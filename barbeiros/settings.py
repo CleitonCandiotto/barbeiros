@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     'apps.usuarios',
     'apps.barbearias',
 ]
@@ -126,3 +127,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'usuarios.CustomUser'
+
+# autenticação
+LOGIN_REDIRECT_URL = 'dashboard'
+
+LOGIN_URL = 'login'
+
+LOGOUT_REDIRECT_URL = 'index'
+
+#crispyforms
+
+CRISPY_TEMPLATE_PACK ='bootstrap4'
