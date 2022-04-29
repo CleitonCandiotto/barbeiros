@@ -13,7 +13,7 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Precisa informar o e-mail')
 
         email = self.normalize_email(email)
-        user = self.model(username=email, email=email, **extra_fields)
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save()
         return user
