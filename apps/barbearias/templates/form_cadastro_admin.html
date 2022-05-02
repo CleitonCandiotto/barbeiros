@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-md-6 mx-auto">
                 <h3>{{ titulo }}</h3>
-                <p class="lead">Preencha todos os campos obrigatórios.</p>
+                <p class="lead">Informações básicas.</p>
                 <hr>
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -26,6 +26,7 @@
 <script src="{% static 'js/jquery.mask.min.js' %}"></script>
 
 <script>
+
     $(document).ready(function(){
 
         $('#id_preco').mask("00.00", {placeholder: "R$"});
@@ -42,8 +43,14 @@
                  };
 
         $('#id_telefone').mask(SPMaskBehavior, spOptions);
-        
+
+        $('#id_horario_inicio').mask('00:00');
+        $('#id_horario_saida').mask('00:00');
+        $('#id_inicio_intervalo').mask('00:00');
+        $('#id_final_intervalo').mask('00:00');
+
     });
+
 </script>
     
 {% endblock %}

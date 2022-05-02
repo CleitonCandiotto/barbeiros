@@ -115,10 +115,10 @@ class HorarioFuncionamento(models.Model):
     )
 
     dias_da_semana = models.CharField(max_length=16, choices=DIAS_CHOICE)
-    horario_inicio = models.TimeField(verbose_name='Horário Início', help_text='Ex "00:00"')
-    horario_saida = models.TimeField(verbose_name='Horário Saída', help_text='Ex "00:00"')
-    inicio_intervalo = models.TimeField(verbose_name='Início Intervalo', help_text='Ex "00:00"')
-    final_intervalo = models.TimeField(verbose_name='Final Intervalo', help_text='Ex "00:00"')
+    horario_inicio = models.TimeField(max_length=5 ,verbose_name='Horário Início', help_text='Ex "00:00"')
+    horario_saida = models.TimeField(max_length=5 ,verbose_name='Horário Saída', help_text='Ex "00:00"')
+    inicio_intervalo = models.TimeField(max_length=5 ,verbose_name='Início Intervalo', help_text='Ex "00:00"')
+    final_intervalo = models.TimeField(max_length=5 ,verbose_name='Final Intervalo', help_text='Ex "00:00"')
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
 
 
@@ -133,7 +133,19 @@ class HorarioFuncionamento(models.Model):
 
 class AgendaHorario(models.Model):
     pass
+
+
+class Clientes(models.Model):
+    nome = models.CharField(max_length=200, verbose_name='Nome', help_text='Digite aqui seu nome completo')
+    telefone = models.CharField(max_length=16, verbose_name='Telefone')
+    barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
+
+
+    class Meta:
+        verbose_name = 'Cliente'
+        verbose_name_plural = 'Clientes'
+
     
-
-
-
+    def __str__(self):
+        return self.nome
+    

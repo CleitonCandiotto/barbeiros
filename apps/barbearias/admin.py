@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Barbearia, Endereco, Profissionais, Servicos, HorarioFuncionamento, AgendaHorario
+from .models import Barbearia, Endereco, Profissionais, Servicos, HorarioFuncionamento, AgendaHorario, Clientes
 
 
 @admin.register(Barbearia)
@@ -26,3 +26,8 @@ class ServicosAdmin(admin.ModelAdmin):
 @admin.register(HorarioFuncionamento)
 class HorarioFuncionamentoAdmin(admin.ModelAdmin):
     list_display = ('dias_da_semana', 'horario_inicio', 'horario_saida', 'barbearia')
+
+
+@admin.register(Clientes)
+class ClientesAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'telefone', 'barbearia')
