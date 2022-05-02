@@ -1,5 +1,106 @@
-from django.views.generic import TemplateView
-
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView, ListView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from .models import Servicos
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class DashboardView(TemplateView):
     template_name = 'dashboard.html'
+
+
+# list
+
+class ServicosList(LoginRequiredMixin, ListView):
+    model = Servicos
+    login_url = reverse_lazy('login')
+    template_name = 'servicos.html'
+
+
+    def get_queryset(self):
+        self.object_list = Servicos.objects.filter(barbearia=self.request.user.barbearia)
+        return self.object_list
+
+
+# create
+
+class ServicosCreate(LoginRequiredMixin, CreateView):
+    model = Servicos
+    login_url = reverse_lazy('login')
+    template_name = 'form_cadastro_admin.html'
+    fields = ['servicos', 'tempo', 'preco']
+    success_url = reverse_lazy('servicos')
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Cadastrar Serviço'
+        context['btn'] = 'Cadastrar'
+
+        return context
+
+    
+    def form_valid(self, form):
+        form.instance.barbearia = self.request.user.barbearia
+        
+        serv_form = super().form_valid(form)
+        
+        return serv_form
+
+    
+
+
+# update
+
+class ServicosUpdate(LoginRequiredMixin, UpdateView):
+    model = Servicos
+    login_url = reverse_lazy('login')
+    template_name = 'form_cadastro_admin.html'
+    fields = ['servicos', 'tempo', 'preco']
+    success_url = reverse_lazy('servicos')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Cadastrar Serviço'
+        context['btn'] = 'Salvar'
+
+        return context
+
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """
+        self.object = Servicos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+
+        return self.object
+
+
+# delete
+
+class ServicosDelete(LoginRequiredMixin, DeleteView):
+    model = Servicos
+    login_url = reverse_lazy('login')
+    template_name = 'form_excluir.html'
+    success_url = reverse_lazy('servicos')
+
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+
+        context['nome'] = 'Serviço'
+
+
+        return context
+
+    
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """
+        self.object = Servicos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+
+        return self.object
+

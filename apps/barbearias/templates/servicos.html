@@ -1,0 +1,41 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block navs %}
+
+<div id="content ">
+    <div class="container-fluid">
+        <div class="mx-3 pb-3">
+            <h5>
+                Serviços
+                <a href="{% url 'criar_servico' %}" class="btn btn-success btn-sm float-right">+ Adicionar</a>
+            </h5>
+            
+        </div>    
+        <table class="table table-hover mx-3">
+            <tr>
+                <th>Serviços</th>
+                <th>Tempo</th>
+                <th>Preço R$</th>
+                <th>Opções</th>
+            </tr>
+            {% for servicos in  object_list %}
+            <tr>
+                <td>{{ servicos.servicos }}</td>
+                <td>{{ servicos.tempo }}</td>
+                <td>{{ servicos.preco }}</td>
+                <td>
+                    <a href="{% url 'editar_servico' servicos.pk %}" class="btn btn-info btn-sm">Editar</a>
+                    <a href="{% url 'excluir_servico' servicos.pk %}" class="btn btn-danger btn-sm">Excluir</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">Nuhum campo cadastrado</td>
+            </tr>
+            {% endfor %}
+        </table>        
+    </div>
+</div>
+
+{% endblock %}
