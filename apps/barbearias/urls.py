@@ -3,7 +3,7 @@ from django.urls import path
 from .views import DashboardView
 from .views import ServicosList, ClientesList
 from .views import ServicosCreate, ClientesCreate, HorarioFuncionamentoCreate
-from .views import ServicosUpdate, ClientesUpdate
+from .views import ServicosUpdate, ClientesUpdate, HorarioFuncionamentoUpdate
 from .views import ServicosDelete, ClientesDelete
 
 urlpatterns = [
@@ -18,6 +18,7 @@ urlpatterns = [
 
     path('editar-servico/<int:pk>/', ServicosUpdate.as_view(), name='editar_servico'),
     path('editar-cliente/<int:pk>/', ClientesUpdate.as_view(), name='editar_cliente'),
+    path('editar-horario-atendimento/<int:pk>/', HorarioFuncionamentoUpdate.as_view(), name='editar_horario'),
 
     path('excluir-servico/<int:pk>/', ServicosDelete.as_view(), name='excluir_servico'),
     path('excluir-cliente/<int:pk>/', ClientesDelete.as_view(), name='excluir_cliente'),

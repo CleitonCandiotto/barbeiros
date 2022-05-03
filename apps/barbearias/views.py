@@ -87,7 +87,7 @@ class ClientesCreate(LoginRequiredMixin, CreateView):
 class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
     model = HorarioFuncionamento
     login_url = reverse_lazy('login')
-    template_name = 'form_cadastro_admin.html'
+    template_name = 'horario_atendimento.html'
     fields = ['dias_da_semana', 'horario_inicio', 'horario_saida', 'inicio_intervalo', 'final_intervalo']
     success_url = reverse_lazy('dashboard')
 
@@ -95,8 +95,10 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['titulo'] = 'Cadastrar Horário Atendimento'
+        context['titulo'] = 'Horário de Funcionamento'
         context['btn'] = 'Cadastrar'
+
+        context['horario'] = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
 
         return context   
 
@@ -159,6 +161,35 @@ class ClientesUpdate(LoginRequiredMixin ,UpdateView):
         Func para somente o usuario conseguir alterar os dados dele
         """        
         self.object = Clientes.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+
+        return self.object
+
+
+class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
+    model = HorarioFuncionamento
+    login_url = reverse_lazy('login')
+    template_name = 'horario_atendimento.html'
+    fields = ['dias_da_semana', 'horario_inicio', 'horario_saida', 'inicio_intervalo', 'final_intervalo']
+    success_url = reverse_lazy('criar_horario')
+
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Horário de Funcionamento'
+        context['btn'] = 'Cadastrar'
+
+        context['horario'] = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
+
+        return context 
+
+    
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """
+        self.object = HorarioFuncionamento.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
 
         return self.object
 
