@@ -3,38 +3,62 @@
 
 {% block navs %}
 
-<div class="col-xxl-12 col-xl-12">
-    <h5>
-        Serviços
-        <a href="{% url 'criar_servico' %}" class="btn btn-success btn-sm right">+ Adicionar</a>
-    </h5>
+<div class="col-lg-12 col-xl-12">
+    <div class="m-3">
+        <h5>
+            Serviços
+            <a href="{% url 'criar_servico' %}" class="btn btn-success btn-sm float-end">+ Adicionar</a>
+        </h5>
+    </div>
     <div class="card info-card customers-card">
-      <div class="p-4">              
-            <table class="table table-hover">
-                <tr>
-                    <th>Serviços</th>
-                    <th>Tempo</th>
-                    <th>Preço R$</th>
-                    <th>Opções</th>
-                </tr>
-                {% for servicos in  object_list %}
-                <tr>
-                    <td>{{ servicos.servicos }}</td>
-                    <td>{{ servicos.tempo }}</td>
-                    <td>{{ servicos.preco }}</td>
-                    <td>
-                        <a href="{% url 'editar_servico' servicos.pk %}" class="btn btn-info btn-sm">Editar</a>
-                        <a href="{% url 'excluir_servico' servicos.pk %}" class="btn btn-danger btn-sm">Excluir</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3">Nuhum campo cadastrado</td>
-                </tr>
-                {% endfor %}
-            </table>  
+      <div class="p-3">
+            <div class="col">              
+                <table class="table table-hover ">
+                    <tr>
+                        <th>Serviços</th>
+                        <th>Tempo</th>
+                        <th>Preço R$</th>
+                        <th>Opções</th>
+                    </tr>
+                    {% for servicos in  object_list %}
+                    <tr onclick="window.location.href=$('#h{{ servicos.pk }}').val();" style="cursor: pointer;" >
+                        <td>{{ servicos.servicos }}</td>
+                        <td>{{ servicos.tempo }}</td>
+                        <td>{{ servicos.preco }}</td>
+                        <td>
+                            <input type="hidden" value="{% url 'editar_servico' servicos.pk %}" id="h{{ servicos.pk }}">
+                            <a href="{% url 'editar_servico' servicos.pk %}" class="btn btn-info btn-sm">Editar</a>
+                            <a href="javascript:void(0);" onclick="exabreModalWxcluir($('#h{{ servicos.pk }}, 'teste');" class="btn btn-danger btn-sm">Excluir</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">Nuhum campo cadastrado</td>
+                    </tr>
+                    {% endfor %}
+                </table> 
+            </div> 
         </div>        
     </div>
 </div>
+<div id="modalExcluir">
+    <h3 id="h3titulo"></h3>
+    <hr>
+    <a href="javascript:void(0);" onclick="Excluir();"> SIM </a>
+</div>
+<input type="hidden" id="hIdExcluir">
+<script>
+    
+    function exabreModalWxcluir(id, nome){
+        $('#hIdExcluir').val(id);
+        $('#h3titulo').text('Deseja realmente exluir o registro ' + nome + '?')
+        $("#modalExcluir").modal('show');
+    }
+
+    function Excluir(){
+        alert('Você excliru o ID '+  $('#hIdExcluir').val());
+    }
+</script>
 
 {% endblock %}
+

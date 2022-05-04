@@ -240,16 +240,6 @@
 
   <main id="main" class="main">
 
-    <div class="pagetitle">
-      <h1>Daddshboard</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item active">Dashboarddd</li>
-        </ol>
-      </nav>
-    </div><!-- End Page Title -->
-
     <section class="section dashboard">
       <div class="row">
 
@@ -273,11 +263,13 @@
   </footer><!-- End Footer -->
 
   <!-- Vendor JS Files -->
+  <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
   <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/main.js' %}"></script>
+ 
 
   {% block script %}
-  {% endblock%}
+  {% endblock %}
 
 </body>
 
