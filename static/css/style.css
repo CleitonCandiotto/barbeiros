@@ -1075,3 +1075,12 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 13px;
   color: #012970;
 }
+
+#div_id_tempo{
+  padding-top: 10px;
+}
+.btn-2 {
+  color: #fff;
+  background-color: #04d484;
+  border-color: #198754;
+}
