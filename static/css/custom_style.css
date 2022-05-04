@@ -1,0 +1,48 @@
+
+#div_id_tempo {
+  padding-top: 10px;
+}
+  
+#div_id_preco {
+  padding-top: 10px;
+}
+
+
+.btn-save {
+  color: #fff;
+  background-color: #04d484;
+  }
+
+.btn-excluir {
+  color: #fff;
+  background-color: #be4040;
+}
+
+/* Modal Excluir*/
+.i-exclame {
+  color: #f57439;
+  font-size: 180px;
+  padding-left: 120px;
+  }
+
+.h2-modal {
+  text-align: center;
+}
+
+.p-modal {
+  text-align: center;
+}
+
+.b-save {
+  color: #fff;
+  background-color: #04d484;
+  width: 200px;
+  height: 40px
+  }
+
+.b-excluir {
+  color: #fff;
+  background-color: #be4040;
+  width: 200px;
+  height: 40px;
+}

@@ -80,7 +80,7 @@ class Profissionais(models.Model):
 
     
     def __str__(self):
-        return f'{self.nome} - {self.barbearia.barbearia}'
+        return f'{self.nome}'
 
 
 class Servicos(models.Model):

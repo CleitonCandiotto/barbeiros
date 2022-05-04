@@ -6,8 +6,8 @@
 <div class="col-lg-12 col-xl-12">
     <div class="m-3">
         <h5>
-            Clientes
-            <a href="{% url 'criar_cliente' %}" class="btn btn-success btn-sm float-end">+ Adicionar</a>
+            Profissionais
+            <a href="{% url 'criar_profissional' %}" class="btn btn-save btn-sm float-end">+ Adicionar</a>
         </h5>
     </div>
     <div class="card info-card customers-card">
@@ -18,12 +18,12 @@
                         <th>Nome</th>
                         <th>Telefone</th>
                     </tr>
-                    {% for cliente in  object_list %}
-                    <tr onclick="window.location.href=$('#h{{ cliente.pk }}').val();" style="cursor: pointer;" >
-                        <td>{{ cliente.nome }}</td>
-                        <td>{{ cliente.telefone }}</td>
+                    {% for profissional in  object_list %}
+                    <tr onclick="window.location.href=$('#h{{ profissional.pk }}').val();" style="cursor: pointer;" >
+                        <td>{{ profissional.nome }}</td>
+                        <td>{{ profissional.telefone }}</td>
                         <td>
-                            <input type="hidden" value="{% url 'editar_cliente' cliente.pk %}" id="h{{ cliente.pk }}">
+                            <input type="hidden" value="{% url 'editar_profissional' profissional.pk %}" id="h{{ profissional.pk }}">
                         </td>
                     </tr>
                     {% empty %}
