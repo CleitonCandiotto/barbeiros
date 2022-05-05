@@ -1,7 +1,8 @@
+from typing import List
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Servicos, Clientes, HorarioFuncionamento
+from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class DashboardView(TemplateView):
@@ -30,6 +31,18 @@ class ClientesList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         self.object_list = Clientes.objects.filter(barbearia=self.request.user.barbearia)
         return self.object_list
+
+
+class ProfissionaisList(LoginRequiredMixin, ListView):
+    model = Profissionais
+    login_url = reverse_lazy('login')
+    template_name = 'profissionais.html'
+
+
+    def get_queryset(self):
+        self.object_list = Profissionais.objects.filter(barbearia=self.request.user.barbearia)
+        return self.object_list
+
 
 # create
 
@@ -84,6 +97,31 @@ class ClientesCreate(LoginRequiredMixin, CreateView):
         return serv_form
 
 
+class ProfissionaisCreate(LoginRequiredMixin, CreateView):
+    model = Profissionais
+    login_url = reverse_lazy('login')
+    template_name = 'form_cadastro_admin.html'
+    fields = ['nome', 'telefone']
+    success_url = reverse_lazy('profissionais')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Cadastrar Profissional'
+        context['btn'] = 'Cadastrar'
+
+        return context
+    
+
+    def form_valid(self, form):
+        form.instance.barbearia = self.request.user.barbearia
+        
+        serv_form = super().form_valid(form)
+        
+        return serv_form
+
+
 class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
     model = HorarioFuncionamento
     login_url = reverse_lazy('login')
@@ -116,7 +154,7 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
 class ServicosUpdate(LoginRequiredMixin, UpdateView):
     model = Servicos
     login_url = reverse_lazy('login')
-    template_name = 'form_cadastro_admin.html'
+    template_name = 'form_editar/form_editar_servicos.html'
     fields = ['servicos', 'tempo', 'preco']
     success_url = reverse_lazy('servicos')
 
@@ -124,7 +162,7 @@ class ServicosUpdate(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['titulo'] = 'Cadastrar Serviço'
+        context['titulo'] = 'Editar Serviço'
         context['btn'] = 'Salvar'
 
         return context
@@ -142,7 +180,7 @@ class ServicosUpdate(LoginRequiredMixin, UpdateView):
 class ClientesUpdate(LoginRequiredMixin ,UpdateView):
     model = Clientes
     login_url = reverse_lazy('login')
-    template_name = 'form_cadastro_admin.html'
+    template_name = 'form_editar/form_editar_cliente.html'
     fields = ['nome', 'telefone']
     success_url = reverse_lazy('clientes')
 
@@ -161,6 +199,32 @@ class ClientesUpdate(LoginRequiredMixin ,UpdateView):
         Func para somente o usuario conseguir alterar os dados dele
         """        
         self.object = Clientes.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+
+        return self.object
+
+
+class ProfissionaisUpdate(LoginRequiredMixin ,UpdateView):
+    model = Profissionais
+    login_url = reverse_lazy('login')
+    template_name = 'form_editar/form_editar_profissional.html'
+    fields = ['nome', 'telefone']
+    success_url = reverse_lazy('profissionais')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Cadastrar Profissional'
+        context['btn'] = 'Salvar'
+
+        return context
+
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = Profissionais.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
 
         return self.object
 
@@ -199,7 +263,7 @@ class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
 class ServicosDelete(LoginRequiredMixin, DeleteView):
     model = Servicos
     login_url = reverse_lazy('login')
-    template_name = 'form_excluir.html'
+    template_name = 'form_editar_admin.html'
     success_url = reverse_lazy('servicos')
 
 
@@ -207,6 +271,8 @@ class ServicosDelete(LoginRequiredMixin, DeleteView):
         context =  super().get_context_data(**kwargs)
 
         context['nome'] = 'Serviço'
+
+        context['servico'] = Servicos.objects.filter(barbearia=self.request.user.barbearia)
 
 
         return context
@@ -241,5 +307,29 @@ class ClientesDelete(LoginRequiredMixin, DeleteView):
         Func para somente o usuario conseguir alterar os dados dele
         """        
         self.object = Clientes.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+
+        return self.object
+
+
+class ProfissionalDelete(LoginRequiredMixin, DeleteView):
+    model = Profissionais
+    login_url = reverse_lazy('login')
+    template_name = 'form_excluir.html'
+    success_url = reverse_lazy('profissionais')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['nome'] = 'Profissional'
+
+        return context
+
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = Profissionais.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
 
         return self.object
