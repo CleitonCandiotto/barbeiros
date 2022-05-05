@@ -9,6 +9,13 @@ class DashboardView(TemplateView):
     template_name = 'dashboard.html'
 
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+
+        return context
+
+
 # list
 
 class ServicosList(LoginRequiredMixin, ListView):
@@ -136,7 +143,8 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
         context['titulo'] = 'Horário de Funcionamento'
         context['btn'] = 'Cadastrar'
 
-        context['horario'] = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
+        context['dias'] = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
+
 
         return context   
 
@@ -244,7 +252,9 @@ class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
         context['titulo'] = 'Horário de Funcionamento'
         context['btn'] = 'Cadastrar'
 
-        context['horario'] = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
+        dias = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
+
+        context['dias'] = dias         
 
         return context 
 

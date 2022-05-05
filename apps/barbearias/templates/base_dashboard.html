@@ -124,9 +124,9 @@
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="#">
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'logout' %}">
                 <i class="bi bi-box-arrow-right"></i>
-                <span>Sign Out</span>
+                <span>Sair</span>
               </a>
             </li>
 
@@ -151,6 +151,14 @@
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
+        <a class="nav-link " href="#">
+          <i class="bi bi-calendar4-week"></i>
+          <span>Agenda</span>
+        </a>
+      </li><!-- End aGENDA Nav -->
+
+
+      <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#servicos-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-menu-button-wide"></i><span>Serviços</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
@@ -167,7 +175,7 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#clientes-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Clientes</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-person"></i></i><span>Clientes</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="clientes-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
             
@@ -267,6 +275,7 @@
   <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
   <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/main.js' %}"></script>
+  
  
 
   {% block script %}
