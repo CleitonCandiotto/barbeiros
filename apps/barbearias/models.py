@@ -125,7 +125,7 @@ class HorarioFuncionamento(models.Model):
     horario_inicio = models.CharField(max_length=5 ,verbose_name='Horário Início', help_text='Ex "00:00"')
     horario_saida = models.CharField(max_length=5 ,verbose_name='Horário Saída', help_text='Ex "00:00"')
     inicio_intervalo = models.CharField(max_length=5 ,verbose_name='Início Intervalo', help_text='Ex "00:00"', blank=True, null=True)
-    final_intervalo = models.CharField(max_length=5 ,verbose_name='Final Intervalo', help_text='Ex "00:00"', blank=True, null=True)
+    final_intervalo = models.CharField(max_length=5 ,verbose_name='Final Intervalo', help_text='Ex "00:00"', blank=True, null=True )
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
 
 
@@ -155,4 +155,9 @@ class Clientes(models.Model):
     
     def __str__(self):
         return self.nome
+    
+
+    @property
+    def total_clientes(self):
+        return self.clientes_set.all().count()
     

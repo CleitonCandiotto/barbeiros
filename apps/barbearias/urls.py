@@ -4,7 +4,7 @@ from .views import DashboardView
 from .views import ServicosList, ClientesList, ProfissionaisList
 from .views import ServicosCreate, ClientesCreate, HorarioFuncionamentoCreate, ProfissionaisCreate
 from .views import ServicosUpdate, ClientesUpdate, HorarioFuncionamentoUpdate, ProfissionaisUpdate
-from .views import ServicosDelete, ClientesDelete, ProfissionalDelete
+from .views import ServicosDelete, ClientesDelete, ProfissionalDelete, HorarioFuncionamentoDelete
 
 urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
@@ -26,5 +26,6 @@ urlpatterns = [
     path('excluir-servico/<int:pk>/', ServicosDelete.as_view(), name='excluir_servico'),
     path('excluir-cliente/<int:pk>/', ClientesDelete.as_view(), name='excluir_cliente'),
     path('excluir-profissional/<int:pk>/', ProfissionalDelete.as_view(), name='excluir_profissional'),
+    path('excluir-horario-atendimento/<int:pk>/', HorarioFuncionamentoDelete.as_view(), name='excluir_horario'),
 
 ]

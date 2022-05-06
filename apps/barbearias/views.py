@@ -1,4 +1,3 @@
-from typing import List
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -11,6 +10,8 @@ class DashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        context['clientes'] = Clientes.objects.filter(barbearia=self.request.user.barbearia).count()
 
 
         return context
@@ -134,7 +135,7 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('login')
     template_name = 'horario_atendimento.html'
     fields = ['dias_da_semana', 'horario_inicio', 'horario_saida', 'inicio_intervalo', 'final_intervalo']
-    success_url = reverse_lazy('dashboard')
+    success_url = reverse_lazy('criar_horario')
 
 
     def get_context_data(self, **kwargs):
@@ -152,9 +153,10 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.barbearia = self.request.user.barbearia
-        
+
         serv_form = super().form_valid(form)
-        
+
+
         return serv_form
 
 # update
@@ -240,7 +242,7 @@ class ProfissionaisUpdate(LoginRequiredMixin ,UpdateView):
 class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
     model = HorarioFuncionamento
     login_url = reverse_lazy('login')
-    template_name = 'horario_atendimento.html'
+    template_name = 'form_editar/form_editar_horario.html'
     fields = ['dias_da_semana', 'horario_inicio', 'horario_saida', 'inicio_intervalo', 'final_intervalo']
     success_url = reverse_lazy('criar_horario')
 
@@ -343,3 +345,20 @@ class ProfissionalDelete(LoginRequiredMixin, DeleteView):
         self.object = Profissionais.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
 
         return self.object
+
+
+class HorarioFuncionamentoDelete(LoginRequiredMixin, DeleteView):
+    model = HorarioFuncionamento
+    login_url = reverse_lazy('login')
+    template_name = 'horario_atendimento.html'
+    success_url = reverse_lazy('criar_horario')
+
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = HorarioFuncionamento.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+
+        return self.object
+
