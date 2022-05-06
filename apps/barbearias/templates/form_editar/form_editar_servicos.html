@@ -32,7 +32,7 @@
                         {% csrf_token %}  
                         <i class="i-exclame bi bi-exclamation-triangle" ></i>
                         <h2 class="h2-modal">Aviso</h2>
-                        <p class="p-modal">Deseja Desativar o serviço: <strong>{{ object }}</strong>?</p>
+                        <p class="p-modal">Deseja <strong>Desativar</strong> o Serviço: <strong>{{ object }}</strong>?</p>
                             <button type="submit" class="btn b-excluir btn-sm float-end">Desativar</button>
                             <button type="button" class="btn b-save btn-sm" data-bs-dismiss="modal">Voltar</button>
                     </form>            
@@ -52,3 +52,18 @@
 </script>
 
 {% endblock %}
+
+{% block script %}
+
+    <script src="{% static 'js/jquery.mask.min.js' %}"></script>
+
+    <script>
+        
+        $(document).ready(function(){
+    
+            $('#id_preco').mask("00.00", {placeholder: "R$"});
+    
+        });
+    </script>
+    
+{% endblock%}

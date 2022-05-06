@@ -32,7 +32,7 @@
                         {% csrf_token %}  
                         <i class="i-exclame bi bi-exclamation-triangle" ></i>
                         <h2 class="h2-modal">Aviso</h2>
-                        <p class="p-modal">Deseja Excluir o Cliente: <strong>{{ object }}</strong>?</p>
+                        <p class="p-modal">Deseja <strong>Excluir</strong> o Cliente: <strong>{{ object }}</strong>?</p>
                             <button type="submit" class="btn b-excluir btn-sm float-end">Excluir</button>
                             <button type="button" class="btn b-save btn-sm" data-bs-dismiss="modal">Voltar</button>
                     </form>            
@@ -52,3 +52,29 @@
 </script>
 
 {% endblock %}
+
+{% block script %}
+
+<script src="{% static 'js/jquery.mask.min.js' %}"></script>
+
+<script>
+
+    $(document).ready(function(){
+
+        $('#id_cpf').mask('000.000.000-00');
+
+            var SPMaskBehavior = function (val) {
+                return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+            },
+                spOptions = {
+                    onKeyPress: function(val, e, field, options) {
+                        field.mask(SPMaskBehavior.apply({}, arguments), options);
+                    }
+                    };
+
+        $('#id_telefone').mask(SPMaskBehavior, spOptions);
+    });
+
+</script>
+    
+{% endblock%}

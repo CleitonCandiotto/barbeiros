@@ -109,16 +109,23 @@ class Servicos(models.Model):
 class HorarioFuncionamento(models.Model):
 
     DIAS_CHOICE = (
-        ('Todos os dias','Todos os dias'), ('Segunda a Sexta','Segunda a Sexta'),( 'Segunda a Sábado', 'Segunda a Sábado'),
-        ('Segunda Feira','Segunda Feira'), ('Terça Feira','Terça Feira'), ('Quarta Feira', 'Quarta Freira'),
-        ('Quinta Feira','Quinta Feira'), ('Sexta Feira','Sexta Feira'), ('Sábado', 'Sábado'), ('Domingo', 'Domingo'),
+        ('Todos os dias','Todos os dias'), 
+        ('Segunda a Sexta','Segunda a Sexta'),
+        ( 'Segunda a Sábado', 'Segunda a Sábado'),
+        ('Segunda-feira','Segunda-feira'), 
+        ('Terça-feira','Terça-feira'), 
+        ('Quarta-feira', 'Quarta-freira'),
+        ('Quinta-feira','Quinta-feira'), 
+        ('Sexta-feira','Sexta-feira'), 
+        ('Sábado', 'Sábado'), 
+        ('Domingo', 'Domingo'),
     )
 
     dias_da_semana = models.CharField(max_length=16, choices=DIAS_CHOICE)
-    horario_inicio = models.TimeField(max_length=5 ,verbose_name='Horário Início', help_text='Ex "00:00"')
-    horario_saida = models.TimeField(max_length=5 ,verbose_name='Horário Saída', help_text='Ex "00:00"')
-    inicio_intervalo = models.TimeField(max_length=5 ,verbose_name='Início Intervalo', help_text='Ex "00:00"')
-    final_intervalo = models.TimeField(max_length=5 ,verbose_name='Final Intervalo', help_text='Ex "00:00"')
+    horario_inicio = models.CharField(max_length=5 ,verbose_name='Horário Início', help_text='Ex "00:00"')
+    horario_saida = models.CharField(max_length=5 ,verbose_name='Horário Saída', help_text='Ex "00:00"')
+    inicio_intervalo = models.CharField(max_length=5 ,verbose_name='Início Intervalo', help_text='Ex "00:00"', blank=True, null=True)
+    final_intervalo = models.CharField(max_length=5 ,verbose_name='Final Intervalo', help_text='Ex "00:00"', blank=True, null=True )
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
 
 
@@ -148,4 +155,9 @@ class Clientes(models.Model):
     
     def __str__(self):
         return self.nome
+    
+
+    @property
+    def total_clientes(self):
+        return self.clientes_set.all().count()
     
