@@ -160,9 +160,10 @@ class Clientes(models.Model):
 class Produtos(models.Model):
     nome = models.CharField(max_length=100, verbose_name='Nome')
     preco = models.DecimalField(decimal_places=2, max_digits=5, verbose_name='Preço')
-    descricao = models.TextField(max_length=500, verbose_name='Descrição')
-    imagem = StdImageField(upload_to='img/produtos', variations={
-        'thumbnail': {"width": 100, "height": 100, "crop": True}
+    descricao = models.TextField(max_length=250, verbose_name='Descrição', null=True, blank=True)
+    imagem = StdImageField(upload_to='produtos', variations={
+        'thumbnail': {"width": 100, "height": 100, "crop": True},
+        'thumb': {"width": 30, "height": 30, "crop": True},
     })
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
 

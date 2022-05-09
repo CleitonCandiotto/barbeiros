@@ -7,7 +7,7 @@
     <div class="m-3">
         <h5>
             Produtos
-            <a href="#" class="btn btn-save btn-sm float-end">+ Adicionar</a>
+            <a href="{% url 'criar_produto' %}" class="btn btn-save btn-sm float-end">+ Adicionar</a>
         </h5>
     </div>
     <div class="card info-card customers-card">
@@ -16,17 +16,17 @@
                 <table class="table table-hover ">
                     <tr>
                         <th></th>
-                        <th>nome</th>
+                        <th>Nome</th>
                         <th>Preço R$</th>
                     
                     </tr>
                     {% for produto in  object_list %}
-                    <tr onclick="window.location.href=$('#h{{ servicos.pk }}').val();" style="cursor: pointer;" >
-                        <td>{{ produto.imagem }}</td>
+                    <tr onclick="window.location.href=$('#h{{ produto.pk }}').val();" style="cursor: pointer;" >
+                        <td> <img src="{{ produto.imagem.thumb.url }}" alt=""></td>
                         <td>{{ produto.nome }}</td>
                         <td>{{ produto.preco }}</td>
                         <td>
-                            <input type="hidden" value="#" id="h{{ servicos.pk }}">
+                            <input type="hidden" value="{% url 'editar_produto' produto.pk %}" id="h{{ produto.pk }}">
                             <!--<a href="javascript:void(0);" onclick="exabreModalWxcluir($('#h{{ servicos.pk }}', 'teste');" class="btn btn-danger btn-sm">Excluir</a> -->
                         </td>
                     </tr>

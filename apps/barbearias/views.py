@@ -169,6 +169,32 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
 
         return serv_form
 
+
+class ProdutosCreate(LoginRequiredMixin, CreateView):
+    model = Produtos
+    login_url = reverse_lazy('login')
+    template_name = 'form_cadastro_admin.html'
+    fields = ['nome', 'preco', 'descricao', 'imagem']
+    success_url = reverse_lazy('produtos')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Cadastrar Produto'
+        context['btn'] = 'Cadastrar'
+
+        return context
+    
+
+    def form_valid(self, form):
+        form.instance.barbearia = self.request.user.barbearia
+        
+        serv_form = super().form_valid(form)
+        
+        return serv_form
+
+
 # update
 
 class ServicosUpdate(LoginRequiredMixin, UpdateView):
@@ -276,6 +302,33 @@ class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
         Func para somente o usuario conseguir alterar os dados dele
         """
         self.object = HorarioFuncionamento.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+
+        return self.object
+
+
+class ProdutoUpdate(LoginRequiredMixin, UpdateView):
+    model = Produtos
+    login_url = reverse_lazy('login')
+    template_name = 'form_editar/form_editar_produto.html'
+    fields = ['nome', 'preco', 'descricao', 'imagem']
+    success_url = reverse_lazy('produtos')
+
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Cadastrar Produto'
+        context['btn'] = 'Salvar'
+
+        return context
+
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = Produtos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
 
         return self.object
 
