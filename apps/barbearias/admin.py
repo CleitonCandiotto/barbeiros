@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Barbearia, Endereco, Profissionais, Servicos, HorarioFuncionamento, AgendaHorario, Clientes
-
+from .models import Produtos
 
 @admin.register(Barbearia)
 class BarbeariaAdmin(admin.ModelAdmin):
@@ -31,3 +31,8 @@ class HorarioFuncionamentoAdmin(admin.ModelAdmin):
 @admin.register(Clientes)
 class ClientesAdmin(admin.ModelAdmin):
     list_display = ('nome', 'telefone', 'barbearia')
+
+
+@admin.register(Produtos)
+class ProdutosAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'preco', 'descricao')

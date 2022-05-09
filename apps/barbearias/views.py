@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais
+from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class DashboardView(TemplateView):
@@ -51,6 +51,16 @@ class ProfissionaisList(LoginRequiredMixin, ListView):
         self.object_list = Profissionais.objects.filter(barbearia=self.request.user.barbearia)
         return self.object_list
 
+
+class ProdutosList(LoginRequiredMixin, ListView):
+    model = Produtos
+    login_url = reverse_lazy('login')
+    template_name = 'produtos.html'
+
+
+    def get_queryset(self):
+        self.object_list = Produtos.objects.filter(barbearia=self.request.user.barbearia)
+        return self.object_list
 
 # create
 

@@ -157,7 +157,22 @@ class Clientes(models.Model):
         return self.nome
     
 
-    @property
-    def total_clientes(self):
-        return self.clientes_set.all().count()
+class Produtos(models.Model):
+    nome = models.CharField(max_length=100, verbose_name='Nome')
+    preco = models.DecimalField(decimal_places=2, max_digits=5, verbose_name='Preço')
+    descricao = models.TextField(max_length=500, verbose_name='Descrição')
+    imagem = StdImageField(upload_to='img/produtos', variations={
+        'thumbnail': {"width": 100, "height": 100, "crop": True}
+    })
+    barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
+
+
+    class Meta:
+        verbose_name = 'Produto'
+        verbose_name_plural = 'Produtos'
+
+    
+    def __str__(self):
+        return self.nome
+
     
