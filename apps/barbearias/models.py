@@ -164,7 +164,7 @@ class Produtos(models.Model):
     imagem = StdImageField(upload_to='produtos', variations={
         'thumbnail': {"width": 100, "height": 100, "crop": True},
         'thumb': {"width": 30, "height": 30, "crop": True},
-    })
+    }, null=True, blank=True)
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
 
 
