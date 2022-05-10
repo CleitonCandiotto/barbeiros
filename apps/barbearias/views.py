@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos
+from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos, Barbearia
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class DashboardView(TemplateView):
@@ -64,6 +64,7 @@ class ProdutosList(LoginRequiredMixin, ListView):
 
 # create
 
+
 class ServicosCreate(LoginRequiredMixin, CreateView):
     model = Servicos
     login_url = reverse_lazy('login')
@@ -87,7 +88,6 @@ class ServicosCreate(LoginRequiredMixin, CreateView):
         serv_form = super().form_valid(form)
         
         return serv_form
-
 
 
 class ClientesCreate(LoginRequiredMixin, CreateView):
@@ -196,6 +196,32 @@ class ProdutosCreate(LoginRequiredMixin, CreateView):
 
 
 # update
+
+
+class BarbeariaUpdate(UpdateView):
+    model = Barbearia
+    template_name = 'form_editar/form_editar_barbearia.html'
+    fields = ['barbearia', 'nome', 'telefone']
+    success_url = reverse_lazy('dashboard')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Dashboard Barbearia'
+        context['btn'] = 'Salvar'
+
+        return context
+
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """
+        self.object = Barbearia.objects.get(pk=self.kwargs['pk'], usuario=self.request.user)
+
+        return self.object
+
 
 class ServicosUpdate(LoginRequiredMixin, UpdateView):
     model = Servicos

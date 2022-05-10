@@ -4,64 +4,115 @@
 {% block navs %}
 
 <div class="col-lg-12">
-    <div class="row">
-        <!-- Sales Card -->
+  <div class="row">
+    <div class="col-xxl-12 col-md-12">
+      <div class="card info-card sales-card">
+        <div class="card-body">
+          <h5 onclick="window.location.href=$('#h{{ request.user.barbearia.pk }}').val()" class="card-title"
+          style="cursor: pointer;">
+            Dados Barbearia
+          </h5>
+          <input type="hidden" value="{% url 'barbearia' request.user.barbearia.pk %}" id="h{{ request.user.barbearia.pk}}">
+        </div>
+      </div>
+    </div> 
+  </div>
+  <div class="row">
+      <!-- Sales Card -->
+      <div class="col-xxl-4 col-md-4">
+        <div class="card info-card sales-card">
+          <div class="card-body">
+            <h5 class="card-title">Novos Clientes</h5>
+            <span class="text-success small">Ultimos 30 dias.</span>
+            <div class="d-flex align-items-center">
+              <div class="ps-3">
+                <h6>{{ clientes }}</h6>
+                <span class="text-success small pt-1 fw-bold">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xxl-4 col-md-4">
+          <div class="card info-card sales-card">
+            <div class="card-body">
+              <h5 class="card-title">Sales <span>| Today</span></h5>
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-cart"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>145</h6>
+                  <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="col-xxl-4 col-md-4">
           <div class="card info-card sales-card">
             <div class="card-body">
-              <h5 class="card-title">Total Clientes</h5>
+              <h5 class="card-title">Sales <span>| Today</span></h5>
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                  <i class="bi bi-person"></i>
+                  <i class="bi bi-cart"></i>
                 </div>
                 <div class="ps-3">
-                  <h6>{{ clientes }}</h6>
-                  <span class="text-success small pt-1 fw-bold">Clientes</span>
+                  <h6>145</h6>
+                  <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
 
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body pb-0">
+            <h5 class="card-title">News &amp; Updates <span>| Today</span></h5>
+
+            <div class="news">
+              <div class="post-item clearfix">
+                <img src="assets/img/news-1.jpg" alt="">
+                <h4><a href="#">Nihil blanditiis at in nihil autem</a></h4>
+                <p>Sit recusandae non aspernatur laboriosam. Quia enim eligendi sed ut harum...</p>
+              </div>
+
+              <div class="post-item clearfix">
+                <img src="assets/img/news-2.jpg" alt="">
+                <h4><a href="#">Quidem autem et impedit</a></h4>
+                <p>Illo nemo neque maiores vitae officiis cum eum turos elan dries werona nande...</p>
+              </div>
+
+              <div class="post-item clearfix">
+                <img src="assets/img/news-3.jpg" alt="">
+                <h4><a href="#">Id quia et et ut maxime similique occaecati ut</a></h4>
+                <p>Fugiat voluptas vero eaque accusantium eos. Consequuntur sed ipsam et totam...</p>
+              </div>
+
+              <div class="post-item clearfix">
+                <img src="assets/img/news-4.jpg" alt="">
+                <h4><a href="#">Laborum corporis quo dara net para</a></h4>
+                <p>Qui enim quia optio. Eligendi aut asperiores enim repellendusvel rerum cuder...</p>
+              </div>
+
+              <div class="post-item clearfix">
+                <img src="assets/img/news-5.jpg" alt="">
+                <h4><a href="#">Et dolores corrupti quae illo quod dolor</a></h4>
+                <p>Odit ut eveniet modi reiciendis. Atque cupiditate libero beatae dignissimos eius...</p>
+              </div>
+
             </div>
 
           </div>
         </div>
+      </div>
 
-        <div class="col-xxl-4 col-md-4">
-            <div class="card info-card sales-card">
-              <div class="card-body">
-                <h5 class="card-title">Sales <span>| Today</span></h5>
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="bi bi-cart"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6>145</h6>
-                    <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
-  
-                  </div>
-                </div>
-              </div>
-  
-            </div>
-          </div>
-
-          <div class="col-xxl-4 col-md-4">
-            <div class="card info-card sales-card">
-              <div class="card-body">
-                <h5 class="card-title">Sales <span>| Today</span></h5>
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="bi bi-cart"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6>145</h6>
-                    <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
-  
-                  </div>
-                </div>
-              </div>
-  
-            </div>
-          </div>
     </div>
 </div>
 

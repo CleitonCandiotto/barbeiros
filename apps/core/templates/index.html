@@ -2,24 +2,25 @@
 {% load static %}
 
 {% block conteudo %}
-<nav class="navbar navbar-expand navbar-light bg-white topbar  static-top shadow-sm p-3  bg-body rounded">
-    <ul class="navbar-nav ml-auto">
-        
-    </ul> 
-</nav>
+
+{% if user.is_authenticated %}
 <div>
     <div class="row">
         <div class="col">
-            <div id="wrapper">
-                <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-                    
-                </ul>
-            </div>
+            <h1>col</h1>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
         </div>
+    </div>
+</div>
+
+{% else %}
+<div>
+    <div class="row">
         <div class="col">
             <h1>col</h1>
             <a href="{% url 'login' %}">Login</a>
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}

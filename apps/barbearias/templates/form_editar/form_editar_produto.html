@@ -17,9 +17,11 @@
                                 {{ form.preco|as_crispy_field }}
                                 {{ form.descricao|as_crispy_field }}
                             </div>
-                            <div class="col">
-                                <img src="{{ object.imagem.url }}" width="250px" alt="">
-                                {{form.imagem|as_crispy_field}}
+                            <div class="col">              
+                                <div class="col-img">
+                                    <img src="{{ object.imagem.url }}" width="250px" alt="imagem_produto" class="img_produto">
+                                    {{form.imagem|as_crispy_field}}
+                                </div>
                             </div>
                         </div>
                     </div>      
