@@ -25,7 +25,7 @@
   <link href="{% static 'css/bootstrap-icons.css' %}" rel="stylesheet">
 
   <!-- Template Main CSS File -->
-  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <link rel="stylesheet" href="{% static 'css/custom_style.css' %}">
 </head>
 
@@ -35,7 +35,7 @@
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="{% url 'index' %}" class="logo d-flex align-items-center">
         <img src="{% static 'img/logo.png' %}" alt="">
         <span class="d-none d-lg-block">NiceAdmin</span>
       </a>
@@ -190,7 +190,7 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#profissionais-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Profissionais</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-person-workspace"></i></i><span>Profissionais</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="profissionais-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
             

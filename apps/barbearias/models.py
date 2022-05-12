@@ -64,8 +64,8 @@ class Endereco(models.Model):
         verbose_name_plural = 'Endereços'
     
 
-    def __srt__(self):
-        return f'Endereço {self.barbearia.barbearia}'
+    def __str__(self):
+        return f'Endereço {self.barbearia}'
 
 
 class Profissionais(models.Model):

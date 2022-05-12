@@ -1,8 +1,9 @@
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos, Barbearia
+from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos, Barbearia, Endereco
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 class DashboardView(TemplateView):
     template_name = 'dashboard.html'
@@ -12,7 +13,10 @@ class DashboardView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['clientes'] = Clientes.objects.filter(barbearia=self.request.user.barbearia).count()
-
+        context['barbearia'] = Barbearia.objects.filter(usuario=self.request.user)
+        context['endereco'] = Endereco.objects.filter(barbearia=self.request.user.barbearia)
+        context['horario'] = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
+        context['profissionais'] = Profissionais.objects.filter(barbearia=self.request.user.barbearia)
 
         return context
 

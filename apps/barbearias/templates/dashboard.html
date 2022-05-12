@@ -4,12 +4,40 @@
 {% block navs %}
 
 <div class="col-lg-12">
+    <!--Dados Barbearia-->
+    <div class="row">
+      <div class="col-xxl-12 col-md-12">
+        <div class="card info-card sales-card ">
+          <div class="card-text d-flex align-items-center">
+            <div>
+              <img class="img-rockt" src="{% static 'img/rockt.png' %}" alt="imagem_rockt">
+            </div>
+            <div class="card card-info-conf">
+              <h3>Configurações Iniciais</h3>
+              <p>Olá <strong>{{ request.user.barbearia }}</strong>.</p>
+              <p>Siga as instruções abaixo e configure sua Empresa!</p>
+              <p class="small">A qualquer momento caso necessário, conte com nossa equipe de Suporte :)</p>
+
+              <div class="d-flex align-items-center">
+                  <a href="#" class="btn btn-light"><i class="bi bi-headset"></i>Suporte Disponível</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> 
+    </div>
+  <!--Dados Barbearia-->
   <div class="row">
     <div class="col-xxl-12 col-md-12">
       <div class="card info-card sales-card">
-        <div class="card-body">
-          <h5 onclick="window.location.href=$('#h{{ request.user.barbearia.pk }}').val()" class="card-title"
-          style="cursor: pointer;">
+        <div class="card-body d-flex align-items-center" onclick="window.location.href=$('#h{{ request.user.barbearia.pk }}').val()" 
+        style="cursor: pointer;">
+          {% if barbearia %}
+          <i class="check bi bi-check-circle-fill"></i>
+          {% else %}
+          <i class="ico bi bi-shop"></i>
+          {% endif %}
+          <h5 class="card-title" >
             Dados Barbearia
           </h5>
           <input type="hidden" value="{% url 'barbearia' request.user.barbearia.pk %}" id="h{{ request.user.barbearia.pk}}">
@@ -17,103 +45,141 @@
       </div>
     </div> 
   </div>
+  <!--Endereço-->
   <div class="row">
-      <!-- Sales Card -->
-      <div class="col-xxl-4 col-md-4">
-        <div class="card info-card sales-card">
-          <div class="card-body">
-            <h5 class="card-title">Novos Clientes</h5>
-            <span class="text-success small">Ultimos 30 dias.</span>
-            <div class="d-flex align-items-center">
-              <div class="ps-3">
-                <h6>{{ clientes }}</h6>
-                <span class="text-success small pt-1 fw-bold">0%</span>
-              </div>
-            </div>
-          </div>
+    <div class="col-xxl-12 col-md-12">
+      <div class="card info-card sales-card">
+        <div class="card-body d-flex align-items-center" onclick="window.location.href=$('#h{{ request.user.barbearia.pk }}').val()"
+        style="cursor: pointer;">
+          {% if endereco %}
+            <i class="check bi bi-check-circle-fill"></i>
+          {% else %}
+            <i class="ico bi bi-map"></i>
+          {% endif %}
+          <h5 class="card-title" >
+            Endereço
+          </h5>
+          <input type="hidden" value="{% url 'barbearia' request.user.barbearia.pk %}" id="h{{ request.user.barbearia.pk}}">
         </div>
       </div>
-
-      <div class="col-xxl-4 col-md-4">
-          <div class="card info-card sales-card">
-            <div class="card-body">
-              <h5 class="card-title">Sales <span>| Today</span></h5>
-              <div class="d-flex align-items-center">
-                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                  <i class="bi bi-cart"></i>
-                </div>
-                <div class="ps-3">
-                  <h6>145</h6>
-                  <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
-                </div>
-              </div>
-            </div>
-          </div>
+    </div> 
+  </div>
+  <!--horario Atendimeto-->
+  <div class="row">
+    <div class="col-xxl-12 col-md-12">
+      <div class="card info-card sales-card">
+        <div class="card-body d-flex align-items-center" onclick="window.location.href=$('#h{{ request.user.barbearia.pk }}').val()" 
+        style="cursor: pointer;">
+          {% if horario %}
+            <i class="check bi bi-check-circle-fill"></i>
+          {% else %}
+            <i class="ico bi bi-alarm"></i>
+          {% endif %}
+          <h5 class="card-title">
+            Horario Atendimento
+          </h5>
+          <input type="hidden" value="{% url 'barbearia' request.user.barbearia.pk %}" id="h{{ request.user.barbearia.pk}}">
         </div>
-        <div class="col-xxl-4 col-md-4">
-          <div class="card info-card sales-card">
-            <div class="card-body">
-              <h5 class="card-title">Sales <span>| Today</span></h5>
-              <div class="d-flex align-items-center">
-                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                  <i class="bi bi-cart"></i>
-                </div>
-                <div class="ps-3">
-                  <h6>145</h6>
-                  <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
-
-                </div>
-              </div>
+      </div>
+    </div> 
+  </div>
+  <!--Cadastro Profissionais-->
+  <div class="row">
+    <div class="col-xxl-12 col-md-12">
+      <div class="card info-card sales-card">
+        <div class="card-body d-flex align-items-center"  onclick="window.location.href=$('#hprofissional').val()" 
+        style="cursor: pointer;">
+          {% if profissionais %}
+            <i class="check bi bi-check-circle-fill"></i>
+          {% else %}
+            <i class="ico bi bi-person-workspace"></i>
+          {% endif %}
+          <h5 class="card-title">
+            Cadastro Profissionais
+          </h5>
+          <input type="hidden" value="{% url 'criar_profissional' %}" id="hprofissional">
+        </div>
+      </div>
+    </div> 
+  </div>    
+  <div class="row">
+    <!-- Novos Clientes -->
+    <div class="col-xxl-4 col-md-4">
+      <div class="card-b info-card sales-card">
+        <div class="card-body">
+          <h5 class="card-title">Novos Clientes</h5>
+          <p class="card-p">Ultimos 30 dias.</p>
+          <div class="d-flex align-items-center">
+            <div class="ps-3">
+              <h6>{{ clientes }}</h6>              
             </div>
+            <span class="card-s">0%</span>
           </div>
         </div>
       </div>
     </div>
-    <div class="row">
 
+    <!-- Novos Serviços -->
+    <div class="col-xxl-4 col-md-4">
+      <div class="card-b info-card sales-card">
+        <div class="card-body">
+          <h5 class="card-title">Serviços Realizados</h5>
+          <p class="card-p">Ultimos 30 dias.</p>
+          <div class="d-flex align-items-center">
+            <div class="ps-3">
+              <h6>0</h6>              
+            </div>
+            <span class="card-s">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Novos Produtos -->
+    <div class="col-xxl-4 col-md-4">
+      <div class="card-b info-card sales-card">
+        <div class="card-body">
+          <h5 class="card-title">Produtos Vendidos</h5>
+          <p class="card-p">Ultimos 30 dias.</p>
+          <div class="d-flex align-items-center">
+            <div class="ps-3">
+              <h6>0</h6>              
+            </div>
+            <span class="card-s">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <div class="row">
       <div class="col-lg-4">
         <div class="card">
-          <div class="card-body pb-0">
-            <h5 class="card-title">News &amp; Updates <span>| Today</span></h5>
-
+          <div class="card-body">
+            <h5 class="card-title">Visão Geral</h5>
             <div class="news">
-              <div class="post-item clearfix">
-                <img src="assets/img/news-1.jpg" alt="">
-                <h4><a href="#">Nihil blanditiis at in nihil autem</a></h4>
-                <p>Sit recusandae non aspernatur laboriosam. Quia enim eligendi sed ut harum...</p>
+              <div class="post-item d-flex align-items-center justify-content-between">
+                <h1 class="post-item-h1">0</h1>              
+                <h4 class="post-item-h4">Total Clientes</h4>
+                <i class="post-item-icon bi bi-people"></i>              
               </div>
-
-              <div class="post-item clearfix">
-                <img src="assets/img/news-2.jpg" alt="">
-                <h4><a href="#">Quidem autem et impedit</a></h4>
-                <p>Illo nemo neque maiores vitae officiis cum eum turos elan dries werona nande...</p>
-              </div>
-
-              <div class="post-item clearfix">
-                <img src="assets/img/news-3.jpg" alt="">
-                <h4><a href="#">Id quia et et ut maxime similique occaecati ut</a></h4>
-                <p>Fugiat voluptas vero eaque accusantium eos. Consequuntur sed ipsam et totam...</p>
-              </div>
-
-              <div class="post-item clearfix">
-                <img src="assets/img/news-4.jpg" alt="">
-                <h4><a href="#">Laborum corporis quo dara net para</a></h4>
-                <p>Qui enim quia optio. Eligendi aut asperiores enim repellendusvel rerum cuder...</p>
-              </div>
-
-              <div class="post-item clearfix">
-                <img src="assets/img/news-5.jpg" alt="">
-                <h4><a href="#">Et dolores corrupti quae illo quod dolor</a></h4>
-                <p>Odit ut eveniet modi reiciendis. Atque cupiditate libero beatae dignissimos eius...</p>
-              </div>
-
             </div>
-
+            <div class="news">
+              <div class="post-item d-flex align-items-center">
+                <h1 class="post-item-h1">0</h1>              
+                <h4 class="post-item-h4">Total Agendamentos</h4>
+                <i class="post-item-icon bi bi-people "></i>              
+              </div>
+            </div>
+            <div class="news">
+              <div class="post-item d-flex align-items-center">
+                <h1 class="post-item-h1">0</h1>              
+                <h4 class="post-item-h4">Total Atendimentos</h4>
+                <i class="post-item-icon bi bi-people"></i>              
+              </div>
+            </div>
           </div>
-        </div>
+        </div>  
       </div>
-
-    </div>
+  </div>
 </div>
 
 {% endblock %}

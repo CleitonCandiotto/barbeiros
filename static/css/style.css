@@ -209,7 +209,22 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Card */
 .card {
-  margin-bottom: 30px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+}
+
+/*.card:hover {
+  margin-bottom: 10px;
+  border: none;
+  background-color: #f3f3f3;
+  border-radius: 5px;
+  box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+}
+*/
+.card-b {
+  margin: 20px 0px;
   border: none;
   border-radius: 5px;
   box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
@@ -223,23 +238,113 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .card-title {
-  padding: 20px 0 15px 0;
+  padding: 5px 0;
   font-size: 18px;
   font-weight: 500;
   color: #012970;
   font-family: "Poppins", sans-serif;
+  margin: 0px;
 }
+
+i.check  {
+  color: #18d26e;
+  font-size: 25px;
+  font-weight: 400;
+  margin-right: 10px;
+}
+
+i.ico  {
+  color:#798eb3; ;
+  font-size: 18px;
+  font-weight: 400;
+  margin-right: 10px;
+}
+
+
 .card-title span {
   color: #899bbd;
   font-size: 14px;
   font-weight: 400;
 }
+
 .card-body {
-  padding: 0 20px 20px 20px;
+  padding: 10px;
 }
 
+.card-text {
+  padding: 15px;
+  background-color: #18d26e;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 0 30px rgb(1 41 112 / 10%);
+}
+
+.card .img-rockt {
+  max-width: 170px;
+  margin-right: 30px;
+}
+
+.card .card-info-conf {
+  color: #012970;
+  background-color: #18d26e;
+  box-shadow: none;
+}
+
+.card-info-conf h3 {
+  font-weight: bolder;
+  margin: 8px 0;
+}
+
+.card-info-conf p{
+  margin: 2px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.card-info-conf p.small{
+  margin: 2px 0;
+  font-size: 12px;
+}
+
+/* Visão geral dashboard */
+.post-item-h1{
+  font-size: 60px;
+  color: #012970;
+  font-weight: 700;
+  margin-right: 10px;
+  padding: 0;
+}
+
+.post-item-icon{
+  font-size: 60px;
+  justify-content: flex-end;
+}
+
+.card-info-conf .btn-light {
+  margin: 8px 0;
+  color: #000;
+  background-color: #f8f9fa;
+  font-weight: 500;
+  border: none;
+}
+
+.card-info-conf .btn-light i {
+  margin-right: 10px;
+}
+
+.card-info-conf .btn-light:hover {
+  margin: 8px 0;
+  color: #000;
+  background-color: #eeeeee;
+  font-weight: 500;
+  border: none;
+}
+
+
+
 .card-img-overlay {
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: #ffffff99;
 }
 
 /* Alerts */
@@ -696,15 +801,28 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Info Cards */
 .dashboard .info-card {
-  padding-bottom: 10px;
+  padding-bottom: 0px;
+}
+
+.dashboard .info-card .card-p {
+  color: #18d26e;
+  font-size: 12px;
+  margin-bottom: 0px;
 }
 .dashboard .info-card h6 {
-  font-size: 28px;
+  font-size: 60px;
   color: #012970;
   font-weight: 700;
   margin: 0;
   padding: 0;
 }
+
+span.card-s {
+  color: #18d26e;
+  font-size: 12px;
+  margin-left: 30px;
+}
+
 .dashboard .card-icon {
   font-size: 32px;
   line-height: 0;
@@ -778,9 +896,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 .dashboard .news h4 {
   font-size: 15px;
-  margin-left: 95px;
+  margin-right: auto;
   font-weight: bold;
-  margin-bottom: 5px;
 }
 .dashboard .news h4 a {
   color: #012970;
