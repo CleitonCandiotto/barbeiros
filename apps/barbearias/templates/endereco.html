@@ -1,0 +1,44 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block navs %}
+
+<div class="col-lg-12 col-xl-12">
+    <div class="m-3">
+        <h5>
+            Serviços
+            <a href="#" class="btn btn-save btn-sm float-end">+ Adicionar</a>
+        </h5>
+    </div>
+    <div class="card info-card customers-card">
+      <div class="p-3">
+            <div class="col">              
+                <table class="table table-hover ">
+                    <tr>
+                        <th>Serviços</th>
+                        <th>Tempo</th>
+                        <th>Preço R$</th>
+                    </tr>
+                    {% for endereco in  object_list %}
+                    <tr onclick="window.location.href=$('#h#').val();" style="cursor: pointer;" >
+                        <td>{{ servicos.servicos }}</td>
+                        <td>{{ servicos.tempo }}</td>
+                        <td>{{ servicos.preco }}</td>
+                        <td>
+                            <input type="hidden" value="#" id="h#">
+                            <!--<a href="javascript:void(0);" onclick="exabreModalWxcluir($('#h{{ servicos.pk }}', 'teste');" class="btn btn-danger btn-sm">Excluir</a> -->
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">Nuhum campo cadastrado</td>
+                    </tr>
+                    {% endfor %}
+                </table> 
+            </div> 
+        </div>        
+    </div>
+</div>
+
+{% endblock %}
+

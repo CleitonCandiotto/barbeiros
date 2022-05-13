@@ -12,8 +12,16 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        barbearia = Barbearia.objects.filter(usuario=self.request.user).values_list()
+        
+        if barbearia[0][1] == ' ':
+            barbearia = None
+        else:
+            barbearia = Barbearia.objects.filter(usuario=self.request.user)
+
+
         context['clientes'] = Clientes.objects.filter(barbearia=self.request.user.barbearia).count()
-        context['barbearia'] = Barbearia.objects.filter(usuario=self.request.user)
+        context['barbearia'] = barbearia
         context['endereco'] = Endereco.objects.filter(barbearia=self.request.user.barbearia)
         context['horario'] = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
         context['profissionais'] = Profissionais.objects.filter(barbearia=self.request.user.barbearia)
@@ -65,6 +73,18 @@ class ProdutosList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         self.object_list = Produtos.objects.filter(barbearia=self.request.user.barbearia)
         return self.object_list
+
+
+class EnderecoList(LoginRequiredMixin, ListView):
+    model = Endereco
+    login_url = reverse_lazy('login')
+    template_name = 'endereco.html'
+
+
+    def get_queryset(self):
+        self.object_list = Endereco.objects.filter(barbearia=self.request.user.barbearia)
+        return self.object_list
+
 
 # create
 
@@ -186,6 +206,31 @@ class ProdutosCreate(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
 
         context['titulo'] = 'Cadastrar Produto'
+        context['btn'] = 'Cadastrar'
+
+        return context
+    
+
+    def form_valid(self, form):
+        form.instance.barbearia = self.request.user.barbearia
+        
+        serv_form = super().form_valid(form)
+        
+        return serv_form
+
+
+class EnderecoCreate(LoginRequiredMixin, CreateView):
+    model = Endereco
+    login_url = reverse_lazy('login')
+    template_name = 'form_cadastro_endereco.html'
+    fields = ['rua', 'numero', 'cep', 'bairro', 'cidade', 'estado']
+    success_url = reverse_lazy('dashboard')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Cadastrar Endereço'
         context['btn'] = 'Cadastrar'
 
         return context
@@ -359,6 +404,33 @@ class ProdutoUpdate(LoginRequiredMixin, UpdateView):
         Func para somente o usuario conseguir alterar os dados dele
         """        
         self.object = Produtos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+
+        return self.object
+
+
+class EnderecoUpdate(LoginRequiredMixin, UpdateView):
+    model = Endereco
+    login_url = reverse_lazy('login')
+    template_name = 'form_cadastro_endereco.html'
+    fields = ['rua', 'numero', 'cep', 'bairro', 'cidade', 'estado']
+    success_url = reverse_lazy('dashboard')
+
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Cadastrar Endereço'
+        context['btn'] = 'Salvar'
+
+        return context
+
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = Endereco.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
 
         return self.object
 

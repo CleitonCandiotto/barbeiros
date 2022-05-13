@@ -57,7 +57,7 @@ class Endereco(models.Model):
     bairro = models.CharField(max_length=100, verbose_name='Bairro')
     cidade = models.CharField(max_length=200, verbose_name='Cidade')
     estado = models.CharField(max_length=2, choices=ESTADO_CHOICE, verbose_name='UF')
-    barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
+    barbearia = models.OneToOneField(Barbearia, on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = 'Endereço'
