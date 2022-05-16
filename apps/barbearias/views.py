@@ -250,7 +250,7 @@ class EnderecoCreate(LoginRequiredMixin, CreateView):
 class BarbeariaUpdate(UpdateView):
     model = Barbearia
     template_name = 'form_editar/form_editar_barbearia.html'
-    fields = ['barbearia', 'nome', 'telefone']
+    fields = ['barbearia', 'nome', 'telefone', 'logo']
     success_url = reverse_lazy('dashboard')
 
 

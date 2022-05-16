@@ -9,6 +9,11 @@ class Barbearia(models.Model):
     nome = models.CharField(max_length=200, verbose_name='Nome', help_text='Informe aqui seu nome completo.')
     telefone = models.CharField(max_length=16, verbose_name='Telefone')
     usuario = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    logo = StdImageField(upload_to='barbearia/logo', variations={
+        'thumbnail': {"width": 100, "height": 100, "crop": True},
+        'thumb': {"width": 30, "height": 30, "crop": True},
+    }, null=True, blank=True)
+
 
 
     class Meta:
@@ -72,6 +77,10 @@ class Profissionais(models.Model):
     nome = models.CharField(blank=True, null=True, max_length=100, verbose_name='Nome')
     telefone = models.CharField(blank=True, null=True,max_length=16, verbose_name='Telefone')
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
+    imagem = StdImageField(upload_to='Profissionais', variations={
+        'thumbnail': {"width": 100, "height": 100, "crop": True},
+        'thumb': {"width": 30, "height": 30, "crop": True},
+    }, null=True, blank=True)
 
 
     class Meta:
