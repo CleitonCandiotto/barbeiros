@@ -143,7 +143,7 @@ class ProfissionaisCreate(LoginRequiredMixin, CreateView):
     model = Profissionais
     login_url = reverse_lazy('login')
     template_name = 'form_cadastro_admin.html'
-    fields = ['nome', 'telefone']
+    fields = ['nome', 'telefone', 'imagem']
     success_url = reverse_lazy('profissionais')
 
 
@@ -328,7 +328,7 @@ class ProfissionaisUpdate(LoginRequiredMixin ,UpdateView):
     model = Profissionais
     login_url = reverse_lazy('login')
     template_name = 'form_editar/form_editar_profissional.html'
-    fields = ['nome', 'telefone']
+    fields = ['nome', 'telefone', 'imagem']
     success_url = reverse_lazy('profissionais')
 
 

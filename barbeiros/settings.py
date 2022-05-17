@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'apps.usuarios',
     'apps.barbearias',
     'apps.core',
+    'apps.agenda',
 ]
 
 MIDDLEWARE = [

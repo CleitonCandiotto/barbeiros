@@ -1,3 +1,4 @@
+from xml.etree.ElementInclude import default_loader
 from django.db import models
 from stdimage import StdImageField
 from apps.usuarios.models import CustomUser
@@ -147,9 +148,6 @@ class HorarioFuncionamento(models.Model):
         return f'Horário Atendimento - {self.barbearia.barbearia}'
 
 
-class AgendaHorario(models.Model):
-    pass
-
 
 class Clientes(models.Model):
     nome = models.CharField(max_length=200, verbose_name='Nome', help_text='Digite aqui seu nome completo')
@@ -185,4 +183,22 @@ class Produtos(models.Model):
     def __str__(self):
         return self.nome
 
+
+class AgendaHorario(models.Model):
+    barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
+    cliente = models.ForeignKey(Clientes, on_delete=models.PROTECT)
+    profissional = models.ForeignKey(Profissionais, on_delete=models.PROTECT)
+    servico = models.ForeignKey(Servicos, on_delete=models.PROTECT)
+    data = models.CharField(max_length=10)
+    horario = models.CharField(max_length=5 ,verbose_name='Hora', help_text='Ex "00:00"')
+    agendado = models.BooleanField(default=False)
+    antendido = models.BooleanField(default=False)
+
+
+    class Meta:
+        verbose_name = 'Agenda Horario'
+        verbose_name_plural = 'Agenda Horarios'
+
     
+    def __str__(self):
+        return f'Agenda Horário Cliente:{self.cliente.nome}'
