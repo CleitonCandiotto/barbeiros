@@ -1,5 +1,6 @@
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
+from django.contrib.auth import views 
 
 from apps.usuarios.models import CustomUser
 from .forms import CustomUserCreationForm
@@ -36,3 +37,6 @@ class UsuarioCreate(CreateView):
 
         return form_cadastro
 
+
+class Login(views.LoginView):
+    template_name = 'login.html'
