@@ -3,6 +3,14 @@
 
 {% block navs %}
 
+<div class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+</div>
+
 <div class="col-lg-12 col-xl-12">
     <div class="m-3">
         <h5>

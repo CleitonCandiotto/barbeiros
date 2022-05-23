@@ -185,10 +185,10 @@ class Produtos(models.Model):
 
 
 class AgendaHorario(models.Model):
-    barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
-    cliente = models.ForeignKey(Clientes, on_delete=models.PROTECT)
-    profissional = models.ForeignKey(Profissionais, on_delete=models.PROTECT)
-    servico = models.ForeignKey(Servicos, on_delete=models.PROTECT)
+    barbearia = models.ForeignKey(Barbearia, on_delete=models.CASCADE)
+    cliente = models.ForeignKey(Clientes, on_delete=models.CASCADE)
+    profissional = models.ForeignKey(Profissionais, on_delete=models.CASCADE)
+    servico = models.ForeignKey(Servicos, on_delete=models.CASCADE)
     data = models.CharField(max_length=10)
     horario = models.CharField(max_length=5 ,verbose_name='Hora', help_text='Ex "00:00"')
     agendado = models.BooleanField(default=False)

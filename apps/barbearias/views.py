@@ -1,8 +1,11 @@
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos, Barbearia, Endereco
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
 
 
 class DashboardView(TemplateView):
@@ -89,12 +92,13 @@ class EnderecoList(LoginRequiredMixin, ListView):
 # create
 
 
-class ServicosCreate(LoginRequiredMixin, CreateView):
+class ServicosCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Servicos
     login_url = reverse_lazy('login')
     template_name = 'form_cadastro_admin.html'
     fields = ['servicos', 'tempo', 'preco']
     success_url = reverse_lazy('servicos')
+    success_message = 'Serviço: %(servicos)s criado com sucesso'
 
     
     def get_context_data(self, **kwargs):
@@ -108,18 +112,24 @@ class ServicosCreate(LoginRequiredMixin, CreateView):
     
     def form_valid(self, form):
         form.instance.barbearia = self.request.user.barbearia
-        
+  
         serv_form = super().form_valid(form)
+
+        success_message = self.get_success_message(form.cleaned_data)
+        if success_message:
+            messages.success(self.request, success_message)
         
         return serv_form
 
 
-class ClientesCreate(LoginRequiredMixin, CreateView):
+class ClientesCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Clientes
     login_url = reverse_lazy('login')
     template_name = 'form_cadastro_admin.html'
     fields = ['nome', 'telefone']
     success_url = reverse_lazy('clientes')
+    success_message = 'Cliente: %(nome)s cadastrado com sucesso'
+
 
 
     def get_context_data(self, **kwargs):
@@ -133,10 +143,21 @@ class ClientesCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.barbearia = self.request.user.barbearia
-        
-        serv_form = super().form_valid(form)
-        
-        return serv_form
+
+        cliente = Clientes.objects.filter(nome=form.instance.nome)
+        telefone = Clientes.objects.filter(telefone=form.instance.telefone)
+
+        if cliente and telefone:
+            messages.warning(self.request, 'Cliente ja cadastrado')
+            return HttpResponseRedirect(reverse_lazy('clientes'))
+        else:                     
+            serv_form = super().form_valid(form)
+
+            success_message = self.get_success_message(form.cleaned_data)
+            if success_message:
+                messages.success(self.request, success_message)
+            
+            return serv_form
 
 
 class ProfissionaisCreate(LoginRequiredMixin, CreateView):
@@ -437,11 +458,12 @@ class EnderecoUpdate(LoginRequiredMixin, UpdateView):
 
 # delete
 
-class ServicosDelete(LoginRequiredMixin, DeleteView):
+class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Servicos
     login_url = reverse_lazy('login')
-    template_name = 'form_editar_admin.html'
+    template_name = 'form_deletar_admin.html'
     success_url = reverse_lazy('servicos')
+    success_message = 'Servico deletado com sucesso'
 
 
     def get_context_data(self, **kwargs):
@@ -450,7 +472,6 @@ class ServicosDelete(LoginRequiredMixin, DeleteView):
         context['nome'] = 'Serviço'
 
         context['servico'] = Servicos.objects.filter(barbearia=self.request.user.barbearia)
-
 
         return context
 
@@ -462,6 +483,17 @@ class ServicosDelete(LoginRequiredMixin, DeleteView):
         self.object = Servicos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
 
         return self.object
+
+    
+    def form_valid(self, form):
+        success_url = self.get_success_url()
+        success_message = self.get_success_message(form.cleaned_data)
+        self.object.delete()
+
+        if success_message:
+            messages.warning(self.request, success_message)
+            
+        return HttpResponseRedirect(success_url)
 
 
 class ClientesDelete(LoginRequiredMixin, DeleteView):
