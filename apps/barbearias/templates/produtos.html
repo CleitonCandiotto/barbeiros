@@ -10,6 +10,17 @@
             <a href="{% url 'criar_produto' %}" class="btn btn-save btn-sm float-end">+ Adicionar</a>
         </h5>
     </div>
+      <!--Pesquisa-->
+      <div class="">
+        <form class="form-inline" method="GET" action="?">
+            {% csrf_token %}
+            <input class="form-inline" type="text" name="produto" placeholder="Pesquisar"
+            value="{{ request.GET.produto}}" id="" autocomplete="off">
+            <button type="submit"><i class="bi bi-search my-2 my-sm-0"></i></button>
+            <a href="{% url 'produtos' %}">Limpar</a>
+        </form>
+    </div>
+    
     <div class="card info-card customers-card">
       <div class="p-3">
             <div class="col">              

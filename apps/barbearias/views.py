@@ -22,7 +22,6 @@ class DashboardView(TemplateView):
         else:
             barbearia = Barbearia.objects.filter(usuario=self.request.user)
 
-
         context['clientes'] = Clientes.objects.filter(barbearia=self.request.user.barbearia).count()
         context['barbearia'] = barbearia
         context['endereco'] = Endereco.objects.filter(barbearia=self.request.user.barbearia)
@@ -38,10 +37,13 @@ class ServicosList(LoginRequiredMixin, ListView):
     model = Servicos
     login_url = reverse_lazy('login')
     template_name = 'servicos.html'
+    paginate_by = 10
 
 
     def get_queryset(self):
-        self.object_list = Servicos.objects.filter(barbearia=self.request.user.barbearia)
+        self.object_list = Servicos.objects.filter(
+            barbearia=self.request.user.barbearia
+            )
         return self.object_list
 
 
@@ -49,10 +51,22 @@ class ClientesList(LoginRequiredMixin, ListView):
     model = Clientes
     login_url = reverse_lazy('login')
     template_name = 'clientes.html'
+    paginate_by = 10
 
 
     def get_queryset(self):
-        self.object_list = Clientes.objects.filter(barbearia=self.request.user.barbearia)
+        buscaCliente = self.request.GET.get('cliente')
+
+        if buscaCliente:
+            self.object_list= Clientes.objects.filter(
+                nome__icontains=buscaCliente, 
+                barbearia=self.request.user.barbearia
+                )
+        else:
+            self.object_list = Clientes.objects.filter(
+                barbearia=self.request.user.barbearia
+                )
+
         return self.object_list
 
 
@@ -63,7 +77,17 @@ class ProfissionaisList(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
-        self.object_list = Profissionais.objects.filter(barbearia=self.request.user.barbearia)
+        buscaProfissional = self.request.GET.get('profissional')
+
+        if buscaProfissional:
+            self.object_list = Profissionais.objects.filter(
+                nome__icontains=buscaProfissional, 
+                barbearia=self.request.user.barbearia
+                )
+        else:        
+            self.object_list = Profissionais.objects.filter(
+                barbearia=self.request.user.barbearia
+                )
         return self.object_list
 
 
@@ -74,7 +98,18 @@ class ProdutosList(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
-        self.object_list = Produtos.objects.filter(barbearia=self.request.user.barbearia)
+        buscaProduto = self.request.GET.get('produto')
+
+        if buscaProduto:
+            self.object_list = Produtos.objects.filter(
+                nome__icontains=buscaProduto, 
+                barbearia=self.request.user.barbearia
+                )
+                
+        else:
+            self.object_list = Produtos.objects.filter(
+                barbearia=self.request.user.barbearia
+                )
         return self.object_list
 
 
@@ -92,71 +127,67 @@ class EnderecoList(LoginRequiredMixin, ListView):
 # create
 
 
-class ServicosCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class ServicosCreate(LoginRequiredMixin, CreateView):
     model = Servicos
     login_url = reverse_lazy('login')
     template_name = 'form_cadastro_admin.html'
     fields = ['servicos', 'tempo', 'preco']
     success_url = reverse_lazy('servicos')
-    success_message = 'Serviço: %(servicos)s criado com sucesso'
 
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Cadastrar Serviço'
         context['btn'] = 'Cadastrar'
-
         return context
 
     
     def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia
-  
-        serv_form = super().form_valid(form)
+        form.instance.barbearia = self.request.user.barbearia  
+        servicos = Servicos.objects.filter(servicos=form.instance.servicos)
 
-        success_message = self.get_success_message(form.cleaned_data)
-        if success_message:
-            messages.success(self.request, success_message)
+        if servicos:
+            messages.error(self.request, 'Serviço já cadastrado')
+            return HttpResponseRedirect(reverse_lazy('servicos'))
         
-        return serv_form
+        else:
+            serv_form = super().form_valid(form)
+            messages.success(self.request, 'Serviço Criado com Sucesso')        
+            return serv_form
 
 
-class ClientesCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class ClientesCreate(LoginRequiredMixin, CreateView):
     model = Clientes
     login_url = reverse_lazy('login')
     template_name = 'form_cadastro_admin.html'
     fields = ['nome', 'telefone']
     success_url = reverse_lazy('clientes')
-    success_message = 'Cliente: %(nome)s cadastrado com sucesso'
-
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Cadastrar Cliente'
         context['btn'] = 'Cadastrar'
-
         return context
     
 
     def form_valid(self, form):
         form.instance.barbearia = self.request.user.barbearia
-
         cliente = Clientes.objects.filter(nome=form.instance.nome)
         telefone = Clientes.objects.filter(telefone=form.instance.telefone)
 
         if cliente and telefone:
-            messages.warning(self.request, 'Cliente ja cadastrado')
+            messages.error(self.request, 'Cliente ja cadastrado')
             return HttpResponseRedirect(reverse_lazy('clientes'))
+        
+        if len(telefone) > 13:
+            messages.error(self.request, 'Entre com um Telefone válido')
+            return HttpResponseRedirect(reverse_lazy('clientes'))
+
         else:                     
             serv_form = super().form_valid(form)
-
-            success_message = self.get_success_message(form.cleaned_data)
-            if success_message:
-                messages.success(self.request, success_message)
-            
+            messages.success(self.request, 'Cliente cadastrado com Sucesso')  
+                         
             return serv_form
 
 
@@ -170,18 +201,14 @@ class ProfissionaisCreate(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Cadastrar Profissional'
         context['btn'] = 'Cadastrar'
-
         return context
     
 
     def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia
-        
-        serv_form = super().form_valid(form)
-        
+        form.instance.barbearia = self.request.user.barbearia     
+        serv_form = super().form_valid(form)       
         return serv_form
 
 
@@ -195,23 +222,15 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Horário de Funcionamento'
         context['btn'] = 'Cadastrar'
-
         context['dias'] = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
-
-
         return context   
-
 
 
     def form_valid(self, form):
         form.instance.barbearia = self.request.user.barbearia
-
         serv_form = super().form_valid(form)
-
-
         return serv_form
 
 
@@ -225,18 +244,14 @@ class ProdutosCreate(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Cadastrar Produto'
         context['btn'] = 'Cadastrar'
-
         return context
     
 
     def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia
-        
-        serv_form = super().form_valid(form)
-        
+        form.instance.barbearia = self.request.user.barbearia       
+        serv_form = super().form_valid(form)       
         return serv_form
 
 
@@ -250,18 +265,14 @@ class EnderecoCreate(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Cadastrar Endereço'
         context['btn'] = 'Cadastrar'
-
         return context
     
 
     def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia
-        
-        serv_form = super().form_valid(form)
-        
+        form.instance.barbearia = self.request.user.barbearia       
+        serv_form = super().form_valid(form)        
         return serv_form
 
 
@@ -277,10 +288,8 @@ class BarbeariaUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Dashboard Barbearia'
         context['btn'] = 'Salvar'
-
         return context
 
 
@@ -289,7 +298,6 @@ class BarbeariaUpdate(UpdateView):
         Func para somente o usuario conseguir alterar os dados dele
         """
         self.object = Barbearia.objects.get(pk=self.kwargs['pk'], usuario=self.request.user)
-
         return self.object
 
 
@@ -303,10 +311,8 @@ class ServicosUpdate(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Editar Serviço'
         context['btn'] = 'Salvar'
-
         return context
 
 
@@ -315,7 +321,6 @@ class ServicosUpdate(LoginRequiredMixin, UpdateView):
         Func para somente o usuario conseguir alterar os dados dele
         """
         self.object = Servicos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
-
         return self.object
 
 
@@ -329,10 +334,8 @@ class ClientesUpdate(LoginRequiredMixin ,UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Cadastrar Cliente'
         context['btn'] = 'Salvar'
-
         return context
 
 
@@ -341,7 +344,6 @@ class ClientesUpdate(LoginRequiredMixin ,UpdateView):
         Func para somente o usuario conseguir alterar os dados dele
         """        
         self.object = Clientes.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
-
         return self.object
 
 
@@ -355,10 +357,8 @@ class ProfissionaisUpdate(LoginRequiredMixin ,UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Cadastrar Profissional'
         context['btn'] = 'Salvar'
-
         return context
 
 
@@ -367,7 +367,6 @@ class ProfissionaisUpdate(LoginRequiredMixin ,UpdateView):
         Func para somente o usuario conseguir alterar os dados dele
         """        
         self.object = Profissionais.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
-
         return self.object
 
 
@@ -382,14 +381,10 @@ class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Horário de Funcionamento'
         context['btn'] = 'Cadastrar'
-
         dias = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
-
         context['dias'] = dias         
-
         return context 
 
     
@@ -398,7 +393,6 @@ class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
         Func para somente o usuario conseguir alterar os dados dele
         """
         self.object = HorarioFuncionamento.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
-
         return self.object
 
 
@@ -413,10 +407,8 @@ class ProdutoUpdate(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Cadastrar Produto'
         context['btn'] = 'Salvar'
-
         return context
 
 
@@ -425,7 +417,6 @@ class ProdutoUpdate(LoginRequiredMixin, UpdateView):
         Func para somente o usuario conseguir alterar os dados dele
         """        
         self.object = Produtos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
-
         return self.object
 
 
@@ -440,10 +431,8 @@ class EnderecoUpdate(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Cadastrar Endereço'
         context['btn'] = 'Salvar'
-
         return context
 
 
@@ -452,7 +441,6 @@ class EnderecoUpdate(LoginRequiredMixin, UpdateView):
         Func para somente o usuario conseguir alterar os dados dele
         """        
         self.object = Endereco.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
-
         return self.object
 
 
@@ -468,11 +456,8 @@ class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
-
         context['nome'] = 'Serviço'
-
         context['servico'] = Servicos.objects.filter(barbearia=self.request.user.barbearia)
-
         return context
 
     
@@ -481,7 +466,6 @@ class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         Func para somente o usuario conseguir alterar os dados dele
         """
         self.object = Servicos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
-
         return self.object
 
     
@@ -516,7 +500,6 @@ class ClientesDelete(LoginRequiredMixin, DeleteView):
         Func para somente o usuario conseguir alterar os dados dele
         """        
         self.object = Clientes.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
-
         return self.object
 
 
@@ -529,9 +512,7 @@ class ProfissionalDelete(LoginRequiredMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['nome'] = 'Profissional'
-
         return context
 
 
@@ -556,6 +537,5 @@ class HorarioFuncionamentoDelete(LoginRequiredMixin, DeleteView):
         Func para somente o usuario conseguir alterar os dados dele
         """        
         self.object = HorarioFuncionamento.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
-
         return self.object
 
