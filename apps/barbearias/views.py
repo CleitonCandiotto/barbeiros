@@ -6,6 +6,7 @@ from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Pro
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
+from .forms import ServicosModelForm, ClienteModelForm, ProfissionaisForm
 
 
 class DashboardView(TemplateView):
@@ -41,9 +42,18 @@ class ServicosList(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
-        self.object_list = Servicos.objects.filter(
-            barbearia=self.request.user.barbearia
+        buscaServico = self.request.GET.get('serviço')
+
+        if buscaServico:
+            self.object_list = Servicos.objects.filter(
+                servico__icontains=buscaServico,
+                barbearia = self.request.user.barbearia
             )
+        else:
+            self.object_list = Servicos.objects.filter(
+                barbearia=self.request.user.barbearia
+                )
+
         return self.object_list
 
 
@@ -129,38 +139,32 @@ class EnderecoList(LoginRequiredMixin, ListView):
 
 class ServicosCreate(LoginRequiredMixin, CreateView):
     model = Servicos
+    form_class = ServicosModelForm
     login_url = reverse_lazy('login')
     template_name = 'form_cadastro_admin.html'
-    fields = ['servicos', 'tempo', 'preco']
     success_url = reverse_lazy('servicos')
 
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Cadastrar Serviço'
         context['btn'] = 'Cadastrar'
         return context
 
-    
-    def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia  
-        servicos = Servicos.objects.filter(servicos=form.instance.servicos)
 
-        if servicos:
-            messages.error(self.request, 'Serviço já cadastrado')
-            return HttpResponseRedirect(reverse_lazy('servicos'))
-        
-        else:
-            serv_form = super().form_valid(form)
-            messages.success(self.request, 'Serviço Criado com Sucesso')        
-            return serv_form
+    def form_valid(self, form):
+        form.instance.barbearia = self.request.user.barbearia
+        messages.success(self.request, 'Servico Cadastrado co Sucesso')  
+        serv_form = super().form_valid(form)     
+        return serv_form
 
 
 class ClientesCreate(LoginRequiredMixin, CreateView):
     model = Clientes
+    form_class = ClienteModelForm
     login_url = reverse_lazy('login')
     template_name = 'form_cadastro_admin.html'
-    fields = ['nome', 'telefone']
+
     success_url = reverse_lazy('clientes')
 
 
@@ -172,30 +176,18 @@ class ClientesCreate(LoginRequiredMixin, CreateView):
     
 
     def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia
-        cliente = Clientes.objects.filter(nome=form.instance.nome)
-        telefone = Clientes.objects.filter(telefone=form.instance.telefone)
-
-        if cliente and telefone:
-            messages.error(self.request, 'Cliente ja cadastrado')
-            return HttpResponseRedirect(reverse_lazy('clientes'))
-        
-        if len(telefone) > 13:
-            messages.error(self.request, 'Entre com um Telefone válido')
-            return HttpResponseRedirect(reverse_lazy('clientes'))
-
-        else:                     
-            serv_form = super().form_valid(form)
-            messages.success(self.request, 'Cliente cadastrado com Sucesso')  
-                         
-            return serv_form
+        form.instance.barbearia = self.request.user.barbearia                    
+        serv_form = super().form_valid(form)
+        messages.success(self.request, 'Cliente cadastrado com Sucesso')  
+                     
+        return serv_form
 
 
 class ProfissionaisCreate(LoginRequiredMixin, CreateView):
     model = Profissionais
+    form_class = ProfissionaisForm
     login_url = reverse_lazy('login')
     template_name = 'form_cadastro_admin.html'
-    fields = ['nome', 'telefone', 'imagem']
     success_url = reverse_lazy('profissionais')
 
 
@@ -207,7 +199,7 @@ class ProfissionaisCreate(LoginRequiredMixin, CreateView):
     
 
     def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia     
+        form.instance.barbearia = self.request.user.barbearia   
         serv_form = super().form_valid(form)       
         return serv_form
 
@@ -250,9 +242,17 @@ class ProdutosCreate(LoginRequiredMixin, CreateView):
     
 
     def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia       
-        serv_form = super().form_valid(form)       
-        return serv_form
+        form.instance.barbearia = self.request.user.barbearia
+        produto = Produtos.objects.filter(nome=form.instance.nome)
+
+        if produto:
+            messages.error(self.request, 'Produto ja Cadastrado')
+            return HttpResponseRedirect(reverse_lazy('produtos'))
+
+        else:  
+            messages.success(self.request, 'Produto Cadastrado com Sucesso')     
+            serv_form = super().form_valid(form)       
+            return serv_form
 
 
 class EnderecoCreate(LoginRequiredMixin, CreateView):

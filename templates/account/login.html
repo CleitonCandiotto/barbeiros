@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% load i18n %}
+{% load account socialaccount %}
+
+
+{% block conteudo %}
+
+<div class="container">
+  <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+          <div class="d-flex justify-content-center py-4">
+            <a href="#" class="logo d-flex align-items-center w-auto">
+              <img src="assets/img/logo.png" alt="">
+              <span class="d-none d-lg-block">Barbeiros</span>
+            </a>
+          </div><!-- End Logo -->
+
+          <div class="card mb-3">
+
+            <div class="card-body">
+
+              <div class="pt-4 pb-2">
+                <h5 class="card-title text-center pb-0 fs-4">Login</h5>
+                <p class="text-center small">Entre com seu email e senha para acessar</p>
+              </div>
+
+              <form class="row g-3 needs-validation" novalidate method="post">
+                {% csrf_token %}
+                <div class="col-12">
+                  {{ form.as_p }}
+                  {% if redirect_field_value %}
+                  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                  {% endif %}
+                <div class="col-12">
+                  <button class="btn btn-save w-100" type="submit">Login</button>
+                </div>
+                <div class="col-12 text-center">
+                  <p class="small mb-0">Não tem conta? <a href="{{ signup_url }}">Cadastre-se</a></p>
+                  <p class="small mb-0"><a href="{% url 'account_reset_password' %}">Esqueceu sua Senha? </a></p>
+                </div>
+              </form>
+              {% get_providers as socialaccount_providers %}
+
+              {% if socialaccount_providers %}
+              <p>{% blocktrans with site.name as site_name %}Please sign in with one
+              of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a>
+              for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
+            
+              <div class="socialaccount_ballot">
+            
+                <ul class="socialaccount_providers">
+                  {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+                </ul>
+            
+                <div class="login-or">{% trans 'or' %}</div>
+            
+              </div>
+            
+              {% include "socialaccount/snippets/login_extra.html" %}
+            
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+{% endblock %}

@@ -100,7 +100,7 @@ class Servicos(models.Model):
         ('01', '01 Hora'),
     )
     servicos = models.CharField(max_length=100, help_text='Ex: Barba - Cabelo - Bigode', 
-                                verbose_name='Nome do Serviço')
+                                verbose_name='Serviço',)
     tempo = models.CharField(max_length=2, choices=TEMPO_CHOICE)
     preco = models.DecimalField(max_digits=4, decimal_places=2, verbose_name='Preço(R$)')
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)

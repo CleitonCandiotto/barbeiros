@@ -23,4 +23,5 @@ urlpatterns = [
     path('', include('apps.core.urls'), name='index'),
     path('barbearias/', include('apps.barbearias.urls'), name='barbearias'),
     path('usuarios/', include('apps.usuarios.urls'), name='usuarios'),
+    path('accounts/', include('allauth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
