@@ -165,4 +165,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_SESSION_REMEMBER = True
 
-ACCOUNT_FORMS = {'signup': 'apps.usuarios.views.MyCustomSignupForm'}
+ACCOUNT_FORMS = {
+    'signup': 'apps.usuarios.forms.UserSignupForm',
+    'login': 'apps.usuarios.forms.UserLoginForm',
+}

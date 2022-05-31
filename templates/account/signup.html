@@ -1,21 +1,55 @@
-{% extends "account/base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
 
 {% load i18n %}
 
 {% block head_title %}{% trans "Signup" %}{% endblock %}
 
-{% block content %}
-<h1>{% trans "Sign Up" %}</h1>
+{% block conteudo %}
+<div class="container">
 
-<p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
+  <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+      <div class="container">
+          <div class="row justify-content-center">
+              <div class="col-lg-5 col-md-6 d-flex flex-column align-items-center justify-content-center">
+                  <div class="d-flex justify-content-center py-4">
+                      <a href="#" class="logo d-flex align-items-center w-auto">
+                      <img src="#" alt="">
+                      <span class="d-none d-lg-block">Barbeiros</span>
+                      </a>
+                  </div><!-- End Logo -->
 
-<form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
-  {% csrf_token %}
-  {{ form.as_p }}
-  {% if redirect_field_value %}
-  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-  {% endif %}
-  <button type="submit">{% trans "Sign Up" %} &raquo;</button>
-</form>
+                  <div class="card mb-3">
+
+                      <div class="card-body">
+
+                          <div class="pt-4 pb-2">
+                              <h5 class="card-title text-center pb-0 fs-4">Cadastro</h5>
+                              <p class="text-center small">Entre com seus dados para cirar uma conta</p>
+                          </div>
+
+                          <form class="row g-3 needs-validation" novalidate method="post">
+                              {% csrf_token %}
+                              <div class="col-12">
+                                {{ form.as_p }}
+                                {% if redirect_field_value %}
+                                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                                {% endif %}
+                              </div>
+                              <div class="col-12">
+                                <button class="btn btn-save w-100" type="submit">Cadastrar</button>
+                              </div>
+                              <div class="col-12 text-center">
+                                <p class="small mb-0">Ja é cadastrado? <a href="{{ login_url }}">Login</a></p>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+</div>
 
 {% endblock %}
