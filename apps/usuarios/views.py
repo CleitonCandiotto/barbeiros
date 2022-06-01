@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
-from allauth.account.forms import SignupForm
+
 
 from .forms import CustomUserCreationForm
 from apps.barbearias.models import Barbearia
@@ -44,5 +44,6 @@ class UsuarioCreate(SuccessMessageMixin, CreateView):
             return form_cadastro
 
         return form_cadastro
+
 
 

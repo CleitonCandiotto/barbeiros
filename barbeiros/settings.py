@@ -168,4 +168,7 @@ ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_FORMS = {
     'signup': 'apps.usuarios.forms.UserSignupForm',
     'login': 'apps.usuarios.forms.UserLoginForm',
+    'change_password': 'apps.usuarios.forms.UserChangePasswordForm',
+    'reset_password': 'apps.usuarios.forms.UserResetPasswordForm',
+    'reset_password_from_key': 'apps.usuarios.forms.UserResetPasswordKeyForm',
 }

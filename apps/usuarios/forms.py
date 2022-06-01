@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from allauth.account.forms import LoginForm, SignupForm
+from allauth.account.forms import LoginForm, SignupForm, ChangePasswordForm, ResetPasswordForm, ResetPasswordKeyForm
 
 from .models import CustomUser
 from apps.barbearias.models import Barbearia
@@ -48,3 +48,28 @@ class UserSignupForm(SignupForm):
 
         # You must return the original result.
         return user    
+
+
+class UserChangePasswordForm(ChangePasswordForm):
+
+    def __init__(self, *args, **kwargs):
+        super(UserChangePasswordForm, self).__init__(*args, **kwargs)
+        self.fields['oldpassword'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+        self.fields['password1'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+        self.fields['password2'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+
+
+class UserResetPasswordForm(ResetPasswordForm):
+
+    def __init__(self, *args, **kwargs):
+        super(UserResetPasswordForm, self).__init__(*args, **kwargs)
+        self.fields['email'].widget = forms.TextInput(attrs={'type': 'email', 'class': 'form-control'}) 
+
+
+class UserResetPasswordKeyForm(ResetPasswordKeyForm):
+
+    def __init__(self, *args, **kwargs):
+        super(UserResetPasswordKeyForm, self).__init__(*args, **kwargs)
+        self.fields['password1'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+        self.fields['password2'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+        
