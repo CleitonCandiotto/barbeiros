@@ -1,12 +1,13 @@
 from django.urls import path
 
-from .views import DashboardView
+from .views import DashboardView, PerfilView
 from .views import ServicosList, ClientesList, ProfissionaisList, ProdutosList, EnderecoList
 from .views import ServicosCreate, ClientesCreate, HorarioFuncionamentoCreate, ProfissionaisCreate
 from .views import ProdutosCreate, EnderecoCreate
 from .views import ServicosUpdate, ClientesUpdate, HorarioFuncionamentoUpdate, ProfissionaisUpdate
 from .views import ProdutoUpdate, BarbeariaUpdate, EnderecoUpdate
 from .views import ServicosDelete, ClientesDelete, ProfissionalDelete, HorarioFuncionamentoDelete
+from .views import EnderecoDelete
 
 
 urlpatterns = [
@@ -17,6 +18,7 @@ urlpatterns = [
     path('profissionais/', ProfissionaisList.as_view(), name='profissionais'),
     path('produtos/', ProdutosList.as_view(), name='produtos'),
     path('endereco/', EnderecoList.as_view(), name='endereco'),
+    path('perfil/', PerfilView.as_view(), name='perfil'),
 
     path('criar-servico/', ServicosCreate.as_view(), name='criar_servico'),
     path('criar-cliente/', ClientesCreate.as_view(), name='criar_cliente'),
@@ -37,5 +39,5 @@ urlpatterns = [
     path('excluir-cliente/<int:pk>/', ClientesDelete.as_view(), name='excluir_cliente'),
     path('excluir-profissional/<int:pk>/', ProfissionalDelete.as_view(), name='excluir_profissional'),
     path('excluir-horario-atendimento/<int:pk>/', HorarioFuncionamentoDelete.as_view(), name='excluir_horario'),
-
+    path('excluir-endereco/<int:pk>/', EnderecoDelete.as_view(), name='excluir_endereco'),
 ]

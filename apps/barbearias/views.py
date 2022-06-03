@@ -32,6 +32,18 @@ class DashboardView(TemplateView):
         return context
 
 
+class PerfilView(TemplateView):
+    template_name = 'perfil.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['endereco'] = Endereco.objects.filter(barbearia=self.request.user.barbearia)
+        
+        return context
+
+
 # list
 
 class ServicosList(LoginRequiredMixin, ListView):
@@ -539,3 +551,24 @@ class HorarioFuncionamentoDelete(LoginRequiredMixin, DeleteView):
         self.object = HorarioFuncionamento.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
         return self.object
 
+
+class EnderecoDelete(LoginRequiredMixin, DeleteView):
+    model = Endereco
+    login_url = reverse_lazy('login')
+    template_name = 'form_excluir.html'
+    success_url = reverse_lazy('endereco')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['nome'] = 'Endereço'
+        return context
+
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = Endereco.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+
+        return self.object

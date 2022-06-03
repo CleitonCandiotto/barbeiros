@@ -72,4 +72,5 @@ class UserResetPasswordKeyForm(ResetPasswordKeyForm):
         super(UserResetPasswordKeyForm, self).__init__(*args, **kwargs)
         self.fields['password1'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
         self.fields['password2'].widget = forms.PasswordInput(attrs={'class': 'form-control'})
+
         

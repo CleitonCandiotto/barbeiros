@@ -1,0 +1,89 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block navs %}
+<div class="col-lg-12 col-xl-12">
+    <div class="m-3">
+        <h5>
+            Perfil
+        </h5>
+    </div>
+
+    <div class="card info-card customers-card p-3">
+        <div>              
+            <img src="{{ request.user.barbearia.logo.thumbnail.url }}" alt="" class="rounded-circle"> 
+            <h1>{{ request.user.barbearia }}</h1>    
+        </div> 
+
+        <div>
+            <h2>Endereço</h2>
+            {% if endereco %}
+            {% for end in endereco %}
+                <hr>
+                <p>{{ end.rua }}, {{ end.numero }}, {{ end.bairro }}</p>
+                <p>{{ end.cidade}} - {{ end.estado }}, {{ end.cep }}</p>
+                
+            {% endfor %}
+                <a href="#" data-bs-toggle="modal" data-bs-target="#modalEditar"><i class="bi bi-pencil-square"></i></a>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#modalExcluir"><i class="bi bi-trash"></i></a>
+                <hr>
+            {% else %}
+                <p>Nenhum Endereco Cadastrado</p>
+                <a href="{% url 'criar_endereco' %}">Cadastrar Endereco</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!--Modal Excluir-->
+<div class="modal fade " id="modalExcluir" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-body">
+                    <form method="post" action="{% url 'excluir_endereco' request.user.barbearia.endereco.pk %}">
+                        {% csrf_token %}  
+                        <i class="i-exclame bi bi-exclamation-triangle" ></i>
+                        <h2 class="h2-modal">Aviso</h2>
+                        <p class="p-modal">Deseja <strong>Excluir</strong>sdaaaa</p>
+                            <button type="submit" class="btn b-excluir btn-sm float-end">Excluir</button>
+                            <button type="button" class="btn b-save btn-sm" data-bs-dismiss="modal">Voltar</button>
+                    </form>            
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Modal Editar-->
+<div class="modal fade " id="modalEditar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-body">
+                    <form method="post" action="{% url 'editar_endereco' request.user.barbearia.endereco.pk %}">
+                        {% csrf_token %} 
+                        {{ form }} 
+                        <i class="i-exclame bi bi-exclamation-triangle" ></i>
+                        <button type="submit" class="btn b-save btn-sm float-end">Editar</button>
+                        <button type="button" class="btn b-save btn-sm" data-bs-dismiss="modal">Voltar</button>
+                    </form>            
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+        
+    function exabreModalWxcluir(){
+        $("#modalExcluir").modal('show');
+        $("#modalEditar").modal('show');
+    }
+
+</script>
+
+{% endblock %}
