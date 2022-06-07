@@ -1,0 +1,14 @@
+
+{% load static %}
+
+
+<form method="post" action="">
+  {% csrf_token %}
+
+  <i class="i-exclame bi bi-exclamation-triangle" ></i>
+  <h2 class="h2-modal">Aviso</h2>
+  <p class="p-modal">Deseja <strong>Excluir</strong> o Servico: <strong>{{ object }}</strong>?</p>
+      <button type="submit" class="btn b-excluir btn-sm float-end">Excluir</button>
+      <button type="button" class="btn b-save btn-sm" data-bs-dismiss="modal">Voltar</button>
+
+</form>

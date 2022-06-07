@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from .forms import ServicosModelForm, ClienteModelForm, ProfissionaisForm
+from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, BSModalDeleteView
 
 
 class DashboardView(TemplateView):
@@ -149,11 +150,11 @@ class EnderecoList(LoginRequiredMixin, ListView):
 # create
 
 
-class ServicosCreate(LoginRequiredMixin, CreateView):
-    model = Servicos
+class ServicosCreate(LoginRequiredMixin, BSModalCreateView):
+    #model = Servicos
     form_class = ServicosModelForm
     login_url = reverse_lazy('login')
-    template_name = 'form_cadastro_admin.html'
+    template_name = 'form_modal_cadastro.html'
     success_url = reverse_lazy('servicos')
 
 
@@ -166,7 +167,7 @@ class ServicosCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.barbearia = self.request.user.barbearia
-        messages.success(self.request, 'Servico Cadastrado co Sucesso')  
+        messages.success(self.request, 'Servico Cadastrado com Sucesso')  
         serv_form = super().form_valid(form)     
         return serv_form
 
@@ -176,7 +177,6 @@ class ClientesCreate(LoginRequiredMixin, CreateView):
     form_class = ClienteModelForm
     login_url = reverse_lazy('login')
     template_name = 'form_cadastro_admin.html'
-
     success_url = reverse_lazy('clientes')
 
 
@@ -313,11 +313,11 @@ class BarbeariaUpdate(UpdateView):
         return self.object
 
 
-class ServicosUpdate(LoginRequiredMixin, UpdateView):
+class ServicosUpdate(LoginRequiredMixin, BSModalUpdateView):
     model = Servicos
+    form_class = ServicosModelForm
     login_url = reverse_lazy('login')
-    template_name = 'form_editar/form_editar_servicos.html'
-    fields = ['servicos', 'tempo', 'preco']
+    template_name = 'form_modal_cadastro.html'
     success_url = reverse_lazy('servicos')
 
 
@@ -458,7 +458,7 @@ class EnderecoUpdate(LoginRequiredMixin, UpdateView):
 
 # delete
 
-class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, BSModalDeleteView):
     model = Servicos
     login_url = reverse_lazy('login')
     template_name = 'form_deletar_admin.html'
@@ -515,7 +515,7 @@ class ClientesDelete(LoginRequiredMixin, DeleteView):
         return self.object
 
 
-class ProfissionalDelete(LoginRequiredMixin, DeleteView):
+class ProfissionalDelete(LoginRequiredMixin, BSModalDeleteView):
     model = Profissionais
     login_url = reverse_lazy('login')
     template_name = 'form_excluir.html'

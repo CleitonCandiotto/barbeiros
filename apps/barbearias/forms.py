@@ -2,13 +2,23 @@ from django import forms
 from stdimage import StdImageField
 from .models import Servicos, Clientes, Profissionais
 from django.contrib.auth.forms import AuthenticationForm
+from bootstrap_modal_forms.forms import BSModalModelForm
 
-class ServicosModelForm(forms.ModelForm):
- 
+
+class ServicosModelForm(BSModalModelForm):
+
+
     class Meta:
         model = Servicos
         fields = ['servicos', 'tempo', 'preco']
-        
+
+
+    def __init__(self, *args, **kwargs):
+        super(ServicosModelForm, self).__init__(*args, **kwargs)
+        self.fields['servicos'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['tempo'].widget.attrs['class'] = 'form-control'
+        self.fields['preco'].widget = forms.TextInput(attrs={'type': 'number', 'class': 'form-control'}) 
+
 
     def clean(self):
         servicos = self.cleaned_data.get('servicos')

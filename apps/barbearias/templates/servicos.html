@@ -15,7 +15,7 @@
     <div class="m-3">
         <h5>
             Serviços
-            <a href="{% url 'criar_servico' %}" class="btn btn-save btn-sm float-end">+ Adicionar</a>
+            <button id="create-servico" class="btn btn-save btn-sm float-end" type="button">+ Adicionar</button>
         </h5>
     </div>
     <div class="card info-card customers-card">
@@ -26,15 +26,44 @@
                         <th>Serviços</th>
                         <th>Tempo</th>
                         <th>Preço R$</th>
+                        <th></th>
                     </tr>
                     {% for servicos in  object_list %}
-                    <tr onclick="window.location.href=$('#h{{ servicos.pk }}').val();" style="cursor: pointer;" >
+                    <tr>
                         <td>{{ servicos.servicos }}</td>
                         <td>{{ servicos.tempo }}</td>
                         <td>{{ servicos.preco }}</td>
                         <td>
-                            <input type="hidden" value="{% url 'editar_servico' servicos.pk %}" id="h{{ servicos.pk }}">
-                            <!--<a href="javascript:void(0);" onclick="exabreModalWxcluir($('#h{{ servicos.pk }}', 'teste');" class="btn btn-danger btn-sm">Excluir</a> -->
+                            <li class="dropdown" style="list-style: none;">
+                                <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots"></i>  
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end ">
+                                  <li>
+                                    <button id="update-servico" type="button" class="dropdown-item d-flex align-items-center"
+                                             data-form-url="{% url 'editar_servico' servicos.pk %}">
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span>Editar</span>
+                                        
+                                    </button>
+                                    </a>
+                                  </li>
+
+                                  <li>
+                                    <hr class="dropdown-divider">
+                                  </li>
+                      
+                                  <li>
+                                        <button id="delete-servico" type="button" class="dropdown-item d-flex align-items-center" 
+                                                data-form-url="{% url 'excluir_servico' servicos.pk %}">
+                                            <i class="bi bi-trash"></i>
+                                            <span>Excluir</span>
+                                        </button>
+                                    </a>
+                                  </li>
+
+                                </ul>
+                            </li>
                         </td>
                     </tr>
                     {% empty %}
@@ -48,5 +77,55 @@
     </div>
 </div>
 
+<div class="modal fade" id="create-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+            delete modal
+      </div>
+    </div>
+</div>
+
+
 {% endblock %}
 
+{% block script %}
+
+<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+
+<script>
+        
+    $(document).ready(function() {
+
+        $("#create-servico").modalForm({
+            formURL: "{% url 'criar_servico' %}",
+            modalID: "#create-modal"
+        });
+
+        $("#update-servico").each(function() {
+            $(this).modalForm({
+                formURL:$(this).data("form-url"),
+                modalID:"#create-modal"
+            });
+        });  
+        
+        $("#delete-servico").each(function() {
+            $(this).modalForm({
+                formURL:$(this).data("form-url"),
+                isDeleteForm:true,
+                modalID:"#delete-modal"
+            });
+
+        });
+
+  });
+</script>
+    
+{% endblock%}
