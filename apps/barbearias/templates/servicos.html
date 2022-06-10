@@ -15,13 +15,13 @@
     <div class="m-3">
         <h5>
             Serviços
-            <button id="create-servico" class="btn btn-save btn-sm float-end" type="button">+ Adicionar</button>
+            <button id="create-servico" class="btn btn-save btn-sm float-end" type="button" name="button">+ Adicionar</button>
         </h5>
     </div>
     <div class="card info-card customers-card">
       <div class="p-3">
             <div class="col">              
-                <table class="table table-hover ">
+                <table id="servico-table" class="table">
                     <tr>
                         <th>Serviços</th>
                         <th>Tempo</th>
@@ -34,36 +34,24 @@
                         <td>{{ servicos.tempo }}</td>
                         <td>{{ servicos.preco }}</td>
                         <td>
-                            <li class="dropdown" style="list-style: none;">
-                                <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                            <div class="dropdown">
+                                <a  href="#" data-bs-toggle="dropdown">
                                     <i class="bi bi-three-dots"></i>  
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end ">
-                                  <li>
+                                <div class="dropdown-menu dropdown-menu-end ">
                                     <button id="update-servico" type="button" class="dropdown-item d-flex align-items-center"
                                              data-form-url="{% url 'editar_servico' servicos.pk %}">
                                         <i class="bi bi-pencil-square"></i>
                                         <span>Editar</span>
-                                        
                                     </button>
-                                    </a>
-                                  </li>
-
-                                  <li>
                                     <hr class="dropdown-divider">
-                                  </li>
-                      
-                                  <li>
-                                        <button id="delete-servico" type="button" class="dropdown-item d-flex align-items-center" 
-                                                data-form-url="{% url 'excluir_servico' servicos.pk %}">
-                                            <i class="bi bi-trash"></i>
-                                            <span>Excluir</span>
-                                        </button>
-                                    </a>
-                                  </li>
-
-                                </ul>
-                            </li>
+                                    <button id="delete-servico" type="button" class="dropdown-item d-flex align-items-center" 
+                                            data-form-url="{% url 'excluir_servico' servicos.pk %}">
+                                        <i class="bi bi-trash"></i>
+                                        <span>Excluir</span>
+                                    </button>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}
@@ -78,6 +66,14 @@
 </div>
 
 <div class="modal fade" id="create-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="update-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
 
@@ -102,19 +98,51 @@
 
 <script>
         
-    $(document).ready(function() {
+    $(function() {
 
-        $("#create-servico").modalForm({
-            formURL: "{% url 'criar_servico' %}",
-            modalID: "#create-modal"
-        });
+        function createModalForm(){
+                $("#create-servico").modalForm({
+                formURL: "{% url 'criar_servico' %}",
+                modalID: "#create-modal",
 
-        $("#update-servico").each(function() {
-            $(this).modalForm({
-                formURL:$(this).data("form-url"),
-                modalID:"#create-modal"
             });
-        });  
+        };
+        createModalForm();
+
+        var asyncSuccessMessage = [
+          "<div ",
+          "style='position:fixed;top:0;z-index:10000;width:100%;border-radius:0;' ",
+          "class='alert alert-icon alert-success alert-dismissible fade show mb-0' role='alert'>",
+          "Success: Book was updated.",
+          "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>",
+          "<span aria-hidden='true'>&times;</span>",
+          "</button>",
+          "</div>",
+          "<script>",
+          "$('.alert').fadeTo(2000, 500).slideUp(500, function () {$('.alert').slideUp(500).remove();});",
+          "<\/script>"
+        ].join();
+        
+        function updateModalForm(){
+            $("#update-servico").each(function() {
+                $(this).modalForm({
+                    formURL:$(this).data("form-url"),
+                    asyncUpdate: true,
+                    modalID:"#update-modal",
+                    errorClass: ".is-invalid",
+                    asyncSettings: {
+                        closeOnSubmit: false,
+                        dataUrl: "{% url 'servicos' %}",
+                        successMessage: 'ssss',
+                        dataElementId: "#servico-table",
+                        dataKey: "table",
+                        addModalFormFunction: updateModalForm
+                    }
+                });
+            });
+        }
+        updateModalForm();
+
         
         $("#delete-servico").each(function() {
             $(this).modalForm({
@@ -125,7 +153,12 @@
 
         });
 
-  });
+        function restartModalForms(){
+            createModalForm();
+            updateModalForm();
+        }
+
+    });
 </script>
     
 {% endblock%}

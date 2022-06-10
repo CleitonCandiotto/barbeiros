@@ -20,14 +20,6 @@ class ServicosModelForm(BSModalModelForm):
         self.fields['preco'].widget = forms.TextInput(attrs={'type': 'number', 'class': 'form-control'}) 
 
 
-    def clean(self):
-        servicos = self.cleaned_data.get('servicos')
-
-        servico_db = Servicos.objects.filter(servicos=servicos)
-
-        if servico_db:
-            raise forms.ValidationError('Servico Já cadastrado')
-
        
 class ClienteModelForm(forms.ModelForm):
  
