@@ -15,7 +15,7 @@
     <div class="m-3">
         <h5>
             Serviços
-            <button id="create-servico" class="btn btn-save btn-sm float-end" type="button" name="button">+ Adicionar</button>
+            <button class="btn btn-save btn-sm float-end" type="button" onclick="criarModalServico('{% url 'criar_servico' %}')">+ Adicionar</button>
         </h5>
     </div>
     <div class="card info-card customers-card">
@@ -39,14 +39,14 @@
                                     <i class="bi bi-three-dots"></i>  
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end ">
-                                    <button id="update-servico" type="button" class="dropdown-item d-flex align-items-center"
-                                             data-form-url="{% url 'editar_servico' servicos.pk %}">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                    onclick="editarModalServico('{% url 'editar_servico' servicos.pk %}')" >
                                         <i class="bi bi-pencil-square"></i>
                                         <span>Editar</span>
                                     </button>
                                     <hr class="dropdown-divider">
-                                    <button id="delete-servico" type="button" class="dropdown-item d-flex align-items-center" 
-                                            data-form-url="{% url 'excluir_servico' servicos.pk %}">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                    onclick="deletarModalServico('{% url 'excluir_servico' servicos.pk %}')" >
                                         <i class="bi bi-trash"></i>
                                         <span>Excluir</span>
                                     </button>
@@ -65,28 +65,16 @@
     </div>
 </div>
 
-<div class="modal fade" id="create-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-
-      </div>
-    </div>
+<div class="modal fade" id="criar-servico"  role="dialog" aria-hidden="true">
+ 
 </div>
 
-<div class="modal fade" id="update-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-
-      </div>
-    </div>
+<div class="modal fade" id="editar-servico"  role="dialog" aria-hidden="true">
+ 
 </div>
 
-<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-            delete modal
-      </div>
-    </div>
+<div class="modal fade" id="deletar-servico"  role="dialog" aria-hidden="true">
+ 
 </div>
 
 
@@ -94,71 +82,26 @@
 
 {% block script %}
 
-<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
-
 <script>
-        
-    $(function() {
-
-        function createModalForm(){
-                $("#create-servico").modalForm({
-                formURL: "{% url 'criar_servico' %}",
-                modalID: "#create-modal",
-
-            });
-        };
-        createModalForm();
-
-        var asyncSuccessMessage = [
-          "<div ",
-          "style='position:fixed;top:0;z-index:10000;width:100%;border-radius:0;' ",
-          "class='alert alert-icon alert-success alert-dismissible fade show mb-0' role='alert'>",
-          "Success: Book was updated.",
-          "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>",
-          "<span aria-hidden='true'>&times;</span>",
-          "</button>",
-          "</div>",
-          "<script>",
-          "$('.alert').fadeTo(2000, 500).slideUp(500, function () {$('.alert').slideUp(500).remove();});",
-          "<\/script>"
-        ].join();
-        
-        function updateModalForm(){
-            $("#update-servico").each(function() {
-                $(this).modalForm({
-                    formURL:$(this).data("form-url"),
-                    asyncUpdate: true,
-                    modalID:"#update-modal",
-                    errorClass: ".is-invalid",
-                    asyncSettings: {
-                        closeOnSubmit: false,
-                        dataUrl: "{% url 'servicos' %}",
-                        successMessage: 'ssss',
-                        dataElementId: "#servico-table",
-                        dataKey: "table",
-                        addModalFormFunction: updateModalForm
-                    }
-                });
-            });
-        }
-        updateModalForm();
-
-        
-        $("#delete-servico").each(function() {
-            $(this).modalForm({
-                formURL:$(this).data("form-url"),
-                isDeleteForm:true,
-                modalID:"#delete-modal"
-            });
-
+    function criarModalServico(url){
+        $('#criar-servico').load(url, function(){
+            $(this).modal('show');
         });
+    }
 
-        function restartModalForms(){
-            createModalForm();
-            updateModalForm();
-        }
+    function editarModalServico(url){
+        $('#editar-servico').load(url, function(){
+            $(this).modal('show');
+        });
+    }
 
-    });
+    function deletarModalServico(url){
+        $('#deletar-servico').load(url, function(){
+            $(this).modal('show');
+        });
+    }
+
+    
 </script>
     
 {% endblock%}

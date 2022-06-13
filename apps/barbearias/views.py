@@ -1,3 +1,4 @@
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, ListView
@@ -51,7 +52,7 @@ class ServicosList(LoginRequiredMixin, ListView):
     model = Servicos
     login_url = reverse_lazy('login')
     template_name = 'servicos.html'
-    paginate_by = 10
+    #paginate_by = 10
 
 
     def get_queryset(self):
@@ -100,6 +101,8 @@ class ProfissionaisList(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
+        '''Pesquisa os profissionais por nome ou por qualquer letra'''
+
         buscaProfissional = self.request.GET.get('profissional')
 
         if buscaProfissional:
@@ -150,11 +153,10 @@ class EnderecoList(LoginRequiredMixin, ListView):
 # create
 
 
-class ServicosCreate(LoginRequiredMixin, BSModalCreateView):
-    #model = Servicos
+class ServicosCreate(LoginRequiredMixin, CreateView):
     form_class = ServicosModelForm
     login_url = reverse_lazy('login')
-    template_name = 'form_modal_cadastro.html'
+    template_name = 'form_criar/criar_servico.html'
     success_url = reverse_lazy('servicos')
 
 
@@ -165,12 +167,22 @@ class ServicosCreate(LoginRequiredMixin, BSModalCreateView):
         return context
 
 
-    def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia
-        messages.success(self.request, 'Servico Cadastrado com Sucesso')  
-        serv_form = super().form_valid(form)     
-        return serv_form
+    def post(self, request, *args, **kwargs):
 
+        form = self.form_class(request.POST)
+        servico = self.request.POST.get('servicos')
+        servico_db = Servicos.objects.filter(servicos=servico)
+        
+        if not servico_db:
+            if form.is_valid():
+                form.instance.barbearia = self.request.user.barbearia
+                messages.success(self.request, 'Serviço Cadastrado com Sucesso')
+                form.save()
+                return redirect('servicos')
+        else:
+            messages.error(self.request, 'Serviço já cadastrado')
+            return redirect('servicos')
+            
 
 class ClientesCreate(LoginRequiredMixin, CreateView):
     model = Clientes
@@ -186,7 +198,7 @@ class ClientesCreate(LoginRequiredMixin, CreateView):
         context['btn'] = 'Cadastrar'
         return context
     
-
+    
     def form_valid(self, form):
         form.instance.barbearia = self.request.user.barbearia                    
         serv_form = super().form_valid(form)
@@ -313,11 +325,11 @@ class BarbeariaUpdate(UpdateView):
         return self.object
 
 
-class ServicosUpdate(LoginRequiredMixin, BSModalUpdateView):
+class ServicosUpdate(LoginRequiredMixin, UpdateView):
     model = Servicos
     form_class = ServicosModelForm
     login_url = reverse_lazy('login')
-    template_name = 'form_modal_cadastro.html'
+    template_name = 'form_editar/form_editar_servicos.html'
     success_url = reverse_lazy('servicos')
 
 
@@ -458,7 +470,7 @@ class EnderecoUpdate(LoginRequiredMixin, UpdateView):
 
 # delete
 
-class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, BSModalDeleteView):
+class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Servicos
     login_url = reverse_lazy('login')
     template_name = 'form_deletar_admin.html'
@@ -468,8 +480,7 @@ class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, BSModalDeleteView)
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
-        context['nome'] = 'Serviço'
-        context['servico'] = Servicos.objects.filter(barbearia=self.request.user.barbearia)
+        context['titulo'] = 'Excluir Serviço'
         return context
 
     
@@ -481,16 +492,6 @@ class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, BSModalDeleteView)
         return self.object
 
     
-    def form_valid(self, form):
-        success_url = self.get_success_url()
-        success_message = self.get_success_message(form.cleaned_data)
-        self.object.delete()
-
-        if success_message:
-            messages.warning(self.request, success_message)
-            
-        return HttpResponseRedirect(success_url)
-
 
 class ClientesDelete(LoginRequiredMixin, DeleteView):
     model = Servicos
