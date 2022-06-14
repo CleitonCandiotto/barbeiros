@@ -1,13 +1,13 @@
 {% load static %}
 
-<div class="modal-dialog modal-lg" role="document">
+<div class="modal-dialog" role="document">
   <div class="modal-content">
-    <form action="{% url 'excluir_servico' object.id %}" method="POST">
+    <form action="{% url 'excluir_cliente' object.id %}" method="POST">
         {% csrf_token %}
         <div class="modal-body">
           <i class="i-exclame bi bi-exclamation-triangle" ></i>
           <h2 class="h2-modal">Aviso</h2>
-          <p class="p-modal">Deseja <strong>Excluir</strong> o Servico: <strong>{{ object }}</strong>?</p>
+          <p class="p-modal">Deseja <strong>Excluir</strong> o {{ nome }}: <strong>{{ object }}</strong>?</p>
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn b-excluir btn-sm float-end">Excluir</button>

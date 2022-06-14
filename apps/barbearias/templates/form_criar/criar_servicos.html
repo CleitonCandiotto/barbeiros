@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="modal-dialog modal-lg" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ titulo }}</h2>
+    </div>
+    <form action="{% url 'criar_servico' %}" method="POST">
+        {% csrf_token %}
+        <div class="modal-body">
+            {{ form.as_p }}
+          </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-info " data-bs-dismiss="modal">Voltar</button>
+            <button type="submit" class="btn b-save btn-sm" >{{ btn }}</button>
+        </div>
+    </form>
+  </div>
+</div>
+
+
+{% block script %}
+
+    <script src="{% static 'js/jquery.mask.min.js' %}"></script>
+
+    <script>
+        
+        $(document).ready(function(){
+    
+            $('#id_preco').mask("00.00", {placeholder: "R$"});
+    
+        });
+    </script>
+    
+{% endblock%}

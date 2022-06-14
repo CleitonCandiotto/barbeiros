@@ -75,8 +75,8 @@ class Endereco(models.Model):
 
 
 class Profissionais(models.Model):
-    nome = models.CharField(blank=True, null=True, max_length=100, verbose_name='Nome')
-    telefone = models.CharField(blank=True, null=True,max_length=16, verbose_name='Telefone')
+    nome = models.CharField(max_length=100, verbose_name='Nome')
+    telefone = models.CharField(max_length=16, verbose_name='Telefone')
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
     imagem = StdImageField(upload_to='Profissionais', variations={
         'thumbnail': {"width": 100, "height": 100, "crop": True},
@@ -150,7 +150,7 @@ class HorarioFuncionamento(models.Model):
 
 
 class Clientes(models.Model):
-    nome = models.CharField(max_length=200, verbose_name='Nome', help_text='Digite aqui seu nome completo')
+    nome = models.CharField(max_length=200, verbose_name='Nome')
     telefone = models.CharField(max_length=16, verbose_name='Telefone')
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
 

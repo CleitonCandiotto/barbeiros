@@ -5,27 +5,18 @@
     <div class="modal-header">
       <h2 class="modal-title">{{ titulo }}</h2>
     </div>
-    <form action="{% url 'criar_servico' %}" method="POST">
+    <form action="{% url 'criar_produto' %}" method="POST">
         {% csrf_token %}
         <div class="modal-body">
-            {% for field in form %}
-              <div class="form-group{% if field.errors %} invalid{% endif %}">
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field }}
-                {% for error in field.errors %}
-                  <p class="help-block">{{ error }}</p>
-                {% endfor %}
-              </div>
-            {% endfor %}
+            {{ form.as_p }}
           </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-primary " data-bs-dismiss="modal">Voltar</button>
+            <button type="button" class="btn btn-info " data-bs-dismiss="modal">Voltar</button>
             <button type="submit" class="btn b-save btn-sm" >{{ btn }}</button>
         </div>
     </form>
   </div>
 </div>
-
 
 {% block script %}
 

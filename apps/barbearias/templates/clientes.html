@@ -3,25 +3,33 @@
 
 {% block navs %}
 
+<div class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+</div>
+
 <div class="col-lg-12 col-xl-12">
-    <div class="m-3">
-        <h5>
-            Clientes
-            <a href="{% url 'criar_cliente' %}" class="btn btn-save btn-sm float-end">+ Adicionar</a>
-        </h5>
+    <div class="mb-3">
+        <h3>Clientes
+            <button class="btn btn-save btn-sm float-end" type="button" 
+                onclick="criarModalCliente('{% url 'criar_cliente' %}')">
+                + Adicionar
+            </button>
+        </h3>
     </div>
 
     <!--Pesquisa-->
-    <div class="">
-        <form class="form-inline" method="GET" action="?">
-            {% csrf_token %}
-            <input class="form-inline" type="text" name="cliente" placeholder="Pesquisar"
-            value="{{ request.GET.cliente }}" id="" autocomplete="off">
-            <button type="submit"><i class="bi bi-search my-2 my-sm-0"></i></button>
-            <a href="{% url 'clientes' %}">Limpar</a>
-        </form>
-    </div>
-        
+    <form class="d-flex align-items-center mb-3" role="search">
+        {% csrf_token %}
+        <input class="form-control me-2" type="text" placeholder="Pesquisar" autocomplete="off"
+        name="cliente" value="{{ request.GET.cliente }}">
+        <button class="btn btn-save btn-sm m-1" type="submit"><i class="bi bi-search"></i></button>
+        <a class="btn btn-info btn-sm m-1" href="{% url 'clientes' %}"><i class="bi bi-x-square"></i></a>
+    </form>
+       
     <div class="card info-card customers-card">
       <div class="p-3">
             <div class="col">              
@@ -29,13 +37,31 @@
                     <tr>
                         <th>Nome</th>
                         <th>Telefone</th>
+                        <th></th>
                     </tr>
                     {% for cliente in object_list %}
-                    <tr onclick="window.location.href=$('#h{{ cliente.pk }}').val();" style="cursor: pointer;" >
+                    <tr>
                         <td>{{ cliente.nome }}</td>
                         <td>{{ cliente.telefone }}</td>
                         <td>
-                            <input type="hidden" value="{% url 'editar_cliente' cliente.pk %}" id="h{{ cliente.pk }}">
+                            <div class="dropdown">
+                                <a  href="#" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots"></i>  
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end ">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                        onclick="editarModalCliente('{% url 'editar_cliente' cliente.pk %}')" >
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span>Editar</span>
+                                    </button>
+                                    <hr class="dropdown-divider">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                        onclick="excluirModalCliente('{% url 'excluir_cliente' cliente.pk %}')" >
+                                        <i class="bi bi-trash"></i>
+                                        <span>Excluir</span>
+                                    </button>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}
@@ -79,5 +105,46 @@
     </div>
 </div>
 
+<div class="modal fade" id="criar-cliente"  role="dialog" aria-hidden="true">
+
+</div>
+
+<div class="modal fade" id="editar-cliente"  role="dialog" aria-hidden="true">
+
+</div>
+
+<div class="modal fade" id="excluir-cliente"  role="dialog" aria-hidden="true">
+    
+</div>
+
 {% endblock %}
+
+{% block script %}
+
+<script>
+    function criarModalCliente(url){
+        $('#criar-cliente').load(url, function(){
+            $(this).modal('show');
+        });
+    };
+
+    function editarModalCliente(url){
+        $('#editar-cliente').load(url, function(){
+            $(this).modal('show');
+        });
+    };
+
+    function excluirModalCliente(url){
+        $('#excluir-cliente').load(url, function(){
+            $(this).modal('show');
+        });
+    };
+
+
+
+
+    
+</script>
+    
+{% endblock%}
 
