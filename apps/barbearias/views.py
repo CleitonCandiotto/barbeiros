@@ -7,8 +7,7 @@ from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Pro
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
-from .forms import ServicosModelForm, ClienteModelForm, ProfissionaisForm
-from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, BSModalDeleteView
+from .forms import ServicosModelForm, ClienteModelForm, ProfissionaisModalForm, ProdutosModalForms
 
 
 class DashboardView(TemplateView):
@@ -56,11 +55,11 @@ class ServicosList(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
-        buscaServico = self.request.GET.get('serviço')
+        buscaServico = self.request.GET.get('servico')
 
         if buscaServico:
             self.object_list = Servicos.objects.filter(
-                servico__icontains=buscaServico,
+                servicos__icontains=buscaServico,
                 barbearia = self.request.user.barbearia
             )
         else:
@@ -79,6 +78,8 @@ class ClientesList(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
+        '''Pesquisa os clientes por nome ou por qualquer letra'''
+
         buscaCliente = self.request.GET.get('cliente')
 
         if buscaCliente:
@@ -156,7 +157,7 @@ class EnderecoList(LoginRequiredMixin, ListView):
 class ServicosCreate(LoginRequiredMixin, CreateView):
     form_class = ServicosModelForm
     login_url = reverse_lazy('login')
-    template_name = 'form_criar/criar_servico.html'
+    template_name = 'form_criar/criar_servicos.html'
     success_url = reverse_lazy('servicos')
 
 
@@ -168,27 +169,26 @@ class ServicosCreate(LoginRequiredMixin, CreateView):
 
 
     def post(self, request, *args, **kwargs):
-
         form = self.form_class(request.POST)
         servico = self.request.POST.get('servicos')
         servico_db = Servicos.objects.filter(servicos=servico)
-        
+    
         if not servico_db:
             if form.is_valid():
                 form.instance.barbearia = self.request.user.barbearia
-                messages.success(self.request, 'Serviço Cadastrado com Sucesso')
+                messages.success(request, f'Servico: {servico} criado com sucesso')
                 form.save()
                 return redirect('servicos')
         else:
-            messages.error(self.request, 'Serviço já cadastrado')
+            messages.warning(request, f'Servico: {servico} ja cadastrado')
             return redirect('servicos')
-            
+                  
 
 class ClientesCreate(LoginRequiredMixin, CreateView):
     model = Clientes
     form_class = ClienteModelForm
     login_url = reverse_lazy('login')
-    template_name = 'form_cadastro_admin.html'
+    template_name = 'form_criar/criar_clientes.html'
     success_url = reverse_lazy('clientes')
 
 
@@ -198,20 +198,34 @@ class ClientesCreate(LoginRequiredMixin, CreateView):
         context['btn'] = 'Cadastrar'
         return context
     
-    
-    def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia                    
-        serv_form = super().form_valid(form)
-        messages.success(self.request, 'Cliente cadastrado com Sucesso')  
-                     
-        return serv_form
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        cliente = self.request.POST.get('nome')
+        telefone = self.request.POST.get('telefone')
+        cliente_db = Clientes.objects.filter(nome=cliente)
+
+        if not cliente_db and len(telefone) > 13:
+            if form.is_valid():
+                form.instance.barbearia = self.request.user.barbearia
+                messages.success(request, f'Cliente: {cliente} cadastrado com sucesso')
+                form.save()
+                return redirect('clientes')
+        
+        elif len(telefone) < 13:
+            messages.warning(request, 'Telefone invalido')
+            return redirect('clientes')
+
+        else:
+            messages.warning(request, 'Cliente ja cadastrado')
+            return redirect('clientes')
 
 
 class ProfissionaisCreate(LoginRequiredMixin, CreateView):
     model = Profissionais
-    form_class = ProfissionaisForm
+    form_class = ProfissionaisModalForm
     login_url = reverse_lazy('login')
-    template_name = 'form_cadastro_admin.html'
+    template_name = 'form_criar/criar_profissionais.html'
     success_url = reverse_lazy('profissionais')
 
 
@@ -222,10 +236,26 @@ class ProfissionaisCreate(LoginRequiredMixin, CreateView):
         return context
     
 
-    def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia   
-        serv_form = super().form_valid(form)       
-        return serv_form
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        profissional = self.request.POST.get('nome')
+        telefone = self.request.POST.get('telefone')
+        profissional_db = Profissionais.objects.filter(nome=profissional)
+
+        if not profissional_db and len(telefone) > 13:
+            if form.is_valid():
+                form.instance.barbearia = self.request.user.barbearia
+                messages.success(request, f'Profissional {profissional} cadastrado com sucesso')
+                form.save()
+                return redirect('profissionais')
+
+        elif len(telefone) < 13:
+            messages.warning(request, 'Telefone inválido')
+            return redirect('profissionais')
+
+        else:
+            messages.warning(request, 'Profissional ja cadastrado')
+            return redirect('profissionais')
 
 
 class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
@@ -253,8 +283,8 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
 class ProdutosCreate(LoginRequiredMixin, CreateView):
     model = Produtos
     login_url = reverse_lazy('login')
-    template_name = 'form_cadastro_admin.html'
-    fields = ['nome', 'preco', 'descricao', 'imagem']
+    form_class = ProdutosModalForms
+    template_name = 'form_criar/criar_produtos.html'
     success_url = reverse_lazy('produtos')
 
 
@@ -325,12 +355,13 @@ class BarbeariaUpdate(UpdateView):
         return self.object
 
 
-class ServicosUpdate(LoginRequiredMixin, UpdateView):
+class ServicosUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Servicos
     form_class = ServicosModelForm
     login_url = reverse_lazy('login')
     template_name = 'form_editar/form_editar_servicos.html'
     success_url = reverse_lazy('servicos')
+    success_message = 'Servico alterado com Sucesso'
 
 
     def get_context_data(self, **kwargs):
@@ -348,20 +379,21 @@ class ServicosUpdate(LoginRequiredMixin, UpdateView):
         return self.object
 
 
-class ClientesUpdate(LoginRequiredMixin ,UpdateView):
+class ClientesUpdate(LoginRequiredMixin, SuccessMessageMixin ,UpdateView):
     model = Clientes
+    form_class = ClienteModelForm
     login_url = reverse_lazy('login')
     template_name = 'form_editar/form_editar_cliente.html'
-    fields = ['nome', 'telefone']
     success_url = reverse_lazy('clientes')
+    success_message = 'Cliente alterado com Sucesso'
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Cadastrar Cliente'
+        context['titulo'] = 'Editar Cliente'
         context['btn'] = 'Salvar'
         return context
-
+    
 
     def get_object(self, queryset=None):
         """
@@ -371,20 +403,21 @@ class ClientesUpdate(LoginRequiredMixin ,UpdateView):
         return self.object
 
 
-class ProfissionaisUpdate(LoginRequiredMixin ,UpdateView):
+class ProfissionaisUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Profissionais
+    form_class = ProfissionaisModalForm
     login_url = reverse_lazy('login')
     template_name = 'form_editar/form_editar_profissional.html'
-    fields = ['nome', 'telefone', 'imagem']
     success_url = reverse_lazy('profissionais')
+    success_message = 'Profissional alterado com Sucesso'
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Cadastrar Profissional'
+        context['titulo'] = 'Editar Profissional'
         context['btn'] = 'Salvar'
         return context
-
+     
 
     def get_object(self, queryset=None):
         """
@@ -400,7 +433,6 @@ class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'form_editar/form_editar_horario.html'
     fields = ['dias_da_semana', 'horario_inicio', 'horario_saida', 'inicio_intervalo', 'final_intervalo']
     success_url = reverse_lazy('criar_horario')
-
 
 
     def get_context_data(self, **kwargs):
@@ -428,7 +460,6 @@ class ProdutoUpdate(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('produtos')
 
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Cadastrar Produto'
@@ -452,7 +483,6 @@ class EnderecoUpdate(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('dashboard')
 
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Cadastrar Endereço'
@@ -473,14 +503,14 @@ class EnderecoUpdate(LoginRequiredMixin, UpdateView):
 class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Servicos
     login_url = reverse_lazy('login')
-    template_name = 'form_deletar_admin.html'
+    template_name = 'form_excluir/form_excluir_servico.html'
     success_url = reverse_lazy('servicos')
     success_message = 'Servico deletado com sucesso'
 
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
-        context['titulo'] = 'Excluir Serviço'
+        context['nome'] = 'Serviço'
         return context
 
     
@@ -490,21 +520,19 @@ class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         """
         self.object = Servicos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
         return self.object
-
     
 
-class ClientesDelete(LoginRequiredMixin, DeleteView):
-    model = Servicos
+class ClientesDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = Clientes
     login_url = reverse_lazy('login')
-    template_name = 'form_excluir.html'
+    template_name = 'form_excluir/form_excluir_cliente.html'
     success_url = reverse_lazy('clientes')
+    success_message = 'Cliente deletado com sucesso'
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['nome'] = 'Cliente'
-
         return context
 
 
@@ -516,11 +544,12 @@ class ClientesDelete(LoginRequiredMixin, DeleteView):
         return self.object
 
 
-class ProfissionalDelete(LoginRequiredMixin, BSModalDeleteView):
+class ProfissionalDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Profissionais
     login_url = reverse_lazy('login')
-    template_name = 'form_excluir.html'
+    template_name = 'form_excluir/form_excluir_profissional.html'
     success_url = reverse_lazy('profissionais')
+    success_message = 'Profissional deletado com sucesso'
 
 
     def get_context_data(self, **kwargs):

@@ -3,42 +3,68 @@
 
 {% block navs %}
 
+<div class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+</div>
+
 <div class="col-lg-12 col-xl-12">
-    <div class="m-3">
-        <h5>
+    <div class="mb-3">
+        <h3>
             Produtos
-            <a href="{% url 'criar_produto' %}" class="btn btn-save btn-sm float-end">+ Adicionar</a>
-        </h5>
+            <button class="btn btn-save btn-sm float-end" type="button" 
+                onclick="criarModalProduto('{% url 'criar_produto' %}')">
+                + Adicionar
+            </button>
+        </h3>
     </div>
-      <!--Pesquisa-->
-      <div class="">
-        <form class="form-inline" method="GET" action="?">
-            {% csrf_token %}
-            <input class="form-inline" type="text" name="produto" placeholder="Pesquisar"
-            value="{{ request.GET.produto}}" id="" autocomplete="off">
-            <button type="submit"><i class="bi bi-search my-2 my-sm-0"></i></button>
-            <a href="{% url 'produtos' %}">Limpar</a>
-        </form>
-    </div>
+
+    <!--Pesquisa-->
+    <form class="d-flex align-items-center mb-3" role="search">
+        {% csrf_token %}
+        <input class="form-control me-2" type="text" placeholder="Pesquisar" autocomplete="off"
+        name="produto" value="{{ request.GET.produto }}">
+        <button class="btn btn-save btn-sm m-1" type="submit"><i class="bi bi-search"></i></button>
+        <a class="btn btn-info btn-sm m-1" href="{% url 'produtos' %}"><i class="bi bi-x-square"></i></a>
+    </form> 
     
     <div class="card info-card customers-card">
       <div class="p-3">
             <div class="col">              
                 <table class="table table-hover ">
                     <tr>
-                        <th></th>
+                        <th>Img</th>
                         <th>Nome</th>
                         <th>Preço R$</th>
-                    
+                        <th></th>
                     </tr>
                     {% for produto in  object_list %}
-                    <tr onclick="window.location.href=$('#h{{ produto.pk }}').val();" style="cursor: pointer;" >
+                    <tr>
                         <td> <img src="{{ produto.imagem.thumb.url }}" alt=""></td>
                         <td>{{ produto.nome }}</td>
                         <td>{{ produto.preco }}</td>
                         <td>
-                            <input type="hidden" value="{% url 'editar_produto' produto.pk %}" id="h{{ produto.pk }}">
-                            <!--<a href="javascript:void(0);" onclick="exabreModalWxcluir($('#h{{ servicos.pk }}', 'teste');" class="btn btn-danger btn-sm">Excluir</a> -->
+                            <div class="dropdown">
+                                <a  href="#" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots"></i>  
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end ">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                        onclick="editarModalProduto('{% url 'editar_produto' produto.pk %}')" >
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span>Editar</span>
+                                    </button>
+                                    <hr class="dropdown-divider">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                        onclick="deletarModalProfissional('#')" >
+                                        <i class="bi bi-trash"></i>
+                                        <span>Excluir</span>
+                                    </button>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}
@@ -52,5 +78,39 @@
     </div>
 </div>
 
+<div class="modal fade" id="criar-produto"  role="dialog" aria-hidden="true">
+ 
+</div>
+
+<div class="modal fade" id="editar-produto"  role="dialog" aria-hidden="true">
+ 
+</div>
+
 {% endblock %}
 
+{% block script %}
+
+<script>
+
+    function criarModalProduto(url){
+        $('#criar-produto').load(url, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function editarModalProduto(url){
+        $('#editar-produto').load(url, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function deletarModalProfissional(url){
+        $('#deletar-profissional').load(url, function(){
+            $(this).modal('show');
+        });
+    }
+
+    
+</script>
+    
+{% endblock%}
