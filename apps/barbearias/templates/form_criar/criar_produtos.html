@@ -1,22 +1,48 @@
 {% load static %}
 
+{% block navs %}
+
 <div class="modal-dialog modal-lg" role="document">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 class="modal-title">{{ titulo }}</h2>
-    </div>
-    <form action="{% url 'criar_produto' %}" method="POST">
-        {% csrf_token %}
-        <div class="modal-body">
-            {{ form.as_p }}
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">{{ titulo }}: {{ object }}</h2>
+      </div>
+      <form action="{% url 'criar_produto' %}" method="POST">
+          {% csrf_token %}
+          <div class="modal-body">            
+            <div class="row d-flex align-items-center ">
+                <div class="col ">
+                    <p>
+                        {{ form.nome.label }}
+                        {{ form.nome }}
+                    </p>
+                    <p>
+                        {{ form.preco.label }}
+                        {{ form.preco }}
+                    </p>
+                    <p>
+                        {{ form.descricao.label }}
+                        {{ form.descricao }}
+                    </p>
+                </div>
+                <div class="col">
+                    <div class="row justify-content-center">
+                          <img src="{% static 'img/produto_defalt.jpg' %}" alt="" class="rounded-circle w-50"> 
+                    </div>
+                    <div class="row justify-content-center">
+                        {{ form.imagem}}
+                    </div>
+                </div>          
+            </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-info " data-bs-dismiss="modal">Voltar</button>
+              <button type="submit" class="btn b-save btn-sm" >{{ btn }}</button>
           </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-info " data-bs-dismiss="modal">Voltar</button>
-            <button type="submit" class="btn b-save btn-sm" >{{ btn }}</button>
-        </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
+
+{% endblock %}
 
 {% block script %}
 

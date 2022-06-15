@@ -7,7 +7,7 @@ from .views import ProdutosCreate, EnderecoCreate
 from .views import ServicosUpdate, ClientesUpdate, HorarioFuncionamentoUpdate, ProfissionaisUpdate
 from .views import ProdutoUpdate, BarbeariaUpdate, EnderecoUpdate
 from .views import ServicosDelete, ClientesDelete, ProfissionalDelete, HorarioFuncionamentoDelete
-from .views import EnderecoDelete
+from .views import EnderecoDelete, Produtodelete
 
 
 urlpatterns = [
@@ -40,4 +40,5 @@ urlpatterns = [
     path('excluir-profissional/<int:pk>/', ProfissionalDelete.as_view(), name='excluir_profissional'),
     path('excluir-horario-atendimento/<int:pk>/', HorarioFuncionamentoDelete.as_view(), name='excluir_horario'),
     path('excluir-endereco/<int:pk>/', EnderecoDelete.as_view(), name='excluir_endereco'),
+    path('excluir-produto/<int:pk>/', Produtodelete.as_view(), name='excluir_produto'),
 ]

@@ -99,7 +99,7 @@ class ProdutosModalForms(forms.ModelForm):
                 })
         self.fields['imagem'].widget = forms.TextInput(
             attrs={
-                'type': 'file', 
+                'type': 'file',
                 'class': 'form-control'
                 })
 

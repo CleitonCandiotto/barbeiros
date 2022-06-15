@@ -59,7 +59,7 @@
                                     </button>
                                     <hr class="dropdown-divider">
                                     <button type="button" class="dropdown-item d-flex align-items-center"
-                                        onclick="deletarModalProfissional('#')" >
+                                        onclick="deletarModalProduto('{% url 'excluir_produto' produto.pk %}')" >
                                         <i class="bi bi-trash"></i>
                                         <span>Excluir</span>
                                     </button>
@@ -86,6 +86,10 @@
  
 </div>
 
+<div class="modal fade" id="deletar-produto"  role="dialog" aria-hidden="true">
+ 
+</div>
+
 {% endblock %}
 
 {% block script %}
@@ -104,8 +108,8 @@
         });
     }
 
-    function deletarModalProfissional(url){
-        $('#deletar-profissional').load(url, function(){
+    function deletarModalProduto(url){
+        $('#deletar-produto').load(url, function(){
             $(this).modal('show');
         });
     }

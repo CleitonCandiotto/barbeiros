@@ -454,15 +454,15 @@ class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
 
 class ProdutoUpdate(LoginRequiredMixin, UpdateView):
     model = Produtos
+    form_class = ProdutosModalForms
     login_url = reverse_lazy('login')
     template_name = 'form_editar/form_editar_produto.html'
-    fields = ['nome', 'preco', 'descricao', 'imagem']
     success_url = reverse_lazy('produtos')
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Cadastrar Produto'
+        context['titulo'] = 'Editar Produto'
         context['btn'] = 'Salvar'
         return context
 
@@ -602,3 +602,27 @@ class EnderecoDelete(LoginRequiredMixin, DeleteView):
         self.object = Endereco.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
 
         return self.object
+
+
+class Produtodelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = Produtos
+    login_url = reverse_lazy('login')
+    template_name = 'form_excluir/form_excluir_produto.html'
+    success_url = reverse_lazy('produtos')
+    success_message = 'Produto deletado com sucesso'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['nome'] = 'Produto'
+        return context
+
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = Produtos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+
+        return self.object
+        
