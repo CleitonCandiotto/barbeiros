@@ -1,7 +1,5 @@
-from pyexpat import model
 from django import forms
-from stdimage import StdImageField
-from .models import Servicos, Clientes, Profissionais, Produtos
+from .models import Servicos, Clientes, Profissionais, Produtos, HorarioFuncionamento
 
 
 class ServicosModelForm(forms.ModelForm):
@@ -47,7 +45,7 @@ class ClienteModelForm(forms.ModelForm):
         
 
         
-class ProfissionaisModalForm(forms.ModelForm):
+class ProfissionaisModelForm(forms.ModelForm):
 
     class Meta:
         model = Profissionais
@@ -55,7 +53,7 @@ class ProfissionaisModalForm(forms.ModelForm):
     
 
     def __init__(self, *args, **kwargs):
-        super(ProfissionaisModalForm, self).__init__(*args, **kwargs)
+        super(ProfissionaisModelForm, self).__init__(*args, **kwargs)
         self.fields['nome'].widget = forms.TextInput(
             attrs={
             'class': 'form-control',
@@ -66,14 +64,9 @@ class ProfissionaisModalForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': '(xx)00000-0000'
                 })
-        self.fields['imagem'].widget = forms.TextInput(
-            attrs={
-                'type': 'file', 
-                'class': 'form-control'
-                })
+        
 
-
-class ProdutosModalForms(forms.ModelForm):
+class ProdutosModelForm(forms.ModelForm):
 
     class Meta:
         model = Produtos
@@ -81,7 +74,7 @@ class ProdutosModalForms(forms.ModelForm):
 
 
     def __init__(self, *args, **kwargs):
-        super(ProdutosModalForms, self).__init__(*args, **kwargs)
+        super(ProdutosModelForm, self).__init__(*args, **kwargs)
         self.fields['nome'].widget = forms.TextInput(
             attrs={
             'class': 'form-control',
@@ -97,9 +90,35 @@ class ProdutosModalForms(forms.ModelForm):
                 'class': 'form-control',
                 'rows': '10'
                 })
-        self.fields['imagem'].widget = forms.TextInput(
-            attrs={
-                'type': 'file',
-                'class': 'form-control'
-                })
 
+
+class HorarioModelForm(forms.ModelForm):
+    
+    class Meta:
+        model = HorarioFuncionamento
+        fields = ['dias_da_semana', 'horario_inicio', 'horario_saida', 'inicio_intervalo', 'final_intervalo']
+
+    
+    def __init__(self, *args, **kwargs):
+        super(HorarioModelForm, self).__init__(*args, **kwargs)
+        self.fields['dias_da_semana'].widget.attrs['class'] = 'form-control'
+        self.fields['horario_inicio'].widget = forms.TextInput(
+            attrs={
+            'type': 'time',
+            'class': 'form-control',
+            })
+        self.fields['horario_saida'].widget = forms.TextInput(
+            attrs={
+            'type': 'time',
+            'class': 'form-control',
+            })
+        self.fields['inicio_intervalo'].widget = forms.TextInput(
+            attrs={
+            'type': 'time',
+            'class': 'form-control',
+            })
+        self.fields['final_intervalo'].widget = forms.TextInput(
+            attrs={
+            'type': 'time',
+            'class': 'form-control',
+            })

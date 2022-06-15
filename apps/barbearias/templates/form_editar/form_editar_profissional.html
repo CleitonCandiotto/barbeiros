@@ -10,7 +10,29 @@
       <form action="{% url 'editar_profissional' object.id %}" method="POST">
           {% csrf_token %}
           <div class="modal-body">
-              {{ form.as_p }}
+            <div class="row d-flex align-items-center">
+                <div class="col">
+                    <p>
+                        {{ form.nome.label }}
+                        {{ form.nome }}
+                    </p>
+                    <p>
+                        {{ form.telefone.label }}
+                        {{ form.telefone }}
+                    </p>
+                </div>
+                <div class="col">
+                    <div class="row justify-content-center">
+                        {% if object.imagem.thumbnail.url %}
+                          <img src="{{ object.imagem.thumbnail.url }}" alt="" class="rounded-circle w-50"> 
+                        {% else %}
+                          <img src="{% static 'img/user_defalt.jpg' %}" alt="" class="rounded-circle w-50"> 
+                        {% endif %}  
+                    </div>
+                    <p class="row justify-content-center">
+                        {{ form.imagem }}
+                    </p>     
+                </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary " data-bs-dismiss="modal">Voltar</button>

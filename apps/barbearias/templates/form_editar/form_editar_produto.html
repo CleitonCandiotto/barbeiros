@@ -10,7 +10,7 @@
       <form action="{% url 'editar_produto' object.id %}" method="POST">
           {% csrf_token %}
           <div class="modal-body">            
-            <div class="row d-flex align-items-center ">
+            <div class="row d-flex align-items-center">
                 <div class="col ">
                     <p>
                         {{ form.nome.label }}

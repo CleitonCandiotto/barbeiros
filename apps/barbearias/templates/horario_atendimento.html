@@ -14,23 +14,28 @@
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-md mb-2">
-                                    {{ form.dias_da_semana|as_crispy_field }}
+                                    {{ form.dias_da_semana.label }}
+                                    {{ form.dias_da_semana }}
                                 </div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-6">
-                                    {{ form.horario_inicio|as_crispy_field }}
+                                    {{ form.horario_inicio.label }}
+                                    {{ form.horario_inicio }}
                                 </div>
                                 <div class="col-md-6">
-                                    {{ form.horario_saida|as_crispy_field }}
+                                    {{ form.horario_saida.label }}
+                                    {{ form.horario_saida }}
                                 </div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-6">
-                                    {{ form.inicio_intervalo|as_crispy_field }}
+                                    {{ form.inicio_intervalo.label }}
+                                    {{ form.inicio_intervalo }}
                                 </div>
                                 <div class="col-md-6">
-                                    {{ form.final_intervalo|as_crispy_field }}
+                                    {{ form.final_intervalo.label }}
+                                    {{ form.final_intervalo }}
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-save btn-sm col-md mt-3">{{ btn }}</button>
@@ -50,22 +55,38 @@
                                 <th>Entrada</th>
                                 <th>Saída</th>
                                 <th>Intervalo</th>
-                                <th></th>
                             </tr>
-                            {% for d in dias %}
+                            {% for dia in dias  %}
                             <tr>
-                                <td>{{ d.dias_da_semana }}</td>
-                                <td>{{ d.horario_inicio }}</td>
-                                <td>{{ d.horario_saida }}</td>
-                                <td>{{ d.inicio_intervalo }} - {{ d.final_intervalo }} </td>
+                                <td>{{ dia.dias_da_semana }}</td>
+                                <td>{{ dia.horario_inicio }}</td>
+                                <td>{{ dia.horario_saida }}</td>
+                                <td>{{ dia.inicio_intervalo }} - {{ dia.final_intervalo }}</td>
                                 <td>
-                                    <a href="{% url 'editar_horario' d.pk %}" ><i class="bi bi-pencil-square bi-sm"></i></a>
+                                    <div class="dropdown">
+                                        <a  href="#" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots"></i>  
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end ">
+                                            <button type="button" class="dropdown-item d-flex align-items-center"
+                                                onclick="editarModalHorario('{% url 'editar_horario' dia.pk %}')" >
+                                                <i class="bi bi-pencil-square"></i>
+                                                <span>Editar</span>
+                                            </button>
+                                            <hr class="dropdown-divider">
+                                            <button type="button" class="dropdown-item d-flex align-items-center"
+                                                onclick="deletarModalProduto()" >
+                                                <i class="bi bi-trash"></i>
+                                                <span>Excluir</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="5">Nunhum Horário Cadastrado</td>
-                            </tr>
+                                <td colspan="4">Nenhum Horário Cadastrado</td>
+                            </tr>        
                             {% endfor %}
                         </table>
                     </div>
@@ -76,22 +97,34 @@
 </div>
 
 
-{% endblock %}
-{% block script %}
+<div class="modal fade" id="editar-horario"  role="dialog" aria-hidden="true">
+ 
+</div>
 
-<script src="{% static 'js/jquery.mask.min.js' %}"></script>
+<div class="modal fade" id="deletar-horario"  role="dialog" aria-hidden="true">
+ 
+</div>
+
+{% endblock %}
+
+{% block script %}
 
 <script>
 
-    $(document).ready(function(){
+    function editarModalHorario(url){
+        $('#editar-horario').load(url, function(){
+            $(this).modal('show');
+        });
+    }
 
-        $('#id_horario_inicio').mask('00:00');
-        $('#id_horario_saida').mask('00:00');
-        $('#id_inicio_intervalo').mask('00:00');
-        $('#id_final_intervalo').mask('00:00');
+    function deletarModalProduto(url){
+        $('#deletar-horario').load(url, function(){
+            $(this).modal('show');
+        });
+    }
 
-    });
-
+    
 </script>
     
-{% endblock %}
+{% endblock%}
+

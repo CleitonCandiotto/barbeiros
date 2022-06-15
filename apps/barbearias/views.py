@@ -7,7 +7,7 @@ from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Pro
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
-from .forms import ServicosModelForm, ClienteModelForm, ProfissionaisModalForm, ProdutosModalForms
+from .forms import ServicosModelForm, ClienteModelForm,  ProdutosModelForm, ProfissionaisModelForm, HorarioModelForm
 
 
 class DashboardView(TemplateView):
@@ -223,7 +223,7 @@ class ClientesCreate(LoginRequiredMixin, CreateView):
 
 class ProfissionaisCreate(LoginRequiredMixin, CreateView):
     model = Profissionais
-    form_class = ProfissionaisModalForm
+    form_class = ProfissionaisModelForm
     login_url = reverse_lazy('login')
     template_name = 'form_criar/criar_profissionais.html'
     success_url = reverse_lazy('profissionais')
@@ -261,8 +261,8 @@ class ProfissionaisCreate(LoginRequiredMixin, CreateView):
 class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
     model = HorarioFuncionamento
     login_url = reverse_lazy('login')
+    form_class = HorarioModelForm
     template_name = 'horario_atendimento.html'
-    fields = ['dias_da_semana', 'horario_inicio', 'horario_saida', 'inicio_intervalo', 'final_intervalo']
     success_url = reverse_lazy('criar_horario')
 
 
@@ -283,7 +283,7 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
 class ProdutosCreate(LoginRequiredMixin, CreateView):
     model = Produtos
     login_url = reverse_lazy('login')
-    form_class = ProdutosModalForms
+    form_class = ProdutosModelForm
     template_name = 'form_criar/criar_produtos.html'
     success_url = reverse_lazy('produtos')
 
@@ -405,7 +405,7 @@ class ClientesUpdate(LoginRequiredMixin, SuccessMessageMixin ,UpdateView):
 
 class ProfissionaisUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Profissionais
-    form_class = ProfissionaisModalForm
+    form_class = ProfissionaisModelForm
     login_url = reverse_lazy('login')
     template_name = 'form_editar/form_editar_profissional.html'
     success_url = reverse_lazy('profissionais')
@@ -454,7 +454,7 @@ class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
 
 class ProdutoUpdate(LoginRequiredMixin, UpdateView):
     model = Produtos
-    form_class = ProdutosModalForms
+    form_class = ProdutosModelForm
     login_url = reverse_lazy('login')
     template_name = 'form_editar/form_editar_produto.html'
     success_url = reverse_lazy('produtos')
