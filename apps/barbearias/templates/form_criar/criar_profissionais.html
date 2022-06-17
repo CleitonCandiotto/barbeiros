@@ -5,7 +5,7 @@
     <div class="modal-header">
       <h2 class="modal-title">{{ titulo }}</h2>
     </div>
-    <form action="{% url 'criar_profissional' %}" method="POST">
+    <form action="{% url 'criar_profissional' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="modal-body">
           <div class="row d-flex align-items-center">
@@ -24,16 +24,16 @@
                   <img src="{% static 'img/user_defalt.jpg' %}" alt="" class="rounded-circle w-50"> 
                 </div>
                 <div class="row justify-content-center">
-                    {{ form.imagem}}
+                    {{ form.imagem }}
                 </div>
             </div>
-        </div>
           </div>
+        </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-info " data-bs-dismiss="modal">Voltar</button>
             <button type="submit" class="btn b-save btn-sm" >{{ btn }}</button>
         </div>
-    </form>
+      </form>
   </div>
 </div>
 

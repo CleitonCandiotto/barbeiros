@@ -75,7 +75,7 @@
                                             </button>
                                             <hr class="dropdown-divider">
                                             <button type="button" class="dropdown-item d-flex align-items-center"
-                                                onclick="deletarModalProduto()" >
+                                                onclick="deletarModalHorario('{% url 'excluir_horario' dia.pk %}')" >
                                                 <i class="bi bi-trash"></i>
                                                 <span>Excluir</span>
                                             </button>
@@ -117,7 +117,7 @@
         });
     }
 
-    function deletarModalProduto(url){
+    function deletarModalHorario(url){
         $('#deletar-horario').load(url, function(){
             $(this).modal('show');
         });

@@ -10,7 +10,32 @@
       <form action="{% url 'editar_horario' object.id %}" method="POST">
           {% csrf_token %}
           <div class="modal-body">
-              {{ form.as_p }}
+            <div class="row">
+              <div class="col-md mb-2">
+                  {{ form.dias_da_semana.label }}
+                  {{ form.dias_da_semana }}
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-md-6">
+                  {{ form.horario_inicio.label }}
+                  {{ form.horario_inicio }}
+              </div>
+              <div class="col-md-6">
+                  {{ form.horario_saida.label }}
+                  {{ form.horario_saida }}
+              </div>
+            </div>
+           <div class="row mb-2">
+              <div class="col-md-6">
+                  {{ form.inicio_intervalo.label }}
+                  {{ form.inicio_intervalo }}
+              </div>
+              <div class="col-md-6">
+                  {{ form.final_intervalo.label }}
+                  {{ form.final_intervalo }}
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary " data-bs-dismiss="modal">Voltar</button>

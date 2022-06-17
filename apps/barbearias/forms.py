@@ -1,5 +1,6 @@
 from django import forms
 from .models import Servicos, Clientes, Profissionais, Produtos, HorarioFuncionamento
+from stdimage import StdImageField
 
 
 class ServicosModelForm(forms.ModelForm):
@@ -64,7 +65,7 @@ class ProfissionaisModelForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': '(xx)00000-0000'
                 })
-        
+
 
 class ProdutosModelForm(forms.ModelForm):
 

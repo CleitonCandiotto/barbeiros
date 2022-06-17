@@ -78,7 +78,7 @@ class Profissionais(models.Model):
     nome = models.CharField(max_length=100, verbose_name='Nome')
     telefone = models.CharField(max_length=16, verbose_name='Telefone')
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
-    imagem = StdImageField(upload_to='Profissionais', variations={
+    imagem = StdImageField(upload_to='profissionais', variations={
         'thumbnail': {"width": 100, "height": 100, "crop": True},
         'thumb': {"width": 30, "height": 30, "crop": True},
     }, null=True, blank=True)
@@ -132,10 +132,10 @@ class HorarioFuncionamento(models.Model):
     )
 
     dias_da_semana = models.CharField(max_length=16, choices=DIAS_CHOICE)
-    horario_inicio = models.CharField(max_length=5 ,verbose_name='Horário Início', help_text='Ex "00:00"')
-    horario_saida = models.CharField(max_length=5 ,verbose_name='Horário Saída', help_text='Ex "00:00"')
-    inicio_intervalo = models.CharField(max_length=5 ,verbose_name='Início Intervalo', help_text='Ex "00:00"', blank=True, null=True)
-    final_intervalo = models.CharField(max_length=5 ,verbose_name='Final Intervalo', help_text='Ex "00:00"', blank=True, null=True )
+    horario_inicio = models.CharField(max_length=5 ,verbose_name='Horário Início')
+    horario_saida = models.CharField(max_length=5 ,verbose_name='Horário Saída')
+    inicio_intervalo = models.CharField(max_length=5 ,verbose_name='Início Intervalo', blank=True, null=True)
+    final_intervalo = models.CharField(max_length=5 ,verbose_name='Final Intervalo', blank=True, null=True )
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
 
 
@@ -146,7 +146,6 @@ class HorarioFuncionamento(models.Model):
     
     def __str__(self):
         return f'Horário Atendimento - {self.barbearia.barbearia}'
-
 
 
 class Clientes(models.Model):
@@ -166,13 +165,14 @@ class Clientes(models.Model):
 
 class Produtos(models.Model):
     nome = models.CharField(max_length=100, verbose_name='Nome')
-    preco = models.DecimalField(decimal_places=2, max_digits=5, verbose_name='Preço')
+    preco = models.DecimalField(decimal_places=2, max_digits=7, verbose_name='Preço')
     descricao = models.TextField(max_length=250, verbose_name='Descrição', null=True, blank=True)
     imagem = StdImageField(upload_to='produtos', variations={
         'thumbnail': {"width": 100, "height": 100, "crop": True},
         'thumb': {"width": 30, "height": 30, "crop": True},
     }, null=True, blank=True)
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
+   
 
 
     class Meta:

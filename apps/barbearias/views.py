@@ -429,9 +429,9 @@ class ProfissionaisUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
 class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
     model = HorarioFuncionamento
+    form_class = HorarioModelForm
     login_url = reverse_lazy('login')
     template_name = 'form_editar/form_editar_horario.html'
-    fields = ['dias_da_semana', 'horario_inicio', 'horario_saida', 'inicio_intervalo', 'final_intervalo']
     success_url = reverse_lazy('criar_horario')
 
 
@@ -567,12 +567,12 @@ class ProfissionalDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         return self.object
 
 
-class HorarioFuncionamentoDelete(LoginRequiredMixin, DeleteView):
+class HorarioFuncionamentoDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = HorarioFuncionamento
     login_url = reverse_lazy('login')
-    template_name = 'horario_atendimento.html'
+    template_name = 'form_excluir/form_excluir_horario.html'
     success_url = reverse_lazy('criar_horario')
-
+    success_message = 'Profissional deletado com sucesso'
 
     def get_object(self, queryset=None):
         """
