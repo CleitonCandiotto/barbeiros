@@ -122,3 +122,4 @@ class HorarioModelForm(forms.ModelForm):
             'type': 'time',
             'class': 'form-control',
             })
+

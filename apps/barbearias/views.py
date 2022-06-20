@@ -1,5 +1,4 @@
-from xml.sax.handler import property_interning_dict
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, ListView
@@ -32,7 +31,7 @@ class DashboardView(TemplateView):
         context['profissionais'] = Profissionais.objects.filter(barbearia=self.request.user.barbearia)
 
         return context
-
+        
 
 class PerfilView(TemplateView):
     template_name = 'perfil.html'
@@ -266,7 +265,9 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Horário de Funcionamento'
         context['btn'] = 'Cadastrar'
-        context['dias'] = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
+        context['dias'] = HorarioFuncionamento.objects.filter(
+            barbearia=self.request.user.barbearia
+            )
         return context   
 
 
@@ -276,53 +277,85 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
         barbearia = self.request.user.barbearia
         diasSemana = self.request.POST.get('dias_da_semana')
         horaInicio = self.request.POST.get('horario_inicio')
-        horarioSaida = self.request.POST.get('horario_saida')
+        horaSaida = self.request.POST.get('horario_saida')
         inicioIntervalo = self.request.POST.get('inicio_intervalo')
         finalIntervalo = self.request.POST.get('final_intervalo')
-        dias = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
+        dias = [
+            'Segunda-feira', 
+            'Terça-feira', 
+            'Quarta-feira', 
+            'Quinta-feira', 
+            'Sexta-feira', 
+            'Sábado'
+            ]
 
-        if form.is_valid():
-            if diasSemana == 'Segunda a Sábado': 
-                for dia in dias:
+        valida = self.valida_hora(horaInicio, horaSaida, inicioIntervalo, finalIntervalo)
+
+        if valida == True:               
+            if form.is_valid():
+                if diasSemana == 'Segunda a Sábado': 
+                    for dia in dias:
+                        hora = HorarioFuncionamento()
+                        hora.dias_da_semana = dia
+                        hora.horario_inicio = horaInicio
+                        hora.horario_saida = horaSaida
+                        hora.inicio_intervalo = inicioIntervalo
+                        hora.final_intervalo = finalIntervalo
+                        hora.barbearia = barbearia
+                        hora.save()
+                    messages.success(request, 'Horario criado com sucesso')
+                    return redirect('criar_horario')
+
+                elif diasSemana == 'Segunda a Sexta':
+                    dias.pop()
+                    for dia in dias:
+                        hora = HorarioFuncionamento()
+                        hora.dias_da_semana = dia
+                        hora.horario_inicio = horaInicio
+                        hora.horario_saida = horaSaida
+                        hora.inicio_intervalo = inicioIntervalo
+                        hora.final_intervalo = finalIntervalo
+                        hora.barbearia = barbearia
+                        hora.save()
+                    messages.success(request, 'Horario criado com sucesso')
+                    return redirect('criar_horario')
+
+                else:
                     hora = HorarioFuncionamento()
-                    hora.dias_da_semana = dia
+                    hora.dias_da_semana = diasSemana
                     hora.horario_inicio = horaInicio
-                    hora.horario_saida = horarioSaida
+                    hora.horario_saida = horaSaida
                     hora.inicio_intervalo = inicioIntervalo
                     hora.final_intervalo = finalIntervalo
                     hora.barbearia = barbearia
                     hora.save()
-    
-                return redirect('criar_horario')
-
-            elif diasSemana == 'Segunda a Sexta':
-                dias.pop()
-                for dia in dias:
-                    hora = HorarioFuncionamento()
-                    hora.dias_da_semana = dia
-                    hora.horario_inicio = horaInicio
-                    hora.horario_saida = horarioSaida
-                    hora.inicio_intervalo = inicioIntervalo
-                    hora.final_intervalo = finalIntervalo
-                    hora.barbearia = barbearia
-                    hora.save()
-
-                return redirect('criar_horario')
-
-            else:
-                hora = HorarioFuncionamento()
-                hora.dias_da_semana = diasSemana
-                hora.horario_inicio = horaInicio
-                hora.horario_saida = horarioSaida
-                hora.inicio_intervalo = inicioIntervalo
-                hora.final_intervalo = finalIntervalo
-                hora.barbearia = barbearia
-                hora.save()
-                return redirect('criar_horario')
+                    messages.success(request, 'Horario criado com sucesso')
+                    return redirect('criar_horario')
         
         messages.warning(request, 'Erro ao cadastrar horario')
         return redirect('criar_horario')
 
+
+    def valida_hora(self, hI:str, hS:str, iI:str=None, fI:str=None):
+        hInicio = self.convert_srt(hI)
+        hSaida = self.convert_srt(hS)
+        iIntervalo = self.convert_srt(iI)
+        fIntervalo = self.convert_srt(fI)
+
+        if iIntervalo and fIntervalo is not None:
+            if hInicio > hSaida:
+                return False
+
+            if iIntervalo > hInicio < fIntervalo or iIntervalo > hSaida < fIntervalo:
+                return False
+        
+        return True
+
+    def convert_srt(self, valor:str):
+        if valor:
+            valor = valor.split(':')
+            valor = int(''.join(valor))
+            return valor
 
 
 class ProdutosCreate(LoginRequiredMixin, CreateView):
@@ -396,7 +429,10 @@ class BarbeariaUpdate(UpdateView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """
-        self.object = Barbearia.objects.get(pk=self.kwargs['pk'], usuario=self.request.user)
+        self.object = Barbearia.objects.get(
+            pk=self.kwargs['pk'], 
+            usuario=self.request.user
+            )
         return self.object
 
 
@@ -420,7 +456,10 @@ class ServicosUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """
-        self.object = Servicos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = Servicos.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
         return self.object
 
 
@@ -444,7 +483,10 @@ class ClientesUpdate(LoginRequiredMixin, SuccessMessageMixin ,UpdateView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """        
-        self.object = Clientes.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = Clientes.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
         return self.object
 
 
@@ -468,7 +510,10 @@ class ProfissionaisUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """        
-        self.object = Profissionais.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = Profissionais.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
         return self.object
 
 
@@ -491,8 +536,37 @@ class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """
-        self.object = HorarioFuncionamento.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = HorarioFuncionamento.objects.get(
+            pk=self.kwargs['pk'],
+            barbearia=self.request.user.barbearia
+            )
         return self.object
+
+
+    def post(self, request, *args, **kwargs) :
+
+        hora = HorarioFuncionamento.objects.get(id=self.kwargs['pk'])
+        form = self.form_class(request.POST, instance=hora)
+        barbearia = self.request.user.barbearia
+        diasSemana = self.request.POST.get('dias_da_semana')
+        horaInicio = self.request.POST.get('horario_inicio')
+        horarioSaida = self.request.POST.get('horario_saida')
+        inicioIntervalo = self.request.POST.get('inicio_intervalo')
+        finalIntervalo = self.request.POST.get('final_intervalo')
+
+        if form.is_valid():
+            hora.dias_da_semana = diasSemana
+            hora.horario_inicio = horaInicio
+            hora.horario_saida = horarioSaida
+            hora.inicio_intervalo = inicioIntervalo
+            hora.final_intervalo = finalIntervalo
+            hora.barbearia = barbearia
+            hora.save()
+            messages.success(request, 'Horario editado com sucesso')
+            return redirect('criar_horario')
+
+        messages.warning(request, 'Erro ao editar horario ')
+        return redirect('criar_horario')
 
 
 class ProdutoUpdate(LoginRequiredMixin, UpdateView):
@@ -514,7 +588,10 @@ class ProdutoUpdate(LoginRequiredMixin, UpdateView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """        
-        self.object = Produtos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = Produtos.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
         return self.object
 
 
@@ -537,7 +614,10 @@ class EnderecoUpdate(LoginRequiredMixin, UpdateView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """        
-        self.object = Endereco.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = Endereco.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
         return self.object
 
 
@@ -561,7 +641,10 @@ class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """
-        self.object = Servicos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = Servicos.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
         return self.object
     
 
@@ -583,7 +666,10 @@ class ClientesDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """        
-        self.object = Clientes.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = Clientes.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
         return self.object
 
 
@@ -605,7 +691,10 @@ class ProfissionalDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """        
-        self.object = Profissionais.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = Profissionais.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
 
         return self.object
 
@@ -615,13 +704,16 @@ class HorarioFuncionamentoDelete(LoginRequiredMixin, SuccessMessageMixin, Delete
     login_url = reverse_lazy('login')
     template_name = 'form_excluir/form_excluir_horario.html'
     success_url = reverse_lazy('criar_horario')
-    success_message = 'Profissional deletado com sucesso'
+    success_message = 'Horario deletado com sucesso'
 
     def get_object(self, queryset=None):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """        
-        self.object = HorarioFuncionamento.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = HorarioFuncionamento.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
         return self.object
 
 
@@ -642,7 +734,10 @@ class EnderecoDelete(LoginRequiredMixin, DeleteView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """        
-        self.object = Endereco.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = Endereco.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
 
         return self.object
 
@@ -665,7 +760,10 @@ class Produtodelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         """
         Func para somente o usuario conseguir alterar os dados dele
         """        
-        self.object = Produtos.objects.get(pk=self.kwargs['pk'], barbearia=self.request.user.barbearia)
+        self.object = Produtos.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
 
         return self.object
         

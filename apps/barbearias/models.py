@@ -119,7 +119,6 @@ class Servicos(models.Model):
 class HorarioFuncionamento(models.Model):
 
     DIAS_CHOICE = (
-        ('Todos os dias','Todos os dias'), 
         ('Segunda a Sexta','Segunda a Sexta'),
         ( 'Segunda a Sábado', 'Segunda a Sábado'),
         ('Segunda-feira','Segunda-feira'), 
