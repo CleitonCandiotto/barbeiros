@@ -89,7 +89,6 @@ class ProdutosModelForm(forms.ModelForm):
         self.fields['descricao'].widget = forms.TextInput(
             attrs={
                 'class': 'form-control',
-                'rows': '10'
                 })
 
 

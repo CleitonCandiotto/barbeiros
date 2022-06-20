@@ -1,3 +1,4 @@
+from xml.sax.handler import property_interning_dict
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
@@ -235,27 +236,22 @@ class ProfissionaisCreate(LoginRequiredMixin, CreateView):
         context['btn'] = 'Cadastrar'
         return context
     
+    def form_valid(self, form):
+        form.instance.barbearia = self.request.user.barbearia
+        profissional = Profissionais.objects.filter(nome=form.instance.nome)
+        telefone = form.instance.telefone
 
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        profissional = self.request.POST.get('nome')
-        telefone = self.request.POST.get('telefone')
-        profissional_db = Profissionais.objects.filter(nome=profissional)
-
-        if not profissional_db and len(telefone) > 13:
-            if form.is_valid():
-                form.instance.barbearia = self.request.user.barbearia
-                messages.success(request, f'Profissional {profissional} cadastrado com sucesso')
-                form.save()
-                return redirect('profissionais')
-
+        if not profissional and len(telefone) > 13:
+            messages.success(self.request, f'Profissiononal {profissional} cadastrado com sucesso')
+            return super().form_valid(form)
+        
         elif len(telefone) < 13:
-            messages.warning(request, 'Telefone inválido')
-            return redirect('profissionais')
+            messages.warning(self.request, 'Telefone inválido')
+            return HttpResponseRedirect(reverse_lazy('profissionais'))
 
         else:
-            messages.warning(request, 'Profissional ja cadastrado')
-            return redirect('profissionais')
+            messages.warning(self.request, 'Profissional ja cadastrado')
+            return HttpResponseRedirect(reverse_lazy('profissionais'))
 
 
 class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
@@ -274,10 +270,59 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
         return context   
 
 
-    def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia
-        serv_form = super().form_valid(form)
-        return serv_form
+    def post(self, request, *args, **kwargs):
+
+        form = self.form_class(request.POST)
+        barbearia = self.request.user.barbearia
+        diasSemana = self.request.POST.get('dias_da_semana')
+        horaInicio = self.request.POST.get('horario_inicio')
+        horarioSaida = self.request.POST.get('horario_saida')
+        inicioIntervalo = self.request.POST.get('inicio_intervalo')
+        finalIntervalo = self.request.POST.get('final_intervalo')
+        dias = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
+
+        if form.is_valid():
+            if diasSemana == 'Segunda a Sábado': 
+                for dia in dias:
+                    hora = HorarioFuncionamento()
+                    hora.dias_da_semana = dia
+                    hora.horario_inicio = horaInicio
+                    hora.horario_saida = horarioSaida
+                    hora.inicio_intervalo = inicioIntervalo
+                    hora.final_intervalo = finalIntervalo
+                    hora.barbearia = barbearia
+                    hora.save()
+    
+                return redirect('criar_horario')
+
+            elif diasSemana == 'Segunda a Sexta':
+                dias.pop()
+                for dia in dias:
+                    hora = HorarioFuncionamento()
+                    hora.dias_da_semana = dia
+                    hora.horario_inicio = horaInicio
+                    hora.horario_saida = horarioSaida
+                    hora.inicio_intervalo = inicioIntervalo
+                    hora.final_intervalo = finalIntervalo
+                    hora.barbearia = barbearia
+                    hora.save()
+
+                return redirect('criar_horario')
+
+            else:
+                hora = HorarioFuncionamento()
+                hora.dias_da_semana = diasSemana
+                hora.horario_inicio = horaInicio
+                hora.horario_saida = horarioSaida
+                hora.inicio_intervalo = inicioIntervalo
+                hora.final_intervalo = finalIntervalo
+                hora.barbearia = barbearia
+                hora.save()
+                return redirect('criar_horario')
+        
+        messages.warning(request, 'Erro ao cadastrar horario')
+        return redirect('criar_horario')
+
 
 
 class ProdutosCreate(LoginRequiredMixin, CreateView):
@@ -438,9 +483,7 @@ class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Horário de Funcionamento'
-        context['btn'] = 'Cadastrar'
-        dias = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
-        context['dias'] = dias         
+        context['btn'] = 'Salvar'
         return context 
 
     
