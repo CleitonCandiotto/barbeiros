@@ -208,7 +208,7 @@ class ContaPagar(models.Model):
     conta = models.CharField(max_length=100)
     valor = models.DecimalField(decimal_places=2, max_digits=7)
     dataVencimento = models.DateField(auto_now=False, auto_now_add=False)
-    dataCadastro = models.DateField(auto_created=True)
+    dataCadastro = models.DateField(auto_created=True, auto_now_add=True)
     pago = models.BooleanField(default=False)
 
     class Meta:

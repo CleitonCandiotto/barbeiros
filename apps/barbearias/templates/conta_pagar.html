@@ -16,7 +16,7 @@
         <h3>
             Contas a Pagar
             <button class="btn btn-save btn-sm float-end" type="button" 
-                onclick="criarModalServico()">
+                onclick="criarModalConta('{% url 'criar_conta_pagar' %}')">
                 + Adicionar
             </button>
         </h3>
@@ -46,7 +46,7 @@
                     <tr>
                         <td>{{ conta.conta }}</td>
                         <td>{{ conta.valor }}</td>
-                        <td>{{ servicos.preco }}</td>
+                        <td>{{ conta.dataVencimento }}</td>
                         <td>
                             <div class="dropdown">
                                 <a  href="#" data-bs-toggle="dropdown">
@@ -54,13 +54,13 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end ">
                                     <button type="button" class="dropdown-item d-flex align-items-center"
-                                        onclick="editarModalServico()" >
+                                        onclick="editarModalProduto()" >
                                         <i class="bi bi-pencil-square"></i>
                                         <span>Editar</span>
                                     </button>
                                     <hr class="dropdown-divider">
                                     <button type="button" class="dropdown-item d-flex align-items-center"
-                                        onclick="deletarModalServico()" >
+                                        onclick="deletarModalProduto()" >
                                         <i class="bi bi-trash"></i>
                                         <span>Excluir</span>
                                     </button>
@@ -70,7 +70,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4">Nuhum campo cadastrado</td>
+                        <td colspan="5">Nuhum campo cadastrado</td>
                     </tr>
                     {% endfor %}
                 </table> 
@@ -79,15 +79,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="criar-servico"  role="dialog" aria-hidden="true">
- 
-</div>
-
-<div class="modal fade" id="editar-servico"  role="dialog" aria-hidden="true">
- 
-</div>
-
-<div class="modal fade" id="deletar-servico"  role="dialog" aria-hidden="true">
+<div class="modal fade" id="modal-conta"  role="dialog" aria-hidden="true">
  
 </div>
 
@@ -98,24 +90,11 @@
 
 <script>
 
-    function criarModalServico(url){
-        $('#criar-servico').load(url, function(){
+    function criarModalConta(url){
+        $('#modal-conta').load(url, function(){
             $(this).modal('show');
         });
     }
-
-    function editarModalServico(url){
-        $('#editar-servico').load(url, function(){
-            $(this).modal('show');
-        });
-    }
-
-    function deletarModalServico(url){
-        $('#deletar-servico').load(url, function(){
-            $(this).modal('show');
-        });
-    }
-
     
 </script>
     

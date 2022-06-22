@@ -163,7 +163,8 @@ class ContaPagarList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         self.object_list = ContaPagar.objects.filter(
             barbearia=self.request.user.barbearia
-        )
+            )
+        return self.object_list
 
 
 # create

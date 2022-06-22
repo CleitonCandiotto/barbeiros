@@ -184,4 +184,25 @@ class ContaPagarModelForm(forms.ModelForm):
 
     class Meta:
         model = ContaPagar
-        fields = ['conta', 'valor', 'dataVencimento', 'pago']
+        fields = ['conta', 'valor', 'dataVencimento','pago']
+
+
+    def __init__(self, *args, **kwargs):
+        super(ContaPagarModelForm, self).__init__(*args, **kwargs)
+        self.fields['conta'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            })
+        self.fields['valor'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                })
+        self.fields['dataVencimento'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'type' : 'date',
+                })
+        self.fields['pago'].widget = forms.CheckboxInput(
+            attrs={
+                'class':'form-check-label',
+            })
