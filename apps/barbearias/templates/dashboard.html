@@ -28,7 +28,7 @@
   <div class="row">
     <div class="col-xxl-12 col-md-12">
       <div class="card info-card sales-card">
-        <div class="card-body d-flex align-items-center" onclick="window.location.href=$('#h{{ request.user.barbearia.pk }}').val()" 
+        <div class="card-body d-flex align-items-center" onclick="modalBarbearia()" 
         style="cursor: pointer;">
           {% if barbearia %}
           <i class="check bi bi-check-circle-fill"></i>
@@ -38,7 +38,7 @@
           <h5 class="card-title" >
             Dados Barbearia
           </h5>
-          <input type="hidden" value="{% url 'barbearia' request.user.barbearia.pk %}" id="h{{ request.user.barbearia.pk}}">
+          <input type="hidden" value="{% url 'barbearia' request.user.barbearia.pk %}" id="hbarbearia">
         </div>
       </div>
     </div> 
@@ -47,7 +47,7 @@
   <div class="row">
     <div class="col-xxl-12 col-md-12">
       <div class="card info-card sales-card">
-        <div class="card-body d-flex align-items-center" onclick="window.location.href=$('#hendereco').val()"
+        <div class="card-body d-flex align-items-center" onclick="modalEndereco()"
         style="cursor: pointer;">
           {% if endereco %}
             <i class="check bi bi-check-circle-fill"></i>
@@ -86,7 +86,7 @@
   <div class="row">
     <div class="col-xxl-12 col-md-12">
       <div class="card info-card sales-card">
-        <div class="card-body d-flex align-items-center"  onclick="window.location.href=$('#hprofissional').val()" 
+        <div class="card-body d-flex align-items-center"  onclick="modalProfissional()" 
         style="cursor: pointer;">
           {% if profissionais %}
             <i class="check bi bi-check-circle-fill"></i>
@@ -180,5 +180,42 @@
       </div>
   </div>
 </div>
-
+<div class="modal fade" id="modal-endereco"  role="dialog" aria-hidden="true">
+ 
+</div>
+<div class="modal fade" id="modal-profissional"  role="dialog" aria-hidden="true">
+ 
+</div>
+<div class="modal fade" id="modal-barbearia"  role="dialog" aria-hidden="true">
+ 
+</div>
 {% endblock %}
+
+{% block script %}
+
+<script>
+
+    function modalEndereco(){
+      const url = document.querySelector('#hendereco')
+        $('#modal-endereco').load(url.value, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function modalProfissional(){
+      const url = document.querySelector('#hprofissional')
+        $('#modal-profissional').load(url.value, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function modalBarbearia(){
+      const url = document.querySelector('#hbarbearia')
+        $('#modal-barbearia').load(url.value, function(){
+            $(this).modal('show');
+        });
+    }
+   
+</script>
+    
+{% endblock%}

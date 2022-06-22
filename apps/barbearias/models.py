@@ -7,7 +7,7 @@ from apps.usuarios.models import CustomUser
 
 class Barbearia(models.Model):
     barbearia = models.CharField(max_length=200, verbose_name='Barbearia')
-    nome = models.CharField(max_length=200, verbose_name='Nome', help_text='Informe aqui seu nome completo.')
+    nome = models.CharField(max_length=200, verbose_name='Nome')
     telefone = models.CharField(max_length=16, verbose_name='Telefone')
     usuario = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     logo = StdImageField(upload_to='barbearia/logo', variations={
@@ -201,3 +201,20 @@ class AgendaHorario(models.Model):
     
     def __str__(self):
         return f'Agenda Horário Cliente:{self.cliente.nome}'
+
+
+class ContaPagar(models.Model):
+    barbearia = models.ForeignKey(Barbearia, on_delete=models.CASCADE)
+    conta = models.CharField(max_length=100)
+    valor = models.DecimalField(decimal_places=2, max_digits=7)
+    dataVencimento = models.DateField(auto_now=False, auto_now_add=False)
+    dataCadastro = models.DateField(auto_created=True)
+    pago = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'Conta a Pagar'
+        verbose_name_plural = 'Contas a Pagar'
+
+    
+    def __str__(self):
+        return f'Conta a Pagar: {self.conta}'

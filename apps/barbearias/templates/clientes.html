@@ -15,8 +15,9 @@
     <div class="mb-3">
         <h3>Clientes
             <button class="btn btn-save btn-sm float-end" type="button" 
-                onclick="criarModalCliente('{% url 'criar_cliente' %}')">
-                + Adicionar
+                onclick="criarModalCliente()">
+                <span>+ Adicionar</span>
+                <input type="hidden" value="{% url 'criar_cliente' %}" id="hcliente">
             </button>
         </h3>
     </div>
@@ -122,16 +123,18 @@
 {% block script %}
 
 <script>
-    function criarModalCliente(url){
-        $('#criar-cliente').load(url, function(){
+    function criarModalCliente(){
+        const url = document.querySelector('#hcliente')
+        $('#criar-cliente').load(url.value, function(){
             $(this).modal('show');
         });
     };
 
     function editarModalCliente(url){
-        $('#editar-cliente').load(url, function(){
+        $(`#editar-cliente`).load(url, function(){
             $(this).modal('show');
         });
+        
     };
 
     function excluirModalCliente(url){

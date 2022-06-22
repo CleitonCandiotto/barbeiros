@@ -1,6 +1,6 @@
 from django import forms
-from .models import Servicos, Clientes, Profissionais, Produtos, HorarioFuncionamento
-from stdimage import StdImageField
+from .models import Barbearia, Endereco, Servicos, Clientes, Profissionais, Produtos, HorarioFuncionamento
+from .models import ContaPagar
 
 
 class ServicosModelForm(forms.ModelForm):
@@ -123,3 +123,65 @@ class HorarioModelForm(forms.ModelForm):
             'class': 'form-control',
             })
 
+
+class EnderecoModelForm(forms.ModelForm):
+
+    class Meta:
+        model = Endereco
+        fields = ['rua', 'numero', 'cep', 'bairro', 'cidade', 'estado']
+
+
+    def __init__(self, *args, **kwargs):
+        super(EnderecoModelForm, self).__init__(*args, **kwargs)
+        self.fields['rua'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            })
+        self.fields['numero'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control'
+                })
+        self.fields['cep'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                })
+        self.fields['bairro'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                })
+        self.fields['cidade'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                })
+        self.fields['estado'].widget.attrs['class'] = 'form-control'
+
+
+class BarbeariaModelForm(forms.ModelForm):
+
+    class Meta:
+        model = Barbearia
+        fields = ['barbearia', 'nome', 'telefone', 'logo']
+
+
+    def __init__(self, *args, **kwargs):
+        super(BarbeariaModelForm, self).__init__(*args, **kwargs)
+        self.fields['barbearia'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            })
+        self.fields['nome'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Nome Completo'
+                })
+        self.fields['telefone'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                })
+
+
+class ContaPagarModelForm(forms.ModelForm):
+
+    class Meta:
+        model = ContaPagar
+        fields = ['conta', 'valor', 'dataVencimento', 'pago']

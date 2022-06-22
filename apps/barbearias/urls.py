@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import DashboardView, PerfilView
 from .views import ServicosList, ClientesList, ProfissionaisList, ProdutosList, EnderecoList
+from .views import ContaPagarList
 from .views import ServicosCreate, ClientesCreate, HorarioFuncionamentoCreate, ProfissionaisCreate
 from .views import ProdutosCreate, EnderecoCreate
 from .views import ServicosUpdate, ClientesUpdate, HorarioFuncionamentoUpdate, ProfissionaisUpdate
@@ -19,6 +20,7 @@ urlpatterns = [
     path('produtos/', ProdutosList.as_view(), name='produtos'),
     path('endereco/', EnderecoList.as_view(), name='endereco'),
     path('perfil/', PerfilView.as_view(), name='perfil'),
+    path('conta-pagar/', ContaPagarList.as_view(), name='conta_pagar'),
 
     path('criar-servico/', ServicosCreate.as_view(), name='criar_servico'),
     path('criar-cliente/', ClientesCreate.as_view(), name='criar_cliente'),

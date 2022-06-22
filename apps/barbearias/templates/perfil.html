@@ -5,85 +5,155 @@
 
 {% block navs %}
 <div class="col-lg-12 col-xl-12">
-    <div class="m-3">
-        <h5>
-            Perfil
-        </h5>
-    </div>
-
-    <div class="card info-card customers-card p-3">
-        <div>              
-            <img src="{{ request.user.barbearia.logo.thumbnail.url }}" alt="" class="rounded-circle"> 
-            <h1>{{ request.user.barbearia }}</h1>    
-        </div> 
-
-        <div>
-            <h2>Endereço</h2>
-            {% if endereco %}
-            {% for end in endereco %}
-                <hr>
-                <p>{{ end.rua }}, {{ end.numero }}, {{ end.bairro }}</p>
-                <p>{{ end.cidade}} - {{ end.estado }}, {{ end.cep }}</p>
-                
-            {% endfor %}
-                <a href="#" data-bs-toggle="modal" data-bs-target="#modalEditar"><i class="bi bi-pencil-square"></i></a>
-                <a href="#" data-bs-toggle="modal" data-bs-target="#modalExcluir"><i class="bi bi-trash"></i></a>
-                <hr>
-            {% else %}
-                <p>Nenhum Endereco Cadastrado</p>
-                <a href="{% url 'criar_endereco' %}">Cadastrar Endereco</a>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
-<!--Modal Excluir-->
-<div class="modal fade " id="modalExcluir" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-body">
-                    <form method="post" action="{% url 'excluir_endereco' request.user.barbearia.endereco.pk %}">
-                        {% csrf_token %}  
-                        <i class="i-exclame bi bi-exclamation-triangle" ></i>
-                        <h2 class="h2-modal">Aviso</h2>
-                        <p class="p-modal">Deseja <strong>Excluir</strong>sdaaaa</p>
-                            <button type="submit" class="btn b-excluir btn-sm float-end">Excluir</button>
-                            <button type="button" class="btn b-save btn-sm" data-bs-dismiss="modal">Voltar</button>
-                    </form>            
+    <section class="section profile">
+        <div class="row">
+          <div class="col-xl-4">
+  
+            <div class="card">
+              <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+  
+                <img src="{{ request.user.barbearia.logo.url }}" alt="Profile" class="rounded-circle">
+                <h2>{{ request.user.barbearia }}</h2>
+                <h3>{{request.user.barbearia.nome }}</h3>
+                <div class="social-links mt-2">
+                  <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+                  <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                  <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                  <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
                 </div>
+              </div>
             </div>
+  
+          </div>
+  
+          <div class="col-xl-8">
+  
+            <div class="card">
+                <div class="card-body pt-3">
+                  <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                    <h5 class="card-title">Perfil</h5>
+                    <p class="small fst-italic"></p>
+  
+                    <h5 class="card-title">Endereço</h5>
+  
+                    <div class="row">
+                        {% if endereco %}
+                        {% for end in endereco %}
+                        <div class="col-lg-9 col-md-4 label ">
+                            <div class="row">
+                                <div class="col">
+                                    <label class="mt-1">Rua:</label>
+                                    {{ end.rua }}, {{ end.numero }}
+                                    <label class="mt-1">Bairro:</label>
+                                    {{ end.bairro }}
+                                    <label class="mt-1">CEP:</label>
+                                    {{ end.cep }}
+                                </div>
+                                <div class="col">
+                                    <label class="mt-1">Cidade:</label>
+                                    {{ end.cidade }}
+                                    <label class="mt-1">UF:</label>
+                                    {{ end.estado }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-8">
+                            <div class="dropdown">
+                                <a  href="#" data-bs-toggle="dropdown">
+                                    <button class="btn btn-info btn-sm"><i class="bi bi-three-dots"></i></button>  
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end ">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                        onclick="editarModalEndereco()" >
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span>Editar</span>
+                                        <input type="hidden" value="{% url 'editar_endereco' end.pk %}" id="heditarendereco">
+                                    </button>
+                                    <hr class="dropdown-divider">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                        onclick="deletarModalEndereco()" >
+                                        <i class="bi bi-trash"></i>
+                                        <span>Excluir</span>
+                                        <input type="hidden" value="{% url 'excluir_endereco' end.pk %}" id="hexcluirendereco">
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="row"> 
+                            <div class="col-lg-4 col-md-8 label">
+                                <p>Sem endereco cadastrado </p>
+                                <button class="btn btn-save btn-sm" onclick="criarModalEndereco()"> 
+                                    Cadastrar
+                                </button>
+                                <input type="hidden" value="{% url 'criar_endereco' %}" id="hendereco">
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <h5 class="card-title">Definir Senha</h5>
+                    <p class="small fst-italic">Para a segurança da sua conta, não compartilhe sua senha com mais ninguém</p>
+                    
+                    <div class="row"> 
+                        <div class="col-lg-4 col-md-8 label">
+                            <button class="btn btn-info btn-sm">Redefinir Senha</button>
+                            <a href="{% url 'account_change_password' %}">Redefinir Senha</a>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-lg-3 col-md-4 label">Job</div>
+                      <div class="col-lg-9 col-md-8">Web Designer</div>
+                    </div>
+                  </div>
+                </div><!-- End Bordered Tabs -->
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
+      </section>
 </div>
 
-<!--Modal Editar-->
-<div class="modal fade " id="modalEditar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-body">
-                    <form method="post" action="{% url 'editar_endereco' request.user.barbearia.endereco.pk %}">
-                        {% csrf_token %} 
-                        {{ form }} 
-                        <i class="i-exclame bi bi-exclamation-triangle" ></i>
-                        <button type="submit" class="btn b-save btn-sm float-end">Editar</button>
-                        <button type="button" class="btn b-save btn-sm" data-bs-dismiss="modal">Voltar</button>
-                    </form>            
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="modal fade" id="criar-endereco"  role="dialog" aria-hidden="true">
+ 
 </div>
-
-
-<script>
-        
-    function exabreModalWxcluir(){
-        $("#modalExcluir").modal('show');
-        $("#modalEditar").modal('show');
-    }
-
-</script>
+<div class="modal fade" id="editar-endereco"  role="dialog" aria-hidden="true">
+ 
+</div>
+<div class="modal fade" id="deletar-endereco"  role="dialog" aria-hidden="true">
+ 
+</div>
 
 {% endblock %}
+
+{% block script %}
+
+<script>
+
+    function criarModalEndereco(){
+        const url = document.querySelector('#hendereco')
+        $('#criar-endereco').load(url.value, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function editarModalEndereco(){
+        const url = document.querySelector('#heditarendereco')
+        $('#editar-endereco').load(url.value, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function deletarModalEndereco(){
+        const url = document.querySelector('#hexcluirendereco')
+        $('#deletar-endereco').load(url.value, function(){
+            $(this).modal('show');
+        });
+    }
+
+    
+</script>
+    
+{% endblock%}

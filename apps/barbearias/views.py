@@ -3,12 +3,13 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos, Barbearia, Endereco
+from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos 
+from .models import ContaPagar, Barbearia, Endereco
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
-from .forms import ServicosModelForm, ClienteModelForm,  ProdutosModelForm, ProfissionaisModelForm, HorarioModelForm
-
+from .forms import ServicosModelForm, ClienteModelForm,  ProdutosModelForm, ProfissionaisModelForm
+from .forms import EnderecoModelForm, BarbeariaModelForm, HorarioModelForm , ContaPagarModelForm
 
 class DashboardView(TemplateView):
     template_name = 'dashboard.html'
@@ -147,8 +148,22 @@ class EnderecoList(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
-        self.object_list = Endereco.objects.filter(barbearia=self.request.user.barbearia)
+        self.object_list = Endereco.objects.filter(
+            barbearia=self.request.user.barbearia
+            )
         return self.object_list
+    
+
+class ContaPagarList(LoginRequiredMixin, ListView):
+    model = ContaPagar
+    login_url = reverse_lazy('login')
+    template_name = 'conta_pagar.html'
+
+
+    def get_queryset(self):
+        self.object_list = ContaPagar.objects.filter(
+            barbearia=self.request.user.barbearia
+        )
 
 
 # create
@@ -291,7 +306,7 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
 
         valida = self.valida_hora(horaInicio, horaSaida, inicioIntervalo, finalIntervalo)
 
-        if valida == True:               
+        if valida:               
             if form.is_valid():
                 if diasSemana == 'Segunda a Sábado': 
                     for dia in dias:
@@ -342,20 +357,17 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
         iIntervalo = self.convert_srt(iI)
         fIntervalo = self.convert_srt(fI)
 
-        if iIntervalo and fIntervalo is not None:
-            if hInicio > hSaida:
-                return False
-
-            if iIntervalo > hInicio < fIntervalo or iIntervalo > hSaida < fIntervalo:
-                return False
+        if hInicio < hSaida and iIntervalo <= fIntervalo:
+            return True
         
-        return True
+        return False
 
     def convert_srt(self, valor:str):
         if valor:
             valor = valor.split(':')
             valor = int(''.join(valor))
             return valor
+        return 0
 
 
 class ProdutosCreate(LoginRequiredMixin, CreateView):
@@ -389,10 +401,10 @@ class ProdutosCreate(LoginRequiredMixin, CreateView):
 
 class EnderecoCreate(LoginRequiredMixin, CreateView):
     model = Endereco
+    form_class = EnderecoModelForm
     login_url = reverse_lazy('login')
-    template_name = 'form_cadastro_endereco.html'
-    fields = ['rua', 'numero', 'cep', 'bairro', 'cidade', 'estado']
-    success_url = reverse_lazy('dashboard')
+    template_name = 'form_criar/criar_endereco.html'
+    success_url = reverse_lazy('perfil')
 
 
     def get_context_data(self, **kwargs):
@@ -408,13 +420,33 @@ class EnderecoCreate(LoginRequiredMixin, CreateView):
         return serv_form
 
 
-# update
+class ContaPagarCreate(LoginRequiredMixin, CreateView):
+    model = ContaPagar
+    form_class = ContaPagarModelForm
+    login_url = reverse_lazy('login')
+    template_name = 'form_criar/criar_contas_pagar.html'
+    success_url = reverse_lazy('conta_pagar')
 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Cadastrar Conta'
+        context['btn'] = 'Cadastrar'
+        return context
+
+    
+    def form_valid(self, form):
+        form.instance.barbearia = self.request.user.barbearia
+        serv_form = super().form_valid(form)
+        return serv_form
+
+
+# update
 
 class BarbeariaUpdate(UpdateView):
     model = Barbearia
+    form_class = BarbeariaModelForm
     template_name = 'form_editar/form_editar_barbearia.html'
-    fields = ['barbearia', 'nome', 'telefone', 'logo']
     success_url = reverse_lazy('dashboard')
 
 
@@ -597,15 +629,15 @@ class ProdutoUpdate(LoginRequiredMixin, UpdateView):
 
 class EnderecoUpdate(LoginRequiredMixin, UpdateView):
     model = Endereco
+    form_class = EnderecoModelForm
     login_url = reverse_lazy('login')
-    template_name = 'form_cadastro_endereco.html'
-    fields = ['rua', 'numero', 'cep', 'bairro', 'cidade', 'estado']
-    success_url = reverse_lazy('dashboard')
+    template_name = 'form_editar/form_editar_endereco.html'
+    success_url = reverse_lazy('perfil')
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Cadastrar Endereço'
+        context['titulo'] = 'Editar Endereço'
         context['btn'] = 'Salvar'
         return context
 
@@ -720,8 +752,8 @@ class HorarioFuncionamentoDelete(LoginRequiredMixin, SuccessMessageMixin, Delete
 class EnderecoDelete(LoginRequiredMixin, DeleteView):
     model = Endereco
     login_url = reverse_lazy('login')
-    template_name = 'form_excluir.html'
-    success_url = reverse_lazy('endereco')
+    template_name = 'form_excluir/form_excluir_endereco.html'
+    success_url = reverse_lazy('perfil')
 
 
     def get_context_data(self, **kwargs):
