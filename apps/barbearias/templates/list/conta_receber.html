@@ -1,0 +1,126 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block navs %}
+
+<div class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+</div>
+
+<div class="col-lg-12 col-xl-12">
+    <div class="mb-3">
+        <h3>
+            Contas a Receber
+            <button class="btn btn-save btn-sm float-end" type="button" 
+                onclick="criarModalConta('{% url 'criar_conta_receber' %}')">
+                + Adicionar
+            </button>
+        </h3>
+    </div>
+    
+    <!--Pesquisa-->
+    <form class="d-flex align-items-center mb-3" role="search">
+        {% csrf_token %}
+        <input class="form-control me-2" type="text" placeholder="Pesquisar" autocomplete="off"
+        name="pg" value="{{ request.GET.pg }}">
+        <button class="btn btn-save btn-sm m-1" type="submit"><i class="bi bi-search"></i></button>
+        <a class="btn btn-info btn-sm m-1" href="{% url 'conta_receber' %}"><i class="bi bi-x-square"></i></a>
+    </form>    
+
+    <div class="card info-card customers-card">
+      <div class="p-3">
+            <div class="col">              
+                <table id="servico-table" class="table">
+                    <tr>
+                        <th>Conta</th>
+                        <th>Valor</th>
+                        <th>Vencimento</th>
+                        <th>Pago</th>
+                        <th></th>
+                    </tr>
+                    {% for conta in object_list %}
+                    <tr>
+                        <td>{{ conta.conta }}</td>
+                        <td>{{ conta.valor }}</td>
+                        <td>{{ conta.dataVencimento }}</td>
+                        <td>{{ conta.infoPago }}</td>
+                        <td>
+                            <div class="dropdown">
+                                <a  href="#" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots"></i>  
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end ">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                        onclick="editarModalConta('{% url 'editar_conta_receber' conta.pk %}')" >
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span>Editar</span>
+                                    </button>
+                                    <hr class="dropdown-divider">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                        onclick="deletarModalConta('{% url 'excluir_conta_receber' conta.pk %}')" >
+                                        <i class="bi bi-trash"></i>
+                                        <span>Excluir</span>
+                                    </button>
+                                    <hr class="dropdown-divider">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                        onclick="verModalConta('{% url 'conta_receberv' conta.pk %}')" >
+                                        <i class="bi bi-eye"></i>
+                                        <span>Visualizar</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">Nuhum campo cadastrado</td>
+                    </tr>
+                    {% endfor %}
+                </table> 
+            </div> 
+        </div>        
+    </div>
+</div>
+
+<div class="modal fade" id="modal-conta"  role="dialog" aria-hidden="true">
+ 
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+
+<script>
+
+    function criarModalConta(url){
+        $('#modal-conta').load(url, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function editarModalConta(url){
+        $('#modal-conta').load(url, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function deletarModalConta(url){
+        $('#modal-conta').load(url, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function verModalConta(url){
+        $('#modal-conta').load(url, function(){
+            $(this).modal('show');
+        });
+    }
+    
+</script>
+    
+{% endblock%}

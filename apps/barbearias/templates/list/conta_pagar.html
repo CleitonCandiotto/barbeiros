@@ -47,6 +47,7 @@
                         <td>{{ conta.conta }}</td>
                         <td>{{ conta.valor }}</td>
                         <td>{{ conta.dataVencimento }}</td>
+                        <td>{{ conta.infoPago }}</td>
                         <td>
                             <div class="dropdown">
                                 <a  href="#" data-bs-toggle="dropdown">
@@ -54,15 +55,21 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end ">
                                     <button type="button" class="dropdown-item d-flex align-items-center"
-                                        onclick="editarModalProduto()" >
+                                        onclick="editarModalConta('{% url 'editar_conta_pagar' conta.pk %}')" >
                                         <i class="bi bi-pencil-square"></i>
                                         <span>Editar</span>
                                     </button>
                                     <hr class="dropdown-divider">
                                     <button type="button" class="dropdown-item d-flex align-items-center"
-                                        onclick="deletarModalProduto()" >
+                                        onclick="deletarModalConta('{% url 'excluir_conta_pagar' conta.pk %}')" >
                                         <i class="bi bi-trash"></i>
                                         <span>Excluir</span>
+                                    </button>
+                                    <hr class="dropdown-divider">
+                                    <button type="button" class="dropdown-item d-flex align-items-center"
+                                        onclick="verModalConta('{% url 'conta_pagarv' conta.pk %}')" >
+                                        <i class="bi bi-eye"></i>
+                                        <span>Visualizar</span>
                                     </button>
                                 </div>
                             </div>
@@ -91,6 +98,24 @@
 <script>
 
     function criarModalConta(url){
+        $('#modal-conta').load(url, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function editarModalConta(url){
+        $('#modal-conta').load(url, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function deletarModalConta(url){
+        $('#modal-conta').load(url, function(){
+            $(this).modal('show');
+        });
+    }
+
+    function verModalConta(url){
         $('#modal-conta').load(url, function(){
             $(this).modal('show');
         });

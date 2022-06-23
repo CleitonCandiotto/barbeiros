@@ -1,0 +1,37 @@
+{% load static %}
+
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+        <div class="modal-body">
+            <div class="row">
+                <div class="d-flex flex-column ">
+                    <span>Conta: {{ conta.conta }}</span>
+                    <span>Valor: R${{ conta.valor}}  </span>                    
+                    <span>Data Cadastro: {{ conta.dataCadastro }} </span>                    
+                    <span>Data Vencimento: {{ conta.dataVencimento }} </span>                    
+                    <span >Condição: {{ conta.infoPago }} </span>                
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal">Voltar</button>
+        </div>
+    </form>
+  </div>
+</div>
+
+
+{% block script %}
+
+    <script src="{% static 'js/jquery.mask.min.js' %}"></script>
+
+    <script>
+        
+        $(document).ready(function(){
+    
+            $('#id_preco').mask("#.##0,00", {reverse: true});
+    
+        });
+    </script>
+    
+{% endblock%}

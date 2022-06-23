@@ -173,7 +173,6 @@ class Produtos(models.Model):
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
    
 
-
     class Meta:
         verbose_name = 'Produto'
         verbose_name_plural = 'Produtos'
@@ -206,9 +205,10 @@ class AgendaHorario(models.Model):
 class ContaPagar(models.Model):
     barbearia = models.ForeignKey(Barbearia, on_delete=models.CASCADE)
     conta = models.CharField(max_length=100)
-    valor = models.DecimalField(decimal_places=2, max_digits=7)
+    valor = models.DecimalField(decimal_places=2, max_digits=9)
     dataVencimento = models.DateField(auto_now=False, auto_now_add=False)
     dataCadastro = models.DateField(auto_created=True, auto_now_add=True)
+    infoPago = models.CharField(max_length=10)
     pago = models.BooleanField(default=False)
 
     class Meta:
@@ -218,3 +218,21 @@ class ContaPagar(models.Model):
     
     def __str__(self):
         return f'Conta a Pagar: {self.conta}'
+
+
+class ContaReceber(models.Model):
+    barbearia = models.ForeignKey(Barbearia, on_delete=models.CASCADE)
+    conta = models.CharField(max_length=100)
+    valor = models.DecimalField(decimal_places=2, max_digits=9)
+    dataVencimento = models.DateField(auto_now=False, auto_now_add=False)
+    dataCadastro = models.DateField(auto_created=True, auto_now_add=True)
+    infoPago = models.CharField(max_length=10)
+    pago = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'Conta a Receber'
+        verbose_name_plural = 'Contas a Receber'
+
+    
+    def __str__(self):
+        return f'Conta a Receber: {self.conta}'

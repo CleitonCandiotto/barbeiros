@@ -4,12 +4,13 @@ from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos 
-from .models import ContaPagar, Barbearia, Endereco
+from .models import ContaPagar, Barbearia, Endereco, ContaReceber
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from .forms import ServicosModelForm, ClienteModelForm,  ProdutosModelForm, ProfissionaisModelForm
 from .forms import EnderecoModelForm, BarbeariaModelForm, HorarioModelForm , ContaPagarModelForm
+from .forms import ContaReceberModelForm
 
 class DashboardView(TemplateView):
     template_name = 'dashboard.html'
@@ -46,12 +47,44 @@ class PerfilView(TemplateView):
         return context
 
 
+# visualizar
+
+class ContaPagarVisualizar(LoginRequiredMixin, ListView):
+    model = ContaPagar
+    login_url = reverse_lazy('login')
+    template_name = 'visualizar/conta_pagar_view.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['conta'] = ContaPagar.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
+        return context
+
+
+class ContaReceberVisualizar(LoginRequiredMixin, ListView):
+    model = ContaReceber
+    login_url = reverse_lazy('login')
+    template_name = 'visualizar/conta_receber_view.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['conta'] = ContaReceber.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
+        return context
+
+
 # list
 
 class ServicosList(LoginRequiredMixin, ListView):
     model = Servicos
     login_url = reverse_lazy('login')
-    template_name = 'servicos.html'
+    template_name = 'list/servicos.html'
     #paginate_by = 10
 
 
@@ -74,7 +107,7 @@ class ServicosList(LoginRequiredMixin, ListView):
 class ClientesList(LoginRequiredMixin, ListView):
     model = Clientes
     login_url = reverse_lazy('login')
-    template_name = 'clientes.html'
+    template_name = 'list/clientes.html'
     paginate_by = 10
 
 
@@ -99,7 +132,7 @@ class ClientesList(LoginRequiredMixin, ListView):
 class ProfissionaisList(LoginRequiredMixin, ListView):
     model = Profissionais
     login_url = reverse_lazy('login')
-    template_name = 'profissionais.html'
+    template_name = 'list/profissionais.html'
 
 
     def get_queryset(self):
@@ -116,13 +149,14 @@ class ProfissionaisList(LoginRequiredMixin, ListView):
             self.object_list = Profissionais.objects.filter(
                 barbearia=self.request.user.barbearia
                 )
+
         return self.object_list
 
 
 class ProdutosList(LoginRequiredMixin, ListView):
     model = Produtos
     login_url = reverse_lazy('login')
-    template_name = 'produtos.html'
+    template_name = 'list/produtos.html'
 
 
     def get_queryset(self):
@@ -132,19 +166,19 @@ class ProdutosList(LoginRequiredMixin, ListView):
             self.object_list = Produtos.objects.filter(
                 nome__icontains=buscaProduto, 
                 barbearia=self.request.user.barbearia
-                )
-                
+                )           
         else:
             self.object_list = Produtos.objects.filter(
                 barbearia=self.request.user.barbearia
                 )
+
         return self.object_list
 
 
 class EnderecoList(LoginRequiredMixin, ListView):
     model = Endereco
     login_url = reverse_lazy('login')
-    template_name = 'endereco.html'
+    template_name = 'list/endereco.html'
 
 
     def get_queryset(self):
@@ -157,18 +191,50 @@ class EnderecoList(LoginRequiredMixin, ListView):
 class ContaPagarList(LoginRequiredMixin, ListView):
     model = ContaPagar
     login_url = reverse_lazy('login')
-    template_name = 'conta_pagar.html'
+    template_name = 'list/conta_pagar.html'
 
 
     def get_queryset(self):
-        self.object_list = ContaPagar.objects.filter(
-            barbearia=self.request.user.barbearia
-            )
+        buscaConta = self.request.GET.get('pg')
+
+        if buscaConta:
+            self.object_list = ContaPagar.objects.filter(
+                conta__icontains=buscaConta,
+                barbearia=self.request.user.barbearia
+                )
+       
+        else:
+            self.object_list = ContaPagar.objects.filter(
+                barbearia=self.request.user.barbearia
+                )
+
+        return self.object_list
+    
+
+class ContaReceberList(LoginRequiredMixin, ListView):
+    model = ContaReceber
+    login_url = reverse_lazy('login')
+    template_name = 'list/conta_receber.html'
+
+
+    def get_queryset(self):
+        buscaConta = self.request.GET.get('pg')
+
+        if buscaConta:
+            self.object_list = ContaReceber.objects.filter(
+                conta__icontains=buscaConta,
+                barbearia=self.request.user.barbearia
+                )
+       
+        else:
+            self.object_list = ContaReceber.objects.filter(
+                barbearia=self.request.user.barbearia
+                )
+
         return self.object_list
 
 
 # create
-
 
 class ServicosCreate(LoginRequiredMixin, CreateView):
     form_class = ServicosModelForm
@@ -273,7 +339,7 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
     model = HorarioFuncionamento
     login_url = reverse_lazy('login')
     form_class = HorarioModelForm
-    template_name = 'horario_atendimento.html'
+    template_name = 'form_criar/horario_atendimento.html'
     success_url = reverse_lazy('criar_horario')
 
 
@@ -359,9 +425,9 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
         fIntervalo = self.convert_srt(fI)
 
         if hInicio < hSaida and iIntervalo <= fIntervalo:
-            return True
-        
+            return True    
         return False
+
 
     def convert_srt(self, valor:str):
         if valor:
@@ -386,18 +452,20 @@ class ProdutosCreate(LoginRequiredMixin, CreateView):
         return context
     
 
-    def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia
-        produto = Produtos.objects.filter(nome=form.instance.nome)
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        produto = self.request.POST.get('nome')
+        produtoDb = Produtos.objects.filter(nome=produto)
 
-        if produto:
-            messages.error(self.request, 'Produto ja Cadastrado')
-            return HttpResponseRedirect(reverse_lazy('produtos'))
-
-        else:  
-            messages.success(self.request, 'Produto Cadastrado com Sucesso')     
-            serv_form = super().form_valid(form)       
-            return serv_form
+        if not produtoDb:
+            if form.is_valid():
+                form.instance.barbearia = self.request.user.barbearia
+                messages.success(request, f'Produto: {produto} cadastrado com sucesso')
+                form.save()
+                return redirect('produtos')
+     
+        messages.warning(request, 'Produto ja cadastrado')
+        return redirect('produtos')
 
 
 class EnderecoCreate(LoginRequiredMixin, CreateView):
@@ -436,11 +504,55 @@ class ContaPagarCreate(LoginRequiredMixin, CreateView):
         return context
 
     
-    def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia
-        serv_form = super().form_valid(form)
-        return serv_form
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        pago = self.request.POST.get('pago')
 
+        conta = lambda pago: 'Pago' if pago else 'A Pagar'
+
+        if form.is_valid():
+            form.instance.barbearia = self.request.user.barbearia
+            form.instance.infoPago = conta(pago)
+            messages.success(request, 'Conta cadastrada com Sucesso')
+            form.save()
+            return redirect('conta_pagar')
+
+        else:
+            messages.warning(request, 'Erro ao cadastrar conta')
+            return redirect('conta_pagar')
+
+
+class ContaReceberCreate(LoginRequiredMixin, CreateView):
+    model = ContaReceber
+    form_class = ContaReceberModelForm
+    login_url = reverse_lazy('login')
+    template_name = 'form_criar/criar_contas_receber.html'
+    success_url = reverse_lazy('conta_receber')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Cadastrar Conta'
+        context['btn'] = 'Cadastrar'
+        return context
+
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        pago = self.request.POST.get('pago')
+
+        conta = lambda pago: 'Recebido' if pago else 'A Receber'
+
+        if form.is_valid():
+            form.instance.barbearia = self.request.user.barbearia
+            form.instance.infoPago = conta(pago)
+            messages.success(request, 'Conta cadastrada com Sucesso')
+            form.save()
+            return redirect('conta_receber')
+
+        else:
+            messages.warning(request, 'Erro ao cadastrar conta')
+            return redirect('conta_receber')
 
 # update
 
@@ -654,6 +766,95 @@ class EnderecoUpdate(LoginRequiredMixin, UpdateView):
         return self.object
 
 
+class ContaPagarUpdate(LoginRequiredMixin, UpdateView):
+    model = ContaPagar
+    form_class = ContaPagarModelForm
+    login_url = reverse_lazy('login')
+    template_name = 'form_editar/form_editar_conta_pagar.html'
+    success_url = reverse_lazy('conta_pagar')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Conta'
+        context['btn'] = 'Salvar'
+        return context
+    
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = ContaPagar.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
+        return self.object
+
+
+    def post(self, request, *args, **kwargs):
+        contaPagar = ContaPagar.objects.get(id=self.kwargs['pk'])
+        form = self.form_class(request.POST, instance=contaPagar)
+        pago = self.request.POST.get('pago')
+
+        conta = lambda pago: 'Pago' if pago else 'A Pagar'
+
+        if form.is_valid():
+            form.instance.barbearia = self.request.user.barbearia
+            form.instance.infoPago = conta(pago)
+            messages.success(request, 'Conta Editada com Sucesso')
+            form.save()
+            return redirect('conta_pagar')
+
+        else:
+            messages.warning(request, 'Erro ao editar conta')
+            return redirect('conta_pagar')
+
+
+class ContaReceberUpdate(LoginRequiredMixin, UpdateView):
+    model = ContaReceber
+    form_class = ContaReceberModelForm
+    login_url = reverse_lazy('login')
+    template_name = 'form_editar/form_editar_conta_receber.html'
+    success_url = reverse_lazy('conta_receber')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Conta'
+        context['btn'] = 'Salvar'
+        return context
+    
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = ContaReceber.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
+        return self.object
+
+
+    def post(self, request, *args, **kwargs):
+        contaReceber = ContaReceber.objects.get(id=self.kwargs['pk'])
+        form = self.form_class(request.POST, instance=contaReceber)
+        pago = self.request.POST.get('pago')
+
+        conta = lambda pago: 'Recebido' if pago else 'A Receber'
+
+        if form.is_valid():
+            form.instance.barbearia = self.request.user.barbearia
+            form.instance.infoPago = conta(pago)
+            messages.success(request, 'Conta Editada com Sucesso')
+            form.save()
+            return redirect('conta_receber')
+
+        else:
+            messages.warning(request, 'Erro ao editar conta')
+            return redirect('conta_receber')
+
 # delete
 
 class ServicosDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
@@ -750,11 +951,12 @@ class HorarioFuncionamentoDelete(LoginRequiredMixin, SuccessMessageMixin, Delete
         return self.object
 
 
-class EnderecoDelete(LoginRequiredMixin, DeleteView):
+class EnderecoDelete(LoginRequiredMixin,SuccessMessageMixin, DeleteView):
     model = Endereco
     login_url = reverse_lazy('login')
     template_name = 'form_excluir/form_excluir_endereco.html'
     success_url = reverse_lazy('perfil')
+    success_message = 'Endereço deletado com sucesso'
 
 
     def get_context_data(self, **kwargs):
@@ -799,4 +1001,55 @@ class Produtodelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
             )
 
         return self.object
-        
+
+
+class ContaPagarDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = ContaPagar
+    login_url = reverse_lazy('login')
+    template_name = 'form_excluir/form_excluir_conta_pagar.html'
+    success_url = reverse_lazy('conta_pagar')
+    success_message = 'Conta deletada com sucesso'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['nome'] = 'Conta'
+        return context
+
+    
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = ContaPagar.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
+
+        return self.object
+
+
+class ContaReceberDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = ContaReceber
+    login_url = reverse_lazy('login')
+    template_name = 'form_excluir/form_excluir_conta_receber.html'
+    success_url = reverse_lazy('conta_receber')
+    success_message = 'Conta deletada com sucesso'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['nome'] = 'Conta'
+        return context
+
+    
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = ContaReceber.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
+
+        return self.object

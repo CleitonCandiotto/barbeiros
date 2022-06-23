@@ -1,5 +1,5 @@
 from django import forms
-from .models import Barbearia, Endereco, Servicos, Clientes, Profissionais, Produtos, HorarioFuncionamento
+from .models import Barbearia, ContaReceber, Endereco, Servicos, Clientes, Profissionais, Produtos, HorarioFuncionamento
 from .models import ContaPagar
 
 
@@ -83,7 +83,6 @@ class ProdutosModelForm(forms.ModelForm):
             })
         self.fields['preco'].widget = forms.TextInput(
             attrs={
-                'type': 'number', 
                 'class': 'form-control'
                 })
         self.fields['descricao'].widget = forms.TextInput(
@@ -189,6 +188,34 @@ class ContaPagarModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ContaPagarModelForm, self).__init__(*args, **kwargs)
+        self.fields['conta'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            })
+        self.fields['valor'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                })
+        self.fields['dataVencimento'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'type' : 'date',
+                })
+        self.fields['pago'].widget = forms.CheckboxInput(
+            attrs={
+                'class':'form-check-label',
+            })
+
+
+class ContaReceberModelForm(forms.ModelForm):
+
+    class Meta:
+        model = ContaReceber
+        fields = ['conta', 'valor', 'dataVencimento','pago']
+
+
+    def __init__(self, *args, **kwargs):
+        super(ContaReceberModelForm, self).__init__(*args, **kwargs)
         self.fields['conta'].widget = forms.TextInput(
             attrs={
             'class': 'form-control',
