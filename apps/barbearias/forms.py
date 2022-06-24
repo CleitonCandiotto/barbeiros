@@ -19,7 +19,8 @@ class ServicosModelForm(forms.ModelForm):
         self.fields['tempo'].widget.attrs['class'] = 'form-control'
         self.fields['preco'].widget = forms.TextInput(
             attrs={
-                'type': 'number', 
+                'type': 'number',
+                'step': '0.01',
                 'class': 'form-control'
                 })
 
@@ -83,6 +84,8 @@ class ProdutosModelForm(forms.ModelForm):
             })
         self.fields['preco'].widget = forms.TextInput(
             attrs={
+                'type': 'number',
+                'step': '0.01',
                 'class': 'form-control'
                 })
         self.fields['descricao'].widget = forms.TextInput(
@@ -194,6 +197,8 @@ class ContaPagarModelForm(forms.ModelForm):
             })
         self.fields['valor'].widget = forms.TextInput(
             attrs={
+                'type': 'number',
+                'step': '0.01',
                 'class': 'form-control',
                 })
         self.fields['dataVencimento'].widget = forms.TextInput(
@@ -222,6 +227,8 @@ class ContaReceberModelForm(forms.ModelForm):
             })
         self.fields['valor'].widget = forms.TextInput(
             attrs={
+                'type': 'number',
+                'step': '0.01',
                 'class': 'form-control',
                 })
         self.fields['dataVencimento'].widget = forms.TextInput(

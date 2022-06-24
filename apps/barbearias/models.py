@@ -1,9 +1,7 @@
-from xml.etree.ElementInclude import default_loader
 from django.db import models
 from stdimage import StdImageField
 from apps.usuarios.models import CustomUser
-
-
+from django.db.models import Sum
 
 class Barbearia(models.Model):
     barbearia = models.CharField(max_length=200, verbose_name='Barbearia')
@@ -14,8 +12,6 @@ class Barbearia(models.Model):
         'thumbnail': {"width": 100, "height": 100, "crop": True},
         'thumb': {"width": 30, "height": 30, "crop": True},
     }, null=True, blank=True)
-
-
 
     class Meta:
         verbose_name = 'Barbearia'
@@ -83,7 +79,6 @@ class Profissionais(models.Model):
         'thumb': {"width": 30, "height": 30, "crop": True},
     }, null=True, blank=True)
 
-
     class Meta:
         verbose_name = 'Profissional'
         verbose_name_plural = 'Profissionais'
@@ -105,7 +100,6 @@ class Servicos(models.Model):
     preco = models.DecimalField(max_digits=4, decimal_places=2, verbose_name='Preço(R$)')
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
 
-
     class Meta:
         verbose_name = 'Serviço'
         verbose_name_plural = 'Serviços'
@@ -113,7 +107,6 @@ class Servicos(models.Model):
     
     def __str__(self):
         return self.servicos
-
 
 
 class HorarioFuncionamento(models.Model):
@@ -137,7 +130,6 @@ class HorarioFuncionamento(models.Model):
     final_intervalo = models.CharField(max_length=5 ,verbose_name='Final Intervalo', blank=True, null=True )
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
 
-
     class Meta:
         verbose_name = 'Horário de Atendimento'
         verbose_name_plural = 'Horários de Atendimento'
@@ -151,7 +143,6 @@ class Clientes(models.Model):
     nome = models.CharField(max_length=200, verbose_name='Nome')
     telefone = models.CharField(max_length=16, verbose_name='Telefone')
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
-
 
     class Meta:
         verbose_name = 'Cliente'
@@ -172,7 +163,6 @@ class Produtos(models.Model):
     }, null=True, blank=True)
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
    
-
     class Meta:
         verbose_name = 'Produto'
         verbose_name_plural = 'Produtos'
@@ -192,7 +182,6 @@ class AgendaHorario(models.Model):
     agendado = models.BooleanField(default=False)
     antendido = models.BooleanField(default=False)
 
-
     class Meta:
         verbose_name = 'Agenda Horario'
         verbose_name_plural = 'Agenda Horarios'
@@ -205,17 +194,17 @@ class AgendaHorario(models.Model):
 class ContaPagar(models.Model):
     barbearia = models.ForeignKey(Barbearia, on_delete=models.CASCADE)
     conta = models.CharField(max_length=100)
-    valor = models.DecimalField(decimal_places=2, max_digits=9)
+    valor = models.DecimalField( max_digits=9, decimal_places=2)
     dataVencimento = models.DateField(auto_now=False, auto_now_add=False)
     dataCadastro = models.DateField(auto_created=True, auto_now_add=True)
     infoPago = models.CharField(max_length=10)
     pago = models.BooleanField(default=False)
+    vencido = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Conta a Pagar'
         verbose_name_plural = 'Contas a Pagar'
 
-    
     def __str__(self):
         return f'Conta a Pagar: {self.conta}'
 
@@ -228,7 +217,8 @@ class ContaReceber(models.Model):
     dataCadastro = models.DateField(auto_created=True, auto_now_add=True)
     infoPago = models.CharField(max_length=10)
     pago = models.BooleanField(default=False)
-
+    vencido = models.BooleanField(default=False)
+    
     class Meta:
         verbose_name = 'Conta a Receber'
         verbose_name_plural = 'Contas a Receber'

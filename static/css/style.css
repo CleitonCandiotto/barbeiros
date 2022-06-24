@@ -246,6 +246,8 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0px;
 }
 
+
+
 i.check  {
   color: #18d26e;
   font-size: 25px;
@@ -310,7 +312,7 @@ i.ico  {
 
 /* Visão geral dashboard */
 .post-item-h1{
-  font-size: 60px;
+  font-size: 40px;
   color: #012970;
   font-weight: 700;
   margin-right: 10px;
@@ -817,7 +819,7 @@ i.ico  {
   margin-bottom: 0px;
 }
 .dashboard .info-card h6 {
-  font-size: 60px;
+  font-size: 40px;
   color: #012970;
   font-weight: 700;
   margin: 0;

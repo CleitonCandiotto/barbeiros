@@ -1,3 +1,4 @@
+from winreg import QueryValue
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
@@ -11,6 +12,8 @@ from django.contrib import messages
 from .forms import ServicosModelForm, ClienteModelForm,  ProdutosModelForm, ProfissionaisModelForm
 from .forms import EnderecoModelForm, BarbeariaModelForm, HorarioModelForm , ContaPagarModelForm
 from .forms import ContaReceberModelForm
+from django.db.models import Sum
+
 
 class DashboardView(TemplateView):
     template_name = 'dashboard.html'
@@ -18,22 +21,54 @@ class DashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        campoBarbearia = Barbearia.objects.filter(usuario=self.request.user).values_list()
 
-        barbearia = Barbearia.objects.filter(usuario=self.request.user).values_list()
-        
-        if barbearia[0][1] == ' ':
-            barbearia = None
+        if campoBarbearia[0][1] == ' ':
+            campoBarbearia = None
         else:
-            barbearia = Barbearia.objects.filter(usuario=self.request.user)
+            campoBarbearia = Barbearia.objects.filter(usuario=self.request.user)
 
-        context['clientes'] = Clientes.objects.filter(barbearia=self.request.user.barbearia).count()
-        context['barbearia'] = barbearia
-        context['endereco'] = Endereco.objects.filter(barbearia=self.request.user.barbearia)
-        context['horario'] = HorarioFuncionamento.objects.filter(barbearia=self.request.user.barbearia)
-        context['profissionais'] = Profissionais.objects.filter(barbearia=self.request.user.barbearia)
+        barbearia = self.request.user.barbearia
+        totalPagar = ContaPagar.objects.filter(
+            barbearia = barbearia,
+            pago = False,
+            ).aggregate(Sum('valor'))['valor__sum']
+        totalReceber = ContaReceber.objects.filter(
+            barbearia = barbearia,
+            pago = False,
+            ).aggregate(Sum('valor'))['valor__sum']
+        context['barbearia'] = campoBarbearia
+        context['clientes'] = Clientes.objects.filter(
+            barbearia = barbearia
+            ).count()
+        context['endereco'] = Endereco.objects.filter(
+            barbearia = barbearia
+            )
+        context['horario'] = HorarioFuncionamento.objects.filter(
+            barbearia = barbearia
+            )
+        context['profissionais'] = Profissionais.objects.filter(
+            barbearia = barbearia
+            )
+        context['totalPagar'] = self.formata_context_conta(totalPagar)
+        context['contaPagar'] = ContaPagar.objects.filter(
+            barbearia = barbearia,
+            pago = False
+            ).count()
+        context['totalReceber'] = self.formata_context_conta(totalReceber)
+        context['contaReceber'] = ContaReceber.objects.filter(
+            barbearia = barbearia,
+            pago = False
+        ).count()
 
         return context
-        
+    
+
+    def formata_context_conta(self, num):
+        if num:
+            return f'R${num:.2f}'.replace('.', ',')
+        return 0
+
 
 class PerfilView(TemplateView):
     template_name = 'perfil.html'
@@ -76,6 +111,7 @@ class ContaReceberVisualizar(LoginRequiredMixin, ListView):
             pk=self.kwargs['pk'], 
             barbearia=self.request.user.barbearia
             )
+        context['conta']
         return context
 
 
@@ -195,6 +231,8 @@ class ContaPagarList(LoginRequiredMixin, ListView):
 
 
     def get_queryset(self):
+        '''Retorna o resultado filtrado do campo de busca'''
+
         buscaConta = self.request.GET.get('pg')
 
         if buscaConta:
@@ -202,7 +240,6 @@ class ContaPagarList(LoginRequiredMixin, ListView):
                 conta__icontains=buscaConta,
                 barbearia=self.request.user.barbearia
                 )
-       
         else:
             self.object_list = ContaPagar.objects.filter(
                 barbearia=self.request.user.barbearia
@@ -210,6 +247,25 @@ class ContaPagarList(LoginRequiredMixin, ListView):
 
         return self.object_list
     
+'''
+    def get_context_data(self, **kwargs):
+        #Envia o contexto para a pagina pra ser renderizado
+        context =  super().get_context_data(**kwargs)
+        conta = ContaPagar.objects.filter(
+            barbearia = self.request.user.barbearia,
+            pago = False,
+            )
+
+        context['contaVencida'] = self.verifica_vencimento(conta)
+        
+        return context
+
+    def verifica_vencimento(self, object):
+        data = []
+        for c in object:
+            data.append(c.dataVencimento)
+        return object
+'''
 
 class ContaReceberList(LoginRequiredMixin, ListView):
     model = ContaReceber
