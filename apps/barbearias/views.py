@@ -1,4 +1,3 @@
-from winreg import QueryValue
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
@@ -13,6 +12,8 @@ from .forms import ServicosModelForm, ClienteModelForm,  ProdutosModelForm, Prof
 from .forms import EnderecoModelForm, BarbeariaModelForm, HorarioModelForm , ContaPagarModelForm
 from .forms import ContaReceberModelForm
 from django.db.models import Sum
+import datetime
+from dateutil.relativedelta import relativedelta
 
 
 class DashboardView(TemplateView):
@@ -29,33 +30,56 @@ class DashboardView(TemplateView):
             campoBarbearia = Barbearia.objects.filter(usuario=self.request.user)
 
         barbearia = self.request.user.barbearia
+        
+
         totalPagar = ContaPagar.objects.filter(
             barbearia = barbearia,
             pago = False,
             ).aggregate(Sum('valor'))['valor__sum']
+
         totalReceber = ContaReceber.objects.filter(
             barbearia = barbearia,
             pago = False,
             ).aggregate(Sum('valor'))['valor__sum']
+
         context['barbearia'] = campoBarbearia
-        context['clientes'] = Clientes.objects.filter(
+
+        clientes  = Clientes.objects.filter(
             barbearia = barbearia
-            ).count()
+            )
+
+        #filtrando clientes dos ultimos 30 dias
+        hoje = datetime.date.today()
+        trintaDias = relativedelta(days=+30)
+        ultimosdias = hoje + trintaDias
+        context['clientes'] = Clientes.objects.filter(
+            barbearia = barbearia,
+            dataCadastro__lte = ultimosdias
+        ).count()
+    
+        context['totalClientes'] = clientes.count()
+
         context['endereco'] = Endereco.objects.filter(
             barbearia = barbearia
             )
+
         context['horario'] = HorarioFuncionamento.objects.filter(
             barbearia = barbearia
             )
+
         context['profissionais'] = Profissionais.objects.filter(
             barbearia = barbearia
             )
+
         context['totalPagar'] = self.formata_context_conta(totalPagar)
+
         context['contaPagar'] = ContaPagar.objects.filter(
             barbearia = barbearia,
             pago = False
             ).count()
+
         context['totalReceber'] = self.formata_context_conta(totalReceber)
+
         context['contaReceber'] = ContaReceber.objects.filter(
             barbearia = barbearia,
             pago = False
@@ -68,7 +92,7 @@ class DashboardView(TemplateView):
         if num:
             return f'R${num:.2f}'.replace('.', ',')
         return 0
-
+    
 
 class PerfilView(TemplateView):
     template_name = 'perfil.html'
@@ -224,7 +248,32 @@ class EnderecoList(LoginRequiredMixin, ListView):
         return self.object_list
     
 
-class ContaPagarList(LoginRequiredMixin, ListView):
+class ContaBase():
+
+    def verifica_vencimento(self, object):
+        '''Verifica se está vencendo ou vencida e manda uma mesegem para o template.'''
+        hoje = datetime.date.today()
+        doisDias = relativedelta(days=+2)
+        umDia = relativedelta(days=+1)
+        umDiaVemcimento = hoje + umDia
+        doisDiasVencimento = hoje + doisDias
+
+        for conta in object:
+            if conta.dataVencimento == doisDiasVencimento:
+                messages.warning(self.request, f'{conta.conta} vence em 02 dias.')
+            elif conta.dataVencimento == umDiaVemcimento:
+                messages.warning(self.request, f'{conta.conta} vence em 01 dia. ')
+            elif conta.dataVencimento == hoje:
+                messages.warning(self.request, f'{conta.conta} vence hoje.')
+            elif conta.dataVencimento < hoje:
+                messages.error(self.request, f'{conta.conta} está vencida.', extra_tags='danger')
+            else:
+                continue
+        
+        return object
+
+
+class ContaPagarList(LoginRequiredMixin, ListView, ContaBase):
     model = ContaPagar
     login_url = reverse_lazy('login')
     template_name = 'list/conta_pagar.html'
@@ -247,9 +296,9 @@ class ContaPagarList(LoginRequiredMixin, ListView):
 
         return self.object_list
     
-'''
+
     def get_context_data(self, **kwargs):
-        #Envia o contexto para a pagina pra ser renderizado
+        '''Envia o contexto  para ser renderizado na mo template'''
         context =  super().get_context_data(**kwargs)
         conta = ContaPagar.objects.filter(
             barbearia = self.request.user.barbearia,
@@ -260,14 +309,8 @@ class ContaPagarList(LoginRequiredMixin, ListView):
         
         return context
 
-    def verifica_vencimento(self, object):
-        data = []
-        for c in object:
-            data.append(c.dataVencimento)
-        return object
-'''
 
-class ContaReceberList(LoginRequiredMixin, ListView):
+class ContaReceberList(LoginRequiredMixin, ListView, ContaBase):
     model = ContaReceber
     login_url = reverse_lazy('login')
     template_name = 'list/conta_receber.html'
@@ -288,6 +331,19 @@ class ContaReceberList(LoginRequiredMixin, ListView):
                 )
 
         return self.object_list
+    
+
+    def get_context_data(self, **kwargs):
+        '''Envia o contexto  para ser renderizado na mo template'''
+        context =  super().get_context_data(**kwargs)
+        conta = ContaReceber.objects.filter(
+            barbearia = self.request.user.barbearia,
+            pago = False,
+            )
+
+        context['contaVencida'] = self.verifica_vencimento(conta)
+        
+        return context
 
 
 # create
@@ -318,7 +374,7 @@ class ServicosCreate(LoginRequiredMixin, CreateView):
                 form.save()
                 return redirect('servicos')
         else:
-            messages.warning(request, f'Servico: {servico} ja cadastrado')
+            messages.error(request, f'Servico: {servico} ja cadastrado', extra_tags='danger')
             return redirect('servicos')
                   
 
@@ -351,11 +407,11 @@ class ClientesCreate(LoginRequiredMixin, CreateView):
                 return redirect('clientes')
         
         elif len(telefone) < 13:
-            messages.warning(request, 'Telefone invalido')
+            messages.error(request, 'Telefone invalido', extra_tags='danger')
             return redirect('clientes')
 
         else:
-            messages.warning(request, 'Cliente ja cadastrado')
+            messages.error(request, 'Cliente ja cadastrado', extra_tags='danger')
             return redirect('clientes')
 
 
@@ -383,11 +439,11 @@ class ProfissionaisCreate(LoginRequiredMixin, CreateView):
             return super().form_valid(form)
         
         elif len(telefone) < 13:
-            messages.warning(self.request, 'Telefone inválido')
+            messages.error(self.request, 'Telefone inválido', extra_tags='danger')
             return HttpResponseRedirect(reverse_lazy('profissionais'))
 
         else:
-            messages.warning(self.request, 'Profissional ja cadastrado')
+            messages.error(self.request, 'Profissional ja cadastrado', extra_tags='danger')
             return HttpResponseRedirect(reverse_lazy('profissionais'))
 
 
@@ -470,7 +526,7 @@ class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
                     messages.success(request, 'Horario criado com sucesso')
                     return redirect('criar_horario')
         
-        messages.warning(request, 'Erro ao cadastrar horario')
+        messages.error(request, 'Erro ao cadastrar horario', extra_tags='danger')
         return redirect('criar_horario')
 
 
@@ -520,7 +576,7 @@ class ProdutosCreate(LoginRequiredMixin, CreateView):
                 form.save()
                 return redirect('produtos')
      
-        messages.warning(request, 'Produto ja cadastrado')
+        messages.error(request, 'Produto ja cadastrado', extra_tags='danger')
         return redirect('produtos')
 
 
@@ -574,7 +630,7 @@ class ContaPagarCreate(LoginRequiredMixin, CreateView):
             return redirect('conta_pagar')
 
         else:
-            messages.warning(request, 'Erro ao cadastrar conta')
+            messages.error(request, 'Erro ao cadastrar conta', extra_tags='danger')
             return redirect('conta_pagar')
 
 
@@ -607,7 +663,7 @@ class ContaReceberCreate(LoginRequiredMixin, CreateView):
             return redirect('conta_receber')
 
         else:
-            messages.warning(request, 'Erro ao cadastrar conta')
+            messages.error(request, 'Erro ao cadastrar conta', extra_tags='danger')
             return redirect('conta_receber')
 
 # update
@@ -766,7 +822,7 @@ class HorarioFuncionamentoUpdate(LoginRequiredMixin, UpdateView):
             messages.success(request, 'Horario editado com sucesso')
             return redirect('criar_horario')
 
-        messages.warning(request, 'Erro ao editar horario ')
+        messages.error(request, 'Erro ao editar horario ', extra_tags='danger')
         return redirect('criar_horario')
 
 
@@ -863,7 +919,7 @@ class ContaPagarUpdate(LoginRequiredMixin, UpdateView):
             return redirect('conta_pagar')
 
         else:
-            messages.warning(request, 'Erro ao editar conta')
+            messages.error(request, 'Erro ao editar conta', extra_tags='danger')
             return redirect('conta_pagar')
 
 
@@ -908,7 +964,7 @@ class ContaReceberUpdate(LoginRequiredMixin, UpdateView):
             return redirect('conta_receber')
 
         else:
-            messages.warning(request, 'Erro ao editar conta')
+            messages.error(request, 'Erro ao editar conta', extra_tags='danger')
             return redirect('conta_receber')
 
 # delete

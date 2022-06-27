@@ -143,6 +143,7 @@ class Clientes(models.Model):
     nome = models.CharField(max_length=200, verbose_name='Nome')
     telefone = models.CharField(max_length=16, verbose_name='Telefone')
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
+    dataCadastro = models.DateField(auto_created=True, auto_now_add=True)
 
     class Meta:
         verbose_name = 'Cliente'
@@ -204,6 +205,7 @@ class ContaPagar(models.Model):
     class Meta:
         verbose_name = 'Conta a Pagar'
         verbose_name_plural = 'Contas a Pagar'
+
 
     def __str__(self):
         return f'Conta a Pagar: {self.conta}'

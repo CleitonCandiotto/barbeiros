@@ -30,7 +30,7 @@ class HorarioFuncionamentoAdmin(admin.ModelAdmin):
 
 @admin.register(Clientes)
 class ClientesAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'telefone', 'barbearia')
+    list_display = ('nome', 'telefone', 'barbearia', 'dataCadastro')
 
 
 @admin.register(Produtos)
@@ -40,7 +40,7 @@ class ProdutosAdmin(admin.ModelAdmin):
 
 @admin.register(ContaPagar)
 class ContaPgarAdmin(admin.ModelAdmin):
-    list_display = ('conta', 'valor', 'dataVencimento', 'dataCadastro', 'pago')
+    list_display = ('conta', 'valor', 'dataVencimento', 'dataCadastro', 'pago', 'infoPago', 'vencido')
 
 
 @admin.register(ContaReceber)
