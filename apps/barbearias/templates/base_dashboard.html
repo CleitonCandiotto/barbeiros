@@ -151,20 +151,20 @@
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link " href="#">
+        <a class="nav-link " href="{% url 'agenda' %}">
           <i class="bi bi-calendar4-week"></i>
           <span>Agenda</span>
         </a>
       </li><!-- End aGENDA Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#servicos-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link collapsed" data-bs-target="#agendar-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-scissors"></i><span>Agendar Horário</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="servicos-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="agendar-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
             
           <li>
-            <a href="{% url 'servicos'  %}">
+            <a href="#">
               <i class="bi bi-circle"></i><span>Agendar</span>
             </a>
           </li>

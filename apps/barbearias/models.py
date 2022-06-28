@@ -1,3 +1,5 @@
+from audioop import maxpp
+from pyexpat import model
 from django.db import models
 from stdimage import StdImageField
 from apps.usuarios.models import CustomUser
@@ -23,6 +25,8 @@ class Barbearia(models.Model):
 
 
 class Endereco(models.Model):
+    global ESTADO_CHOICE
+
     ESTADO_CHOICE=(
         ('AC', 'Acre'),
         ('AL', 'Alagoas'),
@@ -72,12 +76,17 @@ class Endereco(models.Model):
 
 class Profissionais(models.Model):
     nome = models.CharField(max_length=100, verbose_name='Nome')
+    apelido = models.CharField(max_length=50)
     telefone = models.CharField(max_length=16, verbose_name='Telefone')
-    barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
+    barbearia = models.ForeignKey(Barbearia, on_delete=models.CASCADE)
     imagem = StdImageField(upload_to='profissionais', variations={
         'thumbnail': {"width": 100, "height": 100, "crop": True},
         'thumb': {"width": 30, "height": 30, "crop": True},
     }, null=True, blank=True)
+    cpf = models.CharField(max_length=13)
+    nasciemento = models.DateField()
+    ativo = models.BooleanField(default=True)
+    
 
     class Meta:
         verbose_name = 'Profissional'
@@ -178,8 +187,8 @@ class AgendaHorario(models.Model):
     cliente = models.ForeignKey(Clientes, on_delete=models.CASCADE)
     profissional = models.ForeignKey(Profissionais, on_delete=models.CASCADE)
     servico = models.ForeignKey(Servicos, on_delete=models.CASCADE)
-    data = models.CharField(max_length=10)
-    horario = models.CharField(max_length=5 ,verbose_name='Hora', help_text='Ex "00:00"')
+    data = models.DateField(max_length=10)
+    horario = models.TimeField()
     agendado = models.BooleanField(default=False)
     antendido = models.BooleanField(default=False)
 
@@ -189,7 +198,7 @@ class AgendaHorario(models.Model):
 
     
     def __str__(self):
-        return f'Agenda Horário Cliente:{self.cliente.nome}'
+        return f'Horário:{self.cliente.nome}'
 
 
 class ContaPagar(models.Model):
@@ -228,3 +237,20 @@ class ContaReceber(models.Model):
     
     def __str__(self):
         return f'Conta a Receber: {self.conta}'
+
+
+class Fornecedor(models.Model):
+    nome = models.CharField(max_length=100)
+    email = models.EmailField()
+    celular = models.CharField(max_length=16)
+    telefone = models.CharField(max_length=16)
+    inscricao = models.CharField(max_length=14)
+    cnpj = models.CharField(max_length=18)
+    rua = models.CharField(max_length=150, verbose_name='Rua')
+    numero = models.CharField(max_length=5, verbose_name='N°')
+    cep = models.CharField(max_length=9, verbose_name='CEP')
+    bairro = models.CharField(max_length=100, verbose_name='Bairro')
+    cidade = models.CharField(max_length=200, verbose_name='Cidade')
+    estado = models.CharField(max_length=2, choices=ESTADO_CHOICE, verbose_name='UF')
+    barbearia = models.OneToOneField(Barbearia, on_delete=models.PROTECT)
+

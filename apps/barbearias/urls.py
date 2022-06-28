@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import ContaReceberCreate, DashboardView, PerfilView
+from .views import ContaReceberCreate, DashboardView, PerfilView, Agenda
 from .views import ContaPagarVisualizar, ContaReceberVisualizar
 from .views import ServicosList, ClientesList, ProfissionaisList, ProdutosList, EnderecoList
 from .views import ContaPagarList, ContaReceberList
@@ -14,6 +14,7 @@ from .views import EnderecoDelete, Produtodelete, ContaPagarDelete, ContaReceber
 
 urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('agenda/', Agenda.as_view(), name='agenda'),
 
     path('conta-pagar-v/<int:pk>/', ContaPagarVisualizar.as_view(), name='conta_pagarv'),
     path('conta-receber-v/<int:pk>/', ContaReceberVisualizar.as_view(), name='conta_receberv'),

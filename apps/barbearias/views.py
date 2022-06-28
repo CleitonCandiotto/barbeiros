@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos 
-from .models import ContaPagar, Barbearia, Endereco, ContaReceber
+from .models import ContaPagar, Barbearia, Endereco, ContaReceber, AgendaHorario
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
@@ -13,6 +13,8 @@ from .forms import EnderecoModelForm, BarbeariaModelForm, HorarioModelForm , Con
 from .forms import ContaReceberModelForm
 from django.db.models import Sum
 import datetime
+import calendar
+from calendar import HTMLCalendar
 from dateutil.relativedelta import relativedelta
 
 
@@ -94,8 +96,19 @@ class DashboardView(TemplateView):
         return 0
     
 
-class PerfilView(TemplateView):
+class Agenda(TemplateView):
+    template_name = 'agenda.html'
+    model = AgendaHorario
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        cal = HTMLCalendar().formatmonth(2022, 6)
+        context['cal'] = cal
+        return context
+
+class PerfilView(LoginRequiredMixin, TemplateView):
     template_name = 'perfil.html'
+    login_url = reverse_lazy('login')
 
 
     def get_context_data(self, **kwargs):
