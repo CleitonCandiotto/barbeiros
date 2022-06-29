@@ -1,5 +1,5 @@
 from django import forms
-from .models import Barbearia, ContaReceber, Endereco, Servicos, Clientes, Profissionais, Produtos, HorarioFuncionamento
+from .models import Barbearia, ContaReceber, Endereco, Fornecedor, Servicos, Clientes, Profissionais, Produtos, HorarioFuncionamento
 from .models import ContaPagar
 
 
@@ -240,3 +240,10 @@ class ContaReceberModelForm(forms.ModelForm):
             attrs={
                 'class':'form-check-label',
             })
+
+class FornecedorModelForm(forms.ModelForm):
+
+    class Meta:
+        model = Fornecedor
+        fields = ['nome', 'email', 'celular', 'telefone', 'inscricao', 'cnpj', 
+            'rua', 'numero', 'cep', 'cidade', 'estado']

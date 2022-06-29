@@ -84,14 +84,12 @@ class Profissionais(models.Model):
         'thumb': {"width": 30, "height": 30, "crop": True},
     }, null=True, blank=True)
     cpf = models.CharField(max_length=13)
-    nasciemento = models.DateField()
-    ativo = models.BooleanField(default=True)
     
 
     class Meta:
         verbose_name = 'Profissional'
         verbose_name_plural = 'Profissionais'
-
+    
     
     def __str__(self):
         return f'{self.nome}'
@@ -187,7 +185,7 @@ class AgendaHorario(models.Model):
     cliente = models.ForeignKey(Clientes, on_delete=models.CASCADE)
     profissional = models.ForeignKey(Profissionais, on_delete=models.CASCADE)
     servico = models.ForeignKey(Servicos, on_delete=models.CASCADE)
-    data = models.DateField(max_length=10)
+    data = models.DateField(auto_now_add=False, auto_now=False)
     horario = models.TimeField()
     agendado = models.BooleanField(default=False)
     antendido = models.BooleanField(default=False)
@@ -244,7 +242,7 @@ class Fornecedor(models.Model):
     email = models.EmailField()
     celular = models.CharField(max_length=16)
     telefone = models.CharField(max_length=16)
-    inscricao = models.CharField(max_length=14)
+    inscricao = models.CharField(max_length=14, verbose_name='Inscrição Estadual')
     cnpj = models.CharField(max_length=18)
     rua = models.CharField(max_length=150, verbose_name='Rua')
     numero = models.CharField(max_length=5, verbose_name='N°')

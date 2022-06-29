@@ -7,7 +7,7 @@ class CustomUserManager(BaseUserManager):
     use_in_migrations = True
 
     
-    def create_user(self,username, email, password, **extra_fields):
+    def create_user(self, username, email, password, **extra_fields):
 
         if not email:
             raise ValueError('Precisa informar o e-mail')
@@ -35,7 +35,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
-    username = None
+    username = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

@@ -5,12 +5,13 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos 
 from .models import ContaPagar, Barbearia, Endereco, ContaReceber, AgendaHorario
+from .models import Fornecedor
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from .forms import ServicosModelForm, ClienteModelForm,  ProdutosModelForm, ProfissionaisModelForm
 from .forms import EnderecoModelForm, BarbeariaModelForm, HorarioModelForm , ContaPagarModelForm
-from .forms import ContaReceberModelForm
+from .forms import ContaReceberModelForm, FornecedorModelForm
 from django.db.models import Sum
 import datetime
 import calendar
@@ -359,6 +360,29 @@ class ContaReceberList(LoginRequiredMixin, ListView, ContaBase):
         return context
 
 
+class FornecedoresList(LoginRequiredMixin, ListView):
+    model = Fornecedor
+    login_url = reverse_lazy('login')
+    template_name = 'list/fornecedores.html'
+
+
+    def get_queryset(self):
+        buscaFornecedor = self.request.GET.get('fornecedor')
+
+        if buscaFornecedor:
+            self.object_list = Fornecedor.objects.filter(
+                conta__icontains=buscaFornecedor,
+                barbearia=self.request.user.barbearia
+                )
+       
+        else:
+            self.object_list = Fornecedor.objects.filter(
+                barbearia=self.request.user.barbearia
+                )
+
+        return self.object_list
+    
+
 # create
 
 class ServicosCreate(LoginRequiredMixin, CreateView):
@@ -678,6 +702,44 @@ class ContaReceberCreate(LoginRequiredMixin, CreateView):
         else:
             messages.error(request, 'Erro ao cadastrar conta', extra_tags='danger')
             return redirect('conta_receber')
+
+
+class FornecedorCreate(LoginRequiredMixin, CreateView):
+    model = Fornecedor
+    form_class = FornecedorModelForm
+    login_url = reverse_lazy('login')
+    template_name = 'form_criar/criar_fornecedor.html'
+    success_url = reverse_lazy('fornecedores')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Cadastrar Cliente'
+        context['btn'] = 'Cadastrar'
+        return context
+    
+
+    '''def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        cliente = self.request.POST.get('nome')
+        telefone = self.request.POST.get('telefone')
+        cliente_db = Clientes.objects.filter(nome=cliente)
+
+        if not cliente_db and len(telefone) > 13:
+            if form.is_valid():
+                form.instance.barbearia = self.request.user.barbearia
+                messages.success(request, f'Cliente: {cliente} cadastrado com sucesso')
+                form.save()
+                return redirect('clientes')
+        
+        elif len(telefone) < 13:
+            messages.error(request, 'Telefone invalido', extra_tags='danger')
+            return redirect('clientes')
+
+        else:
+            messages.error(request, 'Cliente ja cadastrado', extra_tags='danger')
+            return redirect('clientes')'''
+
 
 # update
 

@@ -3,13 +3,13 @@ from django.urls import path
 from .views import ContaReceberCreate, DashboardView, PerfilView, Agenda
 from .views import ContaPagarVisualizar, ContaReceberVisualizar
 from .views import ServicosList, ClientesList, ProfissionaisList, ProdutosList, EnderecoList
-from .views import ContaPagarList, ContaReceberList
+from .views import ContaPagarList, ContaReceberList, FornecedoresList
 from .views import ServicosCreate, ClientesCreate, HorarioFuncionamentoCreate, ProfissionaisCreate
 from .views import ProdutosCreate, EnderecoCreate, ContaPagarCreate
 from .views import ServicosUpdate, ClientesUpdate, HorarioFuncionamentoUpdate, ProfissionaisUpdate
 from .views import ProdutoUpdate, BarbeariaUpdate, EnderecoUpdate, ContaPagarUpdate, ContaReceberUpdate
 from .views import ServicosDelete, ClientesDelete, ProfissionalDelete, HorarioFuncionamentoDelete
-from .views import EnderecoDelete, Produtodelete, ContaPagarDelete, ContaReceberDelete
+from .views import EnderecoDelete, Produtodelete, ContaPagarDelete, ContaReceberDelete, FornecedorCreate
 
 
 urlpatterns = [
@@ -27,6 +27,7 @@ urlpatterns = [
     path('perfil/', PerfilView.as_view(), name='perfil'),
     path('conta-pagar/', ContaPagarList.as_view(), name='conta_pagar'),
     path('conta-receber/', ContaReceberList.as_view(), name='conta_receber'),
+    path('fornecedores/', FornecedoresList.as_view(), name='fornecedores'),
 
     path('criar-servico/', ServicosCreate.as_view(), name='criar_servico'),
     path('criar-cliente/', ClientesCreate.as_view(), name='criar_cliente'),
@@ -36,6 +37,7 @@ urlpatterns = [
     path('criar-endereco/', EnderecoCreate.as_view(), name='criar_endereco'),
     path('criar-conta-pagar/', ContaPagarCreate.as_view(), name='criar_conta_pagar'),   
     path('criar-conta-receber/', ContaReceberCreate.as_view(), name='criar_conta_receber'),
+    path('criar-fornecedor/', FornecedorCreate.as_view(), name='criar_fornecedor'),
 
     path('editar-servico/<int:pk>/', ServicosUpdate.as_view(), name='editar_servico'),
     path('editar-cliente/<int:pk>/', ClientesUpdate.as_view(), name='editar_cliente'),
