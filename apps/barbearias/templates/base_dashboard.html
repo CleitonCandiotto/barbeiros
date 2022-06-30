@@ -80,7 +80,11 @@
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img src="{{ request.user.barbearia.logo.thumb.url }}" alt="" class="rounded-circle">
+            {% if request.user.barbearia.logo %}
+              <img src="{{ request.user.barbearia.logo.thumb.url }}" alt="" class="rounded-circle">
+            {% else %}
+              <img src="{% static 'img/user_defalt.jpg' %}" alt="" class="rounded-circle">
+            {% endif %}
             <span class="d-none d-md-block dropdown-toggle ps-2">{{ request.user.barbearia }}</span>
           </a><!-- End Profile Iamge Icon -->
 
@@ -156,21 +160,6 @@
           <span>Agenda</span>
         </a>
       </li><!-- End aGENDA Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#agendar-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-scissors"></i><span>Agendar Horário</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="agendar-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-            
-          <li>
-            <a href="#">
-              <i class="bi bi-circle"></i><span>Agendar</span>
-            </a>
-          </li>
-
-        </ul>
-      </li><!-- End Agendar Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#servicos-nav" data-bs-toggle="collapse" href="#">

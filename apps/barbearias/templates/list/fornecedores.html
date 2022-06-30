@@ -37,13 +37,13 @@
                 <table class="table table-hover ">
                     <tr>
                         <th>Nome</th>
-                        <th>Telefone</th>
+                        <th>Email</th>
                         <th></th>
                     </tr>
-                    {% for cliente in object_list %}
+                    {% for fornecedor in object_list %}
                     <tr>
-                        <td>{{ cliente.nome }}</td>
-                        <td>{{ cliente.telefone }}</td>
+                        <td>{{ fornecedor.nome }}</td>
+                        <td>{{ fornecedor.email }}</td>
                         <td>
                             <div class="dropdown">
                                 <a  href="#" data-bs-toggle="dropdown">
@@ -51,7 +51,7 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end ">
                                     <button type="button" class="dropdown-item d-flex align-items-center"
-                                        onclick="editarModalCliente()" >
+                                        onclick="editarModalFornecedor('{% url 'editar_fornecedor' fornecedor.pk %}')" >
                                         <i class="bi bi-pencil-square"></i>
                                         <span>Editar</span>
                                     </button>
@@ -123,8 +123,8 @@
         });
     };
 
-    function editarModalCliente(url){
-        $(`#editar-cliente`).load(url, function(){
+    function editarModalFornecedor(url){
+        $('#criar-modal').load(url, function(){
             $(this).modal('show');
         });
         

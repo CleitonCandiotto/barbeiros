@@ -23,6 +23,7 @@ class ServicosModelForm(forms.ModelForm):
                 'step': '0.01',
                 'class': 'form-control'
                 })
+    
 
 
 class ClienteModelForm(forms.ModelForm):
@@ -43,8 +44,7 @@ class ClienteModelForm(forms.ModelForm):
             attrs={
                 'class': 'form-control',
                 'placeholder': '(xx)00000-0000'
-                })
-        
+                })        
 
         
 class ProfissionaisModelForm(forms.ModelForm):
@@ -246,4 +246,70 @@ class FornecedorModelForm(forms.ModelForm):
     class Meta:
         model = Fornecedor
         fields = ['nome', 'email', 'celular', 'telefone', 'inscricao', 'cnpj', 
-            'rua', 'numero', 'cep', 'cidade', 'estado']
+            'rua', 'numero', 'bairro', 'cep', 'cidade', 'estado', 'complemento']
+    
+
+    def __init__(self, *args, **kwargs):
+        super(FornecedorModelForm, self).__init__(*args, **kwargs)
+        self.fields['nome'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'placeholder' : 'Informe o nome'
+            })
+        self.fields['email'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'type' : 'email',
+            'placeholder' : 'Informe o e-mail'
+            })
+        self.fields['celular'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'placeholder' : 'Informe o celular'
+            })
+        self.fields['telefone'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'placeholder' : 'Informe o telefone'
+            })
+        self.fields['inscricao'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'placeholder' : 'Informe o inscrição estadual'
+            })
+        self.fields['cnpj'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'placeholder' : 'CNPJ'
+            })
+        self.fields['rua'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'placeholder' : 'Rua, Avinida, Travessa...'
+            })
+        self.fields['numero'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'placeholder' : 'Numero'
+            })
+        self.fields['cep'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'placeholder' : 'CEP'
+            })
+        self.fields['bairro'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'placeholder' : 'Bairro'
+            })
+        self.fields['cidade'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'placeholder' : 'Cidade'
+            })
+        self.fields['complemento'].widget = forms.TextInput(
+            attrs={
+            'class': 'form-control',
+            'placeholder' : 'Complemento'
+            })
+        self.fields['estado'].widget.attrs['class'] = 'form-control'

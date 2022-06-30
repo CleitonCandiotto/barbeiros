@@ -104,7 +104,7 @@ class Servicos(models.Model):
     servicos = models.CharField(max_length=100, help_text='Ex: Barba - Cabelo - Bigode', 
                                 verbose_name='Serviço',)
     tempo = models.CharField(max_length=2, choices=TEMPO_CHOICE)
-    preco = models.DecimalField(max_digits=4, decimal_places=2, verbose_name='Preço(R$)')
+    preco = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Valor')
     barbearia = models.ForeignKey(Barbearia, on_delete=models.PROTECT)
 
     class Meta:
@@ -240,15 +240,20 @@ class ContaReceber(models.Model):
 class Fornecedor(models.Model):
     nome = models.CharField(max_length=100)
     email = models.EmailField()
-    celular = models.CharField(max_length=16)
-    telefone = models.CharField(max_length=16)
-    inscricao = models.CharField(max_length=14, verbose_name='Inscrição Estadual')
-    cnpj = models.CharField(max_length=18)
-    rua = models.CharField(max_length=150, verbose_name='Rua')
-    numero = models.CharField(max_length=5, verbose_name='N°')
-    cep = models.CharField(max_length=9, verbose_name='CEP')
-    bairro = models.CharField(max_length=100, verbose_name='Bairro')
-    cidade = models.CharField(max_length=200, verbose_name='Cidade')
-    estado = models.CharField(max_length=2, choices=ESTADO_CHOICE, verbose_name='UF')
+    celular = models.CharField(max_length=16, blank=True, null=True)
+    telefone = models.CharField(max_length=16, blank=True, null=True)
+    inscricao = models.CharField(max_length=14, verbose_name='Inscrição Estadual', blank=True, null=True)
+    cnpj = models.CharField(max_length=18, blank=True, null=True)
+    rua = models.CharField(max_length=150, verbose_name='Rua', blank=True, null=True)
+    numero = models.CharField(max_length=5, verbose_name='N°', blank=True, null=True)
+    cep = models.CharField(max_length=9, verbose_name='CEP', blank=True, null=True)
+    bairro = models.CharField(max_length=100, verbose_name='Bairro', blank=True, null=True)
+    cidade = models.CharField(max_length=200, verbose_name='Cidade', blank=True, null=True)
+    complemento = models.CharField(max_length=100, verbose_name='Complemento', blank=True, null=True)
+    estado = models.CharField(max_length=2, choices=ESTADO_CHOICE, verbose_name='Estado', blank=True, null=True)
     barbearia = models.OneToOneField(Barbearia, on_delete=models.PROTECT)
+
+
+    def __str__(self):
+        return self.nome
 

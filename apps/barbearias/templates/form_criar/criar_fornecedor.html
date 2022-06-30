@@ -8,8 +8,74 @@
     <form action="{% url 'criar_fornecedor' %}" method="POST">
         {% csrf_token %}
         <div class="modal-body">
-            {{ form.as_p }}
+          <div class="row mb-2">
+            <div class="col-md-6">
+                {{ form.nome.label }}
+                {{ form.nome }}
+            </div>
+            <div class="col-md-6">
+                {{ form.email.label }}
+                {{ form.email }}
+            </div>
           </div>
+          <div class="row mb-2">
+            <div class="col-md-6">
+                {{ form.celular.label }}
+                {{ form.celular }}
+            </div>
+            <div class="col-md-6">
+                {{ form.telefone.label }}
+                {{ form.telefone }}
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-6">
+                {{ form.inscricao.label }}
+                {{ form.inscricao }}
+            </div>
+            <div class="col-md-6">
+                {{ form.cnpj.label }}
+                {{ form.cnpj }}
+            </div>
+          </div>
+          <div>
+            <h4>Endereço</h4>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-4">
+                {{ form.cep.label }}
+                {{ form.cep }}
+            </div>
+            <div class="col-md-6">
+                {{ form.rua.label }}
+                {{ form.rua }}
+            </div>
+            <div class="col-md-2">
+                {{ form.numero.label }}
+                {{ form.numero }}
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-6">
+                {{ form.complemento.label }}
+                {{ form.complemento }}
+            </div>
+            <div class="col-md-6">
+                {{ form.bairro.label }}
+                {{ form.bairro }}
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-md-6">
+                {{ form.cidade.label }}
+                {{ form.cidade }}
+            </div>
+            <div class="col-md-6">
+                {{ form.estado.label }}
+                {{ form.estado }}
+            </div>
+          </div>
+        </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-info " data-bs-dismiss="modal">Voltar</button>
             <button type="submit" class="btn b-save btn-sm" >{{ btn }}</button>
@@ -17,19 +83,3 @@
     </form>
   </div>
 </div>
-
-
-{% block script %}
-
-    <script src="{% static 'js/jquery.mask.min.js' %}"></script>
-
-    <script>
-        
-        $(document).ready(function(){
-    
-            $('#id_preco').mask("00.00", {placeholder: "R$"});
-    
-        });
-    </script>
-    
-{% endblock%}

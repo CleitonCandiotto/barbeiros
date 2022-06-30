@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Barbearia, Endereco, Profissionais, Servicos, HorarioFuncionamento, AgendaHorario, Clientes
-from .models import Produtos, ContaPagar, ContaReceber
+from .models import Produtos, ContaPagar, ContaReceber, Fornecedor
 
 @admin.register(Barbearia)
 class BarbeariaAdmin(admin.ModelAdmin):
@@ -46,3 +46,8 @@ class ContaPgarAdmin(admin.ModelAdmin):
 @admin.register(ContaReceber)
 class ContaReceberAdmin(admin.ModelAdmin):
     list_display = ('conta', 'valor', 'dataVencimento', 'dataCadastro', 'pago')
+
+
+@admin.register(Fornecedor)
+class FornecedorAdmin(admin.ModelAdmin):
+    list_display = ('nome', )

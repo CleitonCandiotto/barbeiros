@@ -410,6 +410,9 @@ class ServicosCreate(LoginRequiredMixin, CreateView):
                 messages.success(request, f'Servico: {servico} criado com sucesso')
                 form.save()
                 return redirect('servicos')
+            
+            messages.error(request, 'Verifique dos dados cadastrados', extra_tags='danger')
+            return redirect('servicos')
         else:
             messages.error(request, f'Servico: {servico} ja cadastrado', extra_tags='danger')
             return redirect('servicos')
@@ -442,7 +445,7 @@ class ClientesCreate(LoginRequiredMixin, CreateView):
                 messages.success(request, f'Cliente: {cliente} cadastrado com sucesso')
                 form.save()
                 return redirect('clientes')
-        
+
         elif len(telefone) < 13:
             messages.error(request, 'Telefone invalido', extra_tags='danger')
             return redirect('clientes')
@@ -466,6 +469,7 @@ class ProfissionaisCreate(LoginRequiredMixin, CreateView):
         context['btn'] = 'Cadastrar'
         return context
     
+
     def form_valid(self, form):
         form.instance.barbearia = self.request.user.barbearia
         profissional = Profissionais.objects.filter(nome=form.instance.nome)
@@ -714,31 +718,26 @@ class FornecedorCreate(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Cadastrar Cliente'
+        context['titulo'] = 'Cadastrar Fornecedor'
         context['btn'] = 'Cadastrar'
         return context
     
 
-    '''def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
-        cliente = self.request.POST.get('nome')
-        telefone = self.request.POST.get('telefone')
-        cliente_db = Clientes.objects.filter(nome=cliente)
+        fornecedor = self.request.POST.get('nome')
+        fornecedor_db = Fornecedor.objects.filter(nome=fornecedor)
 
-        if not cliente_db and len(telefone) > 13:
+        if not fornecedor_db:
             if form.is_valid():
                 form.instance.barbearia = self.request.user.barbearia
-                messages.success(request, f'Cliente: {cliente} cadastrado com sucesso')
+                messages.success(request, f'Fornecedor: {fornecedor} cadastrado com sucesso')
                 form.save()
-                return redirect('clientes')
+                return redirect('fornecedores')
         
-        elif len(telefone) < 13:
-            messages.error(request, 'Telefone invalido', extra_tags='danger')
-            return redirect('clientes')
-
         else:
             messages.error(request, 'Cliente ja cadastrado', extra_tags='danger')
-            return redirect('clientes')'''
+            return redirect('fornecedores')
 
 
 # update
@@ -1041,6 +1040,33 @@ class ContaReceberUpdate(LoginRequiredMixin, UpdateView):
         else:
             messages.error(request, 'Erro ao editar conta', extra_tags='danger')
             return redirect('conta_receber')
+
+
+class FornecedorUpdate(LoginRequiredMixin, UpdateView):
+    model = Fornecedor
+    form_class = FornecedorModelForm
+    login_url = reverse_lazy('login')
+    template_name = 'form_editar/form_editar_fornecedor.html'
+    success_url = reverse_lazy('fornecedores')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Fornecedor'
+        context['btn'] = 'Salvar'
+        return context
+
+
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = Fornecedor.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
+        return self.object
+
 
 # delete
 

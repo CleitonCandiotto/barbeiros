@@ -19,17 +19,3 @@
 </div>
 
 
-{% block script %}
-
-    <script src="{% static 'js/jquery.mask.min.js' %}"></script>
-
-    <script>
-        
-        $(document).ready(function(){
-    
-            $('#id_preco').mask("00.00", {placeholder: "R$"});
-    
-        });
-    </script>
-    
-{% endblock%}
