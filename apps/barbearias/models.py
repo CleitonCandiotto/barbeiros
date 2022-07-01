@@ -83,7 +83,7 @@ class Profissionais(models.Model):
         'thumbnail': {"width": 100, "height": 100, "crop": True},
         'thumb': {"width": 30, "height": 30, "crop": True},
     }, null=True, blank=True)
-    cpf = models.CharField(max_length=13)
+    cpf = models.CharField(max_length=13, verbose_name='CPF')
     
 
     class Meta:

@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
@@ -275,15 +276,13 @@ class ContaBase():
         for conta in object:
             if conta.dataVencimento == doisDiasVencimento:
                 messages.warning(self.request, f'{conta.conta} vence em 02 dias.')
-            elif conta.dataVencimento == umDiaVemcimento:
+            if conta.dataVencimento == umDiaVemcimento:
                 messages.warning(self.request, f'{conta.conta} vence em 01 dia. ')
-            elif conta.dataVencimento == hoje:
+            if conta.dataVencimento == hoje:
                 messages.warning(self.request, f'{conta.conta} vence hoje.')
-            elif conta.dataVencimento < hoje:
+            if conta.dataVencimento < hoje:
                 messages.error(self.request, f'{conta.conta} está vencida.', extra_tags='danger')
-            else:
-                continue
-        
+                
         return object
 
 
@@ -416,7 +415,7 @@ class ServicosCreate(LoginRequiredMixin, CreateView):
         else:
             messages.error(request, f'Servico: {servico} ja cadastrado', extra_tags='danger')
             return redirect('servicos')
-                  
+               
 
 class ClientesCreate(LoginRequiredMixin, CreateView):
     model = Clientes
@@ -447,7 +446,7 @@ class ClientesCreate(LoginRequiredMixin, CreateView):
                 return redirect('clientes')
 
         elif len(telefone) < 13:
-            messages.error(request, 'Telefone invalido', extra_tags='danger')
+            messages.error(request, 'Telefone inválido', extra_tags='danger')
             return redirect('clientes')
 
         else:

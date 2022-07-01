@@ -19,12 +19,11 @@ class ServicosModelForm(forms.ModelForm):
         self.fields['tempo'].widget.attrs['class'] = 'form-control'
         self.fields['preco'].widget = forms.TextInput(
             attrs={
-                'type': 'number',
+               'type': 'number',
                 'step': '0.01',
                 'class': 'form-control'
                 })
     
-
 
 class ClienteModelForm(forms.ModelForm):
  
@@ -51,7 +50,7 @@ class ProfissionaisModelForm(forms.ModelForm):
 
     class Meta:
         model = Profissionais
-        fields = ['nome', 'telefone', 'imagem']
+        fields = ['nome', 'telefone', 'imagem', 'apelido', 'cpf']
     
 
     def __init__(self, *args, **kwargs):
@@ -65,6 +64,16 @@ class ProfissionaisModelForm(forms.ModelForm):
             attrs={
                 'class': 'form-control',
                 'placeholder': '(xx)00000-0000'
+                })
+        self.fields['apelido'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Apelido'
+                })
+        self.fields['cpf'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'CPF'
                 })
 
 

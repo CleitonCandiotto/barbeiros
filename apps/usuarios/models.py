@@ -14,12 +14,13 @@ class CustomUserManager(BaseUserManager):
 
         email = self.normalize_email(email)
         user = self.model(username=email, email=email, **extra_fields)
-        user.set_password(password)
+        if password:
+            user.set_password(password)
         user.save()
         return user
 
     
-    def create_superuser(self, email, password, **extra_fields):
+    def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff',True)
         extra_fields.setdefault('is_superuser',True)
         extra_fields.setdefault('is_active',True)
@@ -30,8 +31,9 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Super Usuário precisa estar com o "is_superuser = True"')
         if extra_fields.get('is_active') is not True:
             raise ValueError('Super Usuário precisa estar com o "is_active = True"')
-        
-        return self.create_user(email, password, **extra_fields)
+        user = self.create_user(username=None, email=email, password=password, **extra_fields)
+        user.save(using=self._db)
+        return user
 
 
 class CustomUser(AbstractUser):
