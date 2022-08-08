@@ -1,5 +1,5 @@
 from django import forms
-from .models import Barbearia, ContaReceber, Endereco, Fornecedor, Servicos, Clientes, Profissionais, Produtos, HorarioFuncionamento
+from .models import AgendaHorario, Barbearia, ContaReceber, Endereco, Fornecedor, Servicos, Clientes, Profissionais, Produtos, HorarioFuncionamento
 from .models import ContaPagar
 
 
@@ -50,7 +50,7 @@ class ProfissionaisModelForm(forms.ModelForm):
 
     class Meta:
         model = Profissionais
-        fields = ['nome', 'telefone', 'imagem', 'apelido', 'cpf']
+        fields = ['nome', 'telefone', 'imagem']
     
 
     def __init__(self, *args, **kwargs):
@@ -65,7 +65,7 @@ class ProfissionaisModelForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': '(xx)00000-0000'
                 })
-        self.fields['apelido'].widget = forms.TextInput(
+        '''self.fields['apelido'].widget = forms.TextInput(
             attrs={
                 'class': 'form-control',
                 'placeholder': 'Apelido'
@@ -73,8 +73,39 @@ class ProfissionaisModelForm(forms.ModelForm):
         self.fields['cpf'].widget = forms.TextInput(
             attrs={
                 'class': 'form-control',
-                'placeholder': 'CPF'
+                'placeholder': '000.000.000-00'
                 })
+        self.fields['rua'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Rua'
+                })
+        self.fields['numero'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'N°'
+                })   
+        self.fields['cep'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': '00000-000'
+                })  
+        self.fields['bairro'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Bairro'
+                })
+        self.fields['complemento'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Complemento'
+                })
+        self.fields['cidade'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Cidade'
+                })
+        self.fields['estado'].widget.attrs['class'] = 'form-control'''
 
 
 class ProdutosModelForm(forms.ModelForm):
@@ -322,3 +353,29 @@ class FornecedorModelForm(forms.ModelForm):
             'placeholder' : 'Complemento'
             })
         self.fields['estado'].widget.attrs['class'] = 'form-control'
+
+
+class AgendaHorarioModelForm(forms.ModelForm):
+
+    class Meta:
+        model = AgendaHorario
+        fields = ['cliente', 'profissional', 'servico', 'data', 
+                  'horario', 'antendido']
+
+    
+    def __init__(self, *args, **kwargs):
+        super(AgendaHorarioModelForm, self).__init__(*args, **kwargs)
+        self.fields['cliente'].widget.attrs['class'] = 'form-control'
+        self.fields['profissional'].widget.attrs['class'] = 'form-control'
+        self.fields['servico'].widget.attrs['class'] = 'form-control'
+        self.fields['data'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'type' : 'date',
+                })
+        self.fields['horario'].widget = forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'type' : 'time',
+                })
+        self.fields['antendido'].widget.attrs['class'] = 'form-check'

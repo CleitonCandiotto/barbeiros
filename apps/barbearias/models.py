@@ -5,6 +5,7 @@ from stdimage import StdImageField
 from apps.usuarios.models import CustomUser
 from django.db.models import Sum
 
+
 class Barbearia(models.Model):
     barbearia = models.CharField(max_length=200, verbose_name='Barbearia')
     nome = models.CharField(max_length=200, verbose_name='Nome')
@@ -83,7 +84,14 @@ class Profissionais(models.Model):
         'thumbnail': {"width": 100, "height": 100, "crop": True},
         'thumb': {"width": 30, "height": 30, "crop": True},
     }, null=True, blank=True)
-    cpf = models.CharField(max_length=13, verbose_name='CPF')
+    #cpf = models.CharField(max_length=13, verbose_name='CPF')
+    #rua = models.CharField(max_length=150, verbose_name='Rua', blank=True, null=True)
+    #numero = models.CharField(max_length=5, verbose_name='N°', blank=True, null=True)
+    #cep = models.CharField(max_length=9, verbose_name='CEP', blank=True, null=True)
+    #bairro = models.CharField(max_length=100, verbose_name='Bairro', blank=True, null=True)
+    #cidade = models.CharField(max_length=200, verbose_name='Cidade', blank=True, null=True)
+    #complemento = models.CharField(max_length=100, verbose_name='Complemento', blank=True, null=True)
+    #estado = models.CharField(max_length=2, choices=ESTADO_CHOICE, verbose_name='Estado', blank=True, null=True)
     
 
     class Meta:
@@ -187,7 +195,7 @@ class AgendaHorario(models.Model):
     servico = models.ForeignKey(Servicos, on_delete=models.CASCADE)
     data = models.DateField(auto_now_add=False, auto_now=False)
     horario = models.TimeField()
-    agendado = models.BooleanField(default=False)
+    agendado = models.BooleanField(default=True)
     antendido = models.BooleanField(default=False)
 
     class Meta:

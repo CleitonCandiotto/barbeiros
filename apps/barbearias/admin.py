@@ -51,3 +51,8 @@ class ContaReceberAdmin(admin.ModelAdmin):
 @admin.register(Fornecedor)
 class FornecedorAdmin(admin.ModelAdmin):
     list_display = ('nome', )
+    
+    
+@admin.register(AgendaHorario)
+class AgendaHorarioAdmin(admin.ModelAdmin):
+    list_display = ('cliente', 'profissional', 'servico')

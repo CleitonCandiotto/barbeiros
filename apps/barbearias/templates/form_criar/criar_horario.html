@@ -1,0 +1,89 @@
+{% load static %}
+
+<div class="modal-dialog " role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ titulo }}</h2>
+    </div>
+    <form action="{% url 'agenda_horario' %}" method="POST">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="mb-3">
+            {{ form.cliente.label }}
+            <div class="row d-flex align-items-center">
+              <div class="col-md-10">
+                {{ form.cliente }}
+              </div>
+              <div class="col-md-2">
+                <button type="button" 
+                onclick="criarModalCliente()">
+                <input type="hidden" value="{% url 'criar_cliente' %}" id="hhoracliente" >
+                <i id="bi-circle" class="bi bi-plus-circle-fill" title="Acicionar Clientes" style="font-size: 22px; color:#04d484;"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            {{ form.profissional.label }}
+            <div class="row d-flex align-items-center">
+              <div class="col-md-10">
+                {{ form.profissional }}
+              </div>
+              <div class="col-md-2">
+                <a href="#"><i class="bi bi-plus-circle-fill" title="Acicionar Profisionais" style="font-size: 22px; color:#04d484;"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            {{ form.servico.label }}
+            <div class="row d-flex align-items-center">
+              <div class="col-md-10">
+                {{ form.servico }}
+              </div>
+              <div class="col-md-2">
+                <a href="#"><i class="bi bi-plus-circle-fill" title="Acicionar Serviço" style="font-size: 22px; color:#04d484;"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="row">
+              <div class="col-md-6">
+                {{ form.data.label }}
+                {{ form.data }}
+              </div>
+              <div class="col-md-6">
+                {{ form.horario.label }}
+                {{ form.horario }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-info " data-bs-dismiss="modal">Voltar</button>
+            <button type="submit" class="btn b-save btn-sm" >{{ btn }}</button>
+        </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="open-modal"  role="dialog" aria-hidden="true">
+
+</div>
+<div class="modal fade" id="cliente-modal"  role="dialog" aria-hidden="true">
+
+</div>
+
+{% block script %}
+
+<script>
+
+function criarModalCliente(){
+        const url = document.querySelector('#hcliente')
+        $('#cliente-modal').load(url.value, function(){
+            $(this).modal('show');
+        });
+    };
+
+</script>
+    
+{% endblock%}

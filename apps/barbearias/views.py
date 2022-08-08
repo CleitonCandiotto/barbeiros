@@ -6,18 +6,17 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos 
 from .models import ContaPagar, Barbearia, Endereco, ContaReceber, AgendaHorario
-from .models import Fornecedor
+from .models import Fornecedor, AgendaHorario
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
-from .forms import ServicosModelForm, ClienteModelForm,  ProdutosModelForm, ProfissionaisModelForm
+from .forms import AgendaHorarioModelForm, ServicosModelForm, ClienteModelForm,  ProdutosModelForm, ProfissionaisModelForm
 from .forms import EnderecoModelForm, BarbeariaModelForm, HorarioModelForm , ContaPagarModelForm
 from .forms import ContaReceberModelForm, FornecedorModelForm
 from django.db.models import Sum
-import datetime
+from datetime import date, timedelta
 import calendar
 from calendar import HTMLCalendar
-from dateutil.relativedelta import relativedelta
 
 
 class DashboardView(TemplateView):
@@ -53,12 +52,12 @@ class DashboardView(TemplateView):
             )
 
         #filtrando clientes dos ultimos 30 dias
-        hoje = datetime.date.today()
-        trintaDias = relativedelta(days=+30)
-        ultimosdias = hoje + trintaDias
+        hoje = date.today()
+        trintaDias =  timedelta(days=30)
+        ultimosdias = hoje - trintaDias
         context['clientes'] = Clientes.objects.filter(
             barbearia = barbearia,
-            dataCadastro__lte = ultimosdias
+            dataCadastro__range = [ultimosdias, hoje]
         ).count()
     
         context['totalClientes'] = clientes.count()
@@ -106,7 +105,9 @@ class Agenda(TemplateView):
         context =  super().get_context_data(**kwargs)
         cal = HTMLCalendar().formatmonth(2022, 6)
         context['cal'] = cal
+        context['agenda'] = AgendaHorario.objects.filter(barbearia=self.request.user.barbearia)
         return context
+
 
 class PerfilView(LoginRequiredMixin, TemplateView):
     template_name = 'perfil.html'
@@ -152,6 +153,7 @@ class ContaReceberVisualizar(LoginRequiredMixin, ListView):
             )
         context['conta']
         return context
+
 
 
 # list
@@ -267,9 +269,9 @@ class ContaBase():
 
     def verifica_vencimento(self, object):
         '''Verifica se está vencendo ou vencida e manda uma mesegem para o template.'''
-        hoje = datetime.date.today()
-        doisDias = relativedelta(days=+2)
-        umDia = relativedelta(days=+1)
+        hoje = date.today()
+        doisDias = timedelta(days=2)
+        umDia = timedelta(days=1)
         umDiaVemcimento = hoje + umDia
         doisDiasVencimento = hoje + doisDias
 
@@ -468,24 +470,28 @@ class ProfissionaisCreate(LoginRequiredMixin, CreateView):
         context['btn'] = 'Cadastrar'
         return context
     
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        profissional = self.request.POST.get('nome')
+        telefone = self.request.POST.get('telefone')
+        profissional_db = Profissionais.objects.filter(nome=profissional)
 
-    def form_valid(self, form):
-        form.instance.barbearia = self.request.user.barbearia
-        profissional = Profissionais.objects.filter(nome=form.instance.nome)
-        telefone = form.instance.telefone
+        if not profissional_db and len(telefone) > 13:
+            if form.is_valid():
+                form.instance.barbearia = self.request.user.barbearia
+                messages.success(request, f'Profissional: {profissional} cadastrado com sucesso')
+                form.save()
+                return redirect('profissionais')
 
-        if not profissional and len(telefone) > 13:
-            messages.success(self.request, f'Profissiononal {profissional} cadastrado com sucesso')
-            return super().form_valid(form)
-        
         elif len(telefone) < 13:
-            messages.error(self.request, 'Telefone inválido', extra_tags='danger')
-            return HttpResponseRedirect(reverse_lazy('profissionais'))
+            messages.error(request, 'Telefone inválido', extra_tags='danger')
+            return redirect('profissionais')
 
         else:
-            messages.error(self.request, 'Profissional ja cadastrado', extra_tags='danger')
-            return HttpResponseRedirect(reverse_lazy('profissionais'))
-
+            messages.error(request, 'Profissional ja cadastrado', extra_tags='danger')
+            return redirect('profissionais')
+        
 
 class HorarioFuncionamentoCreate(LoginRequiredMixin, CreateView):
     model = HorarioFuncionamento
@@ -660,11 +666,11 @@ class ContaPagarCreate(LoginRequiredMixin, CreateView):
         form = self.form_class(request.POST)
         pago = self.request.POST.get('pago')
 
-        conta = lambda pago: 'Pago' if pago else 'A Pagar'
+        #conta = lambda pago: 'Pago' if pago else 'A Pagar'
 
         if form.is_valid():
             form.instance.barbearia = self.request.user.barbearia
-            form.instance.infoPago = conta(pago)
+            form.instance.infoPago = 'Pago' if pago else 'A Pagar'
             messages.success(request, 'Conta cadastrada com Sucesso')
             form.save()
             return redirect('conta_pagar')
@@ -738,6 +744,31 @@ class FornecedorCreate(LoginRequiredMixin, CreateView):
             messages.error(request, 'Cliente ja cadastrado', extra_tags='danger')
             return redirect('fornecedores')
 
+
+class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
+    model = AgendaHorario
+    form_class = AgendaHorarioModelForm
+    login_url = reverse_lazy('login')
+    template_name = 'form_criar/criar_horario.html'
+    success_url = reverse_lazy('agenda_horario')
+    
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Agendar Horário'
+        context['btn'] = 'Agendar'
+        return context
+    
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        
+        if form.is_valid():
+            form.instance.barbearia = self.request.user.barbearia
+            form.save()
+            return redirect('agenda_horario')
+              
+        return redirect('horarios_agendados')
 
 # update
 

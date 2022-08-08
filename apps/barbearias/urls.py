@@ -5,7 +5,7 @@ from .views import ContaPagarVisualizar, ContaReceberVisualizar
 from .views import ServicosList, ClientesList, ProfissionaisList, ProdutosList, EnderecoList
 from .views import ContaPagarList, ContaReceberList, FornecedoresList
 from .views import ServicosCreate, ClientesCreate, HorarioFuncionamentoCreate, ProfissionaisCreate
-from .views import ProdutosCreate, EnderecoCreate, ContaPagarCreate
+from .views import ProdutosCreate, EnderecoCreate, ContaPagarCreate, AgendaHorarioCreate
 from .views import ServicosUpdate, ClientesUpdate, HorarioFuncionamentoUpdate, ProfissionaisUpdate
 from .views import ProdutoUpdate, BarbeariaUpdate, EnderecoUpdate, ContaPagarUpdate, ContaReceberUpdate
 from .views import FornecedorUpdate
@@ -39,6 +39,7 @@ urlpatterns = [
     path('criar-conta-pagar/', ContaPagarCreate.as_view(), name='criar_conta_pagar'),   
     path('criar-conta-receber/', ContaReceberCreate.as_view(), name='criar_conta_receber'),
     path('criar-fornecedor/', FornecedorCreate.as_view(), name='criar_fornecedor'),
+    path('criar-horario/', AgendaHorarioCreate.as_view(), name='agenda_horario'),
 
     path('editar-servico/<int:pk>/', ServicosUpdate.as_view(), name='editar_servico'),
     path('editar-cliente/<int:pk>/', ClientesUpdate.as_view(), name='editar_cliente'),
