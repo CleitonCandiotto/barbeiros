@@ -17,6 +17,7 @@ from django.db.models import Sum
 from datetime import date, timedelta
 import calendar
 from calendar import HTMLCalendar
+import pandas as pd
 
 
 class DashboardView(TemplateView):
@@ -34,7 +35,6 @@ class DashboardView(TemplateView):
 
         barbearia = self.request.user.barbearia
         
-
         totalPagar = ContaPagar.objects.filter(
             barbearia = barbearia,
             pago = False,
@@ -44,6 +44,17 @@ class DashboardView(TemplateView):
             barbearia = barbearia,
             pago = False,
             ).aggregate(Sum('valor'))['valor__sum']
+        
+        totalReceber = totalReceber if totalReceber else 0
+        totalPagar = totalPagar if totalPagar else 0
+        
+        saldo = totalReceber - totalPagar
+        
+        context['saldo'] = self.formata_context_conta(saldo)
+        
+        context['totalReceber'] = self.formata_context_conta(totalReceber)
+        
+        context['totalPagar'] = self.formata_context_conta(totalPagar)
 
         context['barbearia'] = campoBarbearia
 
@@ -74,18 +85,34 @@ class DashboardView(TemplateView):
             barbearia = barbearia
             )
 
-        context['totalPagar'] = self.formata_context_conta(totalPagar)
-
         context['contaPagar'] = ContaPagar.objects.filter(
             barbearia = barbearia,
             pago = False
             ).count()
 
-        context['totalReceber'] = self.formata_context_conta(totalReceber)
-
         context['contaReceber'] = ContaReceber.objects.filter(
             barbearia = barbearia,
             pago = False
+        ).count()
+        
+        context['totalAgendamento'] = AgendaHorario.objects.filter(
+            barbearia = barbearia,
+            agendado = True
+        ).count()
+        
+        #filtrando atendimentos dos ultimos 30 dias
+        hoje = date.today()
+        trintaDias =  timedelta(days=30)
+        ultimosdias = hoje - trintaDias
+        context['antendimento30Dias'] = AgendaHorario.objects.filter(
+            barbearia = barbearia,
+            antendido = True,
+            data__range = [ultimosdias, hoje]
+        ).count()
+        
+        context['totalAtendimento'] = AgendaHorario.objects.filter(
+            barbearia = barbearia,
+            antendido = True
         ).count()
 
         return context
@@ -96,6 +123,12 @@ class DashboardView(TemplateView):
             return f'R${num:.2f}'.replace('.', ',')
         return 0
     
+    
+    def cria_df (self, data):
+        df = pd.DataFrame(data)
+        
+        return df
+
 
 class Agenda(TemplateView):
     template_name = 'agenda.html'
@@ -103,9 +136,11 @@ class Agenda(TemplateView):
 
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
-        cal = HTMLCalendar().formatmonth(2022, 6)
+        cal = HTMLCalendar().formatmonth(2022, 8)
         context['cal'] = cal
-        context['agenda'] = AgendaHorario.objects.filter(barbearia=self.request.user.barbearia)
+        context['agenda'] = AgendaHorario.objects.filter(
+            barbearia = self.request.user.barbearia,
+            antendido = False)
         return context
 
 
@@ -153,7 +188,6 @@ class ContaReceberVisualizar(LoginRequiredMixin, ListView):
             )
         context['conta']
         return context
-
 
 
 # list

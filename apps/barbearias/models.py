@@ -1,9 +1,6 @@
-from audioop import maxpp
-from pyexpat import model
 from django.db import models
 from stdimage import StdImageField
 from apps.usuarios.models import CustomUser
-from django.db.models import Sum
 
 
 class Barbearia(models.Model):
@@ -105,9 +102,8 @@ class Profissionais(models.Model):
 
 class Servicos(models.Model):
     TEMPO_CHOICE = (
-        ('15', '15 Minutos'),
         ('30', '30 Minutos'),
-        ('01', '01 Hora'),
+        ('60', '01 Hora'),
     )
     servicos = models.CharField(max_length=100, help_text='Ex: Barba - Cabelo - Bigode', 
                                 verbose_name='Serviço',)

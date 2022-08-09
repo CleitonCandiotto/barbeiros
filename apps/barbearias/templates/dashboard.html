@@ -121,11 +121,11 @@
     <div class="col-xxl-4 col-md-4">
       <div class="card-b info-card sales-card">
         <div class="card-body">
-          <h5 class="card-title">Serviços Realizados</h5>
+          <h5 class="card-title">Atendimentos Realizados</h5>
           <p class="card-p">Ultimos 30 dias.</p>
           <div class="d-flex align-items-center">
             <div class="ps-3">
-              <h6>0</h6>              
+              <h6>{{ antendimento30Dias }}</h6>              
             </div>
           </div>
         </div>
@@ -183,6 +183,20 @@
         </div>
       </div>
     </div>
+    <!-- saldo entre contas -->
+    <div class="col-xxl-4 col-md-4">
+      <div class="card-b info-card sales-card">
+        <div class="card-body">
+          <h5 class="card-title">Saldo</h5>
+          <div class="row d-flex align-items-center">
+            <div class="col">
+              <p class="card-p">Saldo entre Contas a Receber e a Pagar.</p>
+              <h6>{{ saldo }}</h6>
+            </div>            
+          </div>
+        </div>
+      </div>
+    </div>
 
 
   </div>
@@ -201,14 +215,14 @@
             </div>
             <div class="news">
               <div class="post-item d-flex align-items-center">
-                <h1 class="post-item-h1">0</h1>              
+                <h1 class="post-item-h1">{{ totalAgendamento }}</h1>              
                 <h4 class="post-item-h4">Total Agendamentos</h4>
                 <i class="post-item-icon bi bi-calendar4-week"></i>             
               </div>
             </div>
             <div class="news">
               <div class="post-item d-flex align-items-center">
-                <h1 class="post-item-h1">0</h1>              
+                <h1 class="post-item-h1">{{ totalAtendimento }}</h1>              
                 <h4 class="post-item-h4">Total Atendimentos</h4>
                 <i class="post-item-icon bi bi-scissors"></i>              
               </div>

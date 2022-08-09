@@ -287,7 +287,7 @@ class FornecedorModelForm(forms.ModelForm):
         model = Fornecedor
         fields = ['nome', 'email', 'celular', 'telefone', 'inscricao', 'cnpj', 
             'rua', 'numero', 'bairro', 'cep', 'cidade', 'estado', 'complemento']
-    
+
 
     def __init__(self, *args, **kwargs):
         super(FornecedorModelForm, self).__init__(*args, **kwargs)
@@ -379,3 +379,4 @@ class AgendaHorarioModelForm(forms.ModelForm):
                 'type' : 'time',
                 })
         self.fields['antendido'].widget.attrs['class'] = 'form-check'
+        
