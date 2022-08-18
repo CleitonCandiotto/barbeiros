@@ -1,7 +1,5 @@
-from django.forms import ValidationError
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Servicos, Clientes, HorarioFuncionamento, Profissionais, Produtos 
@@ -14,7 +12,7 @@ from .forms import AgendaHorarioModelForm, ServicosModelForm, ClienteModelForm, 
 from .forms import EnderecoModelForm, BarbeariaModelForm, HorarioModelForm , ContaPagarModelForm
 from .forms import ContaReceberModelForm, FornecedorModelForm
 from django.db.models import Sum
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 import calendar
 from calendar import HTMLCalendar
 import pandas as pd
@@ -797,12 +795,39 @@ class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         
+        horario = self.request.POST.get('horario')
+        data = self.request.POST.get('data')
+        servico = self.request.POST.get('servico')
+            
+        horario = datetime.strptime(horario, '%H:%M').time()
+        data = datetime.strptime(data, '%Y-%m-%d').date()
+        
+        dataDb = AgendaHorario.objects.filter(data=data)
+        horarioDb = AgendaHorario.objects.filter(horario=horario)
+                
+        horarioDb = AgendaHorario.objects.filter(horario=horario)
+        servicoDb = Servicos.objects.get(id=servico)
+        
+        if dataDb and horarioDb:
+            tempoServicoDb = AgendaHorario.objects.get(data=data, horario=horario)
+            tempoServicoDb = tempoServicoDb.horarioFim
+            
+               
+        tempoAdicional = timedelta(minutes=int(servicoDb.tempo))
+        tempoServico = (datetime.combine(data, horario) + tempoAdicional).time()
+        
         if form.is_valid():
             form.instance.barbearia = self.request.user.barbearia
-            form.save()
-            return redirect('agenda_horario')
+            
+            if not dataDb and horarioDb:                
+                agenda = AgendaHorario.objects.all()
+                
+            else:
+                print('horario ja agendado')
+            #form.save()
+            return redirect('agenda')
               
-        return redirect('horarios_agendados')
+        return redirect('agenda')
 
 # update
 

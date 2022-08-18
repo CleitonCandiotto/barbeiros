@@ -191,6 +191,7 @@ class AgendaHorario(models.Model):
     servico = models.ForeignKey(Servicos, on_delete=models.CASCADE)
     data = models.DateField(auto_now_add=False, auto_now=False)
     horario = models.TimeField()
+    horarioFim = models.TimeField()
     agendado = models.BooleanField(default=True)
     antendido = models.BooleanField(default=False)
 
