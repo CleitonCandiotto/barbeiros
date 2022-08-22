@@ -2,6 +2,15 @@
 {% load static %}
 
 {% block navs %}
+
+<div class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+</div>
+
 <div class="col-lg-12">
     {{ cal|safe }}
 </div>
@@ -12,17 +21,45 @@
 </button>
 
 <div class="col-lg-12">
-    {% for hora in agenda %}
-        {{ hora.cliente }}
-        {{ hora.profissional }}
-        {{ hora.servico }}
-        {{ hora.data }}
-        {{ hora.horario }}
-    {% endfor %}
+    <div class='row'>
+        {% for hora in agenda %}
+        <div class="col col-3">
+            <div class="card-b info-card">
+                <div class="card-body">
+                    <h5 class="card-title">Cliente: {{ hora.cliente }}</h5>
+                    <p class="card-p"><strong>Profissional</strong>: {{ hora.profissional }}</p>
+                    <p class="card-p"><strong>Serviço</strong>: {{ hora.servico }}</p>
+                    <p class="card-p"><strong>Data</strong>: {{ hora.data }}</p>
+                    <p class="card-p"><strong>Hora Início</strong>: {{ hora.horario }}hrs</p>
+                    <p class="card-p"><strong>Hora Término</strong>: {{ hora.horarioFim }}hrs </p>
+                    <div class="dropdown">
+                        <a  href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>  
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end ">
+                            <button type="button" class="dropdown-item d-flex align-items-center"
+                                onclick="editarAgenda('{% url 'editar_agenda' hora.pk %}')" >
+                                <i class="bi bi-pencil-square"></i>
+                                <span>Editar</span>
+                            </button>
+                            <hr class="dropdown-divider">
+                            <button type="button" class="dropdown-item d-flex align-items-center"
+                                onclick="deletarAgenda()" >
+                                <i class="bi bi-trash"></i>
+                                <span>Excluir</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 
 
 <div class="modal fade" id="open-modal"  role="dialog" aria-hidden="true">
+
 
 </div>
 {% endblock %}
@@ -38,9 +75,8 @@
         });
     }
 
-    function modalProfissional(){
-      const url = document.querySelector('#hprofissional')
-        $('#modal-profissional').load(url.value, function(){
+    function editarAgenda(url){
+        $('#open-modal').load(url, function(){
             $(this).modal('show');
         });
     }

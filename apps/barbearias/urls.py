@@ -8,7 +8,7 @@ from .views import ServicosCreate, ClientesCreate, HorarioFuncionamentoCreate, P
 from .views import ProdutosCreate, EnderecoCreate, ContaPagarCreate, AgendaHorarioCreate
 from .views import ServicosUpdate, ClientesUpdate, HorarioFuncionamentoUpdate, ProfissionaisUpdate
 from .views import ProdutoUpdate, BarbeariaUpdate, EnderecoUpdate, ContaPagarUpdate, ContaReceberUpdate
-from .views import FornecedorUpdate
+from .views import FornecedorUpdate, AgendaHorarioUpdate
 from .views import ServicosDelete, ClientesDelete, ProfissionalDelete, HorarioFuncionamentoDelete
 from .views import EnderecoDelete, Produtodelete, ContaPagarDelete, ContaReceberDelete, FornecedorCreate
 
@@ -51,6 +51,7 @@ urlpatterns = [
     path('editar-conta-pagar/<int:pk>/',ContaPagarUpdate.as_view(), name='editar_conta_pagar'),
     path('editar-conta-receber/<int:pk>/',ContaReceberUpdate.as_view(), name='editar_conta_receber'),
     path('editar-fornecedor/<int:pk>/',FornecedorUpdate.as_view(), name='editar_fornecedor'),
+    path('editar-agenda/<int:pk>/', AgendaHorarioUpdate.as_view(), name='editar_agenda'),
 
     path('excluir-servico/<int:pk>/', ServicosDelete.as_view(), name='excluir_servico'),
     path('excluir-cliente/<int:pk>/', ClientesDelete.as_view(), name='excluir_cliente'),

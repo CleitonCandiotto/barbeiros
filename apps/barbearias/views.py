@@ -804,29 +804,36 @@ class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
         
         dataDb = AgendaHorario.objects.filter(data=data)
         horarioDb = AgendaHorario.objects.filter(horario=horario)
-                
-        horarioDb = AgendaHorario.objects.filter(horario=horario)
         servicoDb = Servicos.objects.get(id=servico)
-        
-        if dataDb and horarioDb:
-            tempoServicoDb = AgendaHorario.objects.get(data=data, horario=horario)
-            tempoServicoDb = tempoServicoDb.horarioFim
-            
                
         tempoAdicional = timedelta(minutes=int(servicoDb.tempo))
         tempoServico = (datetime.combine(data, horario) + tempoAdicional).time()
         
         if form.is_valid():
             form.instance.barbearia = self.request.user.barbearia
+            form.instance.horarioFim = tempoServico 
             
-            if not dataDb and horarioDb:                
-                agenda = AgendaHorario.objects.all()
-                
-            else:
-                print('horario ja agendado')
-            #form.save()
-            return redirect('agenda')
-              
+            if dataDb and horarioDb:                
+                messages.error(request, 'Horario já Agendado', extra_tags='danger')
+                return redirect('agenda')
+            
+            if not dataDb:
+                form.save()
+                messages.success(request, 'Horario agendado')
+                return redirect('agenda')
+            
+            if dataDb: 
+                agendamento = AgendaHorario.objects.filter(data=data)
+                for a in agendamento:
+                    if a.horario <= tempoServico >= a.horarioFim and a.horario <= horario >= a.horarioFim:
+                        form.save()
+                        messages.success(request, 'Horario agendado')
+                        return redirect('agenda')
+                    else:
+                        messages.error(request, 'Horario Indisponível', extra_tags='danger')
+                        return redirect('agenda') 
+                      
+        messages.error(request, 'Erro ao agendar', extra_tags='danger')          
         return redirect('agenda')
 
 # update
@@ -1154,7 +1161,67 @@ class FornecedorUpdate(LoginRequiredMixin, UpdateView):
             pk=self.kwargs['pk'], 
             barbearia=self.request.user.barbearia
             )
-        return self.object
+        return self.object  
+
+
+class AgendaHorarioUpdate(LoginRequiredMixin, UpdateView):
+    model = AgendaHorario
+    form_class = AgendaHorarioModelForm
+    login_url = reverse_lazy('login')
+    template_name = 'form_editar/form_editar_agenda.html'
+    success_url = reverse_lazy('agenda')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Agenda'
+        context['btn'] = 'Salvar'
+        return context
+   
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        
+        horario = self.request.POST.get('horario')
+        data = self.request.POST.get('data')
+        servico = self.request.POST.get('servico')
+            
+        horario = datetime.strptime(horario, '%H:%M').time()
+        data = datetime.strptime(data, '%Y-%m-%d').date()
+        
+        dataDb = AgendaHorario.objects.filter(data=data)
+        horarioDb = AgendaHorario.objects.filter(horario=horario)
+        servicoDb = Servicos.objects.get(id=servico)
+               
+        tempoAdicional = timedelta(minutes=int(servicoDb.tempo))
+        tempoServico = (datetime.combine(data, horario) + tempoAdicional).time()
+        
+        if form.is_valid():
+            form.instance.barbearia = self.request.user.barbearia
+            form.instance.horarioFim = tempoServico 
+            
+            if dataDb and horarioDb:                
+                messages.error(request, 'Horario já Agendado', extra_tags='danger')
+                return redirect('agenda')
+            
+            if not dataDb:
+                form.save()
+                messages.success(request, 'Horario agendado')
+                return redirect('agenda')
+            
+            if dataDb: 
+                agendamento = AgendaHorario.objects.filter(data=data)
+                for a in agendamento:
+                    if a.horario <= tempoServico >= a.horarioFim and a.horario <= horario >= a.horarioFim:
+                        form.save()
+                        messages.success(request, 'Horario agendado')
+                        return redirect('agenda')
+                    else:
+                        messages.error(request, 'Horario Indisponível', extra_tags='danger')
+                        return redirect('agenda') 
+                      
+        messages.error(request, 'Erro ao agendar', extra_tags='danger')          
+        return redirect('agenda')
 
 
 # delete
