@@ -44,7 +44,7 @@
                             </button>
                             <hr class="dropdown-divider">
                             <button type="button" class="dropdown-item d-flex align-items-center"
-                                onclick="deletarAgenda()" >
+                                onclick="deletarAgenda('{% url 'excluir_agenda' hora.pk %}')" >
                                 <i class="bi bi-trash"></i>
                                 <span>Excluir</span>
                             </button>
@@ -81,9 +81,8 @@
         });
     }
 
-    function modalBarbearia(){
-      const url = document.querySelector('#hbarbearia')
-        $('#modal-barbearia').load(url.value, function(){
+    function deletarAgenda(url){
+        $('#open-modal').load(url, function(){
             $(this).modal('show');
         });
     }

@@ -823,12 +823,11 @@ class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
                 return redirect('agenda')
             
             if dataDb: 
-                agendamento = AgendaHorario.objects.filter(data=data)
-                for a in agendamento:
-                    if a.horario <= tempoServico >= a.horarioFim and a.horario <= horario >= a.horarioFim:
+                for a in dataDb:
+                    if (horario <= a.horario or horario >= a.horarioFim) and (tempoServico <= a.horario or tempoServico >= a.horarioFim):
                         form.save()
                         messages.success(request, 'Horario agendado')
-                        return redirect('agenda')
+                        #return redirect('agenda')
                     else:
                         messages.error(request, 'Horario Indisponível', extra_tags='danger')
                         return redirect('agenda') 
@@ -1177,18 +1176,30 @@ class AgendaHorarioUpdate(LoginRequiredMixin, UpdateView):
         context['titulo'] = 'Editar Agenda'
         context['btn'] = 'Salvar'
         return context
+    
+    
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = AgendaHorario.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
+        return self.object 
    
     
     def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
+        agenda = AgendaHorario.objects.get(id=self.kwargs['pk'])
+        form = self.form_class(request.POST, instance=agenda)
         
         horario = self.request.POST.get('horario')
         data = self.request.POST.get('data')
         servico = self.request.POST.get('servico')
-            
-        horario = datetime.strptime(horario, '%H:%M').time()
-        data = datetime.strptime(data, '%Y-%m-%d').date()
         
+        horario = datetime.strptime(horario[:5], '%H:%M').time()
+        data = datetime.strptime(data, '%Y-%m-%d').date()
+             
         dataDb = AgendaHorario.objects.filter(data=data)
         horarioDb = AgendaHorario.objects.filter(horario=horario)
         servicoDb = Servicos.objects.get(id=servico)
@@ -1206,15 +1217,15 @@ class AgendaHorarioUpdate(LoginRequiredMixin, UpdateView):
             
             if not dataDb:
                 form.save()
-                messages.success(request, 'Horario agendado')
+                messages.success(request, 'Horario Alterado com Sucesso')
                 return redirect('agenda')
             
             if dataDb: 
                 agendamento = AgendaHorario.objects.filter(data=data)
                 for a in agendamento:
-                    if a.horario <= tempoServico >= a.horarioFim and a.horario <= horario >= a.horarioFim:
+                    if (horario <= a.horario or horario >= a.horarioFim) and (tempoServico <= a.horario or tempoServico >= a.horarioFim):
                         form.save()
-                        messages.success(request, 'Horario agendado')
+                        messages.success(request, 'Horario Alterado com Sucesso')
                         return redirect('agenda')
                     else:
                         messages.error(request, 'Horario Indisponível', extra_tags='danger')
@@ -1422,3 +1433,30 @@ class ContaReceberDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
             )
 
         return self.object
+
+
+class AgendaHorarioDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = AgendaHorario
+    login_url = reverse_lazy('login')
+    template_name = 'form_excluir/form_excluir_agenda.html'
+    success_url = reverse_lazy('agenda')
+    success_message = 'Agenda deletada com sucesso'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['nome'] = 'Agenda'
+        return context
+
+    
+    def get_object(self, queryset=None):
+        """
+        Func para somente o usuario conseguir alterar os dados dele
+        """        
+        self.object = AgendaHorario.objects.get(
+            pk=self.kwargs['pk'], 
+            barbearia=self.request.user.barbearia
+            )
+
+        return self.object
+    

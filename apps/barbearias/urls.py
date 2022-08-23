@@ -11,7 +11,7 @@ from .views import ProdutoUpdate, BarbeariaUpdate, EnderecoUpdate, ContaPagarUpd
 from .views import FornecedorUpdate, AgendaHorarioUpdate
 from .views import ServicosDelete, ClientesDelete, ProfissionalDelete, HorarioFuncionamentoDelete
 from .views import EnderecoDelete, Produtodelete, ContaPagarDelete, ContaReceberDelete, FornecedorCreate
-
+from .views import AgendaHorarioDelete
 
 urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
@@ -61,4 +61,5 @@ urlpatterns = [
     path('excluir-produto/<int:pk>/', Produtodelete.as_view(), name='excluir_produto'),
     path('excluir-conta-pagar/<int:pk>/', ContaPagarDelete.as_view(), name='excluir_conta_pagar'),
     path('excluir-conta-receber/<int:pk>/', ContaReceberDelete.as_view(), name='excluir_conta_receber'),
+    path('excluir-agenda/<int:pk>/', AgendaHorarioDelete.as_view(), name='excluir_agenda' )
 ]
