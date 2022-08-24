@@ -123,7 +123,7 @@ class DashboardView(TemplateView):
         
         graph = self.graph_atendimento_data(agendaAtendido)
         
-        #context['graphAtendimentoData']
+        context['graphAtendimentoData'] = graph
 
         return context
     
@@ -171,10 +171,11 @@ class DashboardView(TemplateView):
         df = pd.DataFrame(dfDict, columns=['Dia','Atendido'])
         dfGroupd = df.groupby('Dia').sum()[['Atendido']].reset_index()
         
-        #graph = plt.bar(dfGroupd)
-        print(dfGroupd)
+        fig, ax = plt.subplots(figsize=(5, 2.7), layout='constrained')
+        ax.bar(dfGroupd['Dia'], dfGroupd['Atendido'])
+        print(type(ax))
 
-        return
+        return ax
 
 
 class Agenda(TemplateView):
