@@ -13,9 +13,9 @@ from .forms import EnderecoModelForm, BarbeariaModelForm, HorarioModelForm , Con
 from .forms import ContaReceberModelForm, FornecedorModelForm
 from django.db.models import Sum
 from datetime import date, datetime, timedelta
-import calendar
 from calendar import HTMLCalendar
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
 class DashboardView(TemplateView):
@@ -99,23 +99,31 @@ class DashboardView(TemplateView):
         ).count()
         
         #filtrando atendimentos dos ultimos 30 dias
-        '''hoje = date.today()
-        ag = AgendaHorario.objects.filter(
-            barbearia = barbearia,
-            antendido = True
-        )
-        datas = self.get_data_atendimento(ag)
-        print(datas)
         context['antendimento30Dias'] = AgendaHorario.objects.filter(
             barbearia = barbearia,
             antendido = True,
-            data__range = [hoje, [d for d in datas][0]]
-        ).count()'''
+            data__range = [ultimosdias, hoje]
+            
+        ).count()
         
         context['totalAtendimento'] = AgendaHorario.objects.filter(
             barbearia = barbearia,
             antendido = True
         ).count()
+        
+        # retornando Dataframe dos Agendamentos
+        data = AgendaHorario.objects.filter(
+            barbearia = barbearia,
+            antendido = True
+        )         
+        agendaAtendido = self.cria_df_agendamento(data)
+        context['dfagendaAtendido'] = agendaAtendido
+        
+        # grafico de número de atendimentos por data e profissionais
+        
+        graph = self.graph_atendimento_data(agendaAtendido)
+        
+        #context['graphAtendimentoData']
 
         return context
     
@@ -126,19 +134,48 @@ class DashboardView(TemplateView):
         return 0
     
     
-    def cria_df (self, data):
-        df = pd.DataFrame(data)
+    def cria_df_agendamento (self, data):
+        dfAgendameto = pd.DataFrame.from_records(data.values(
+            'id',
+            'barbearia_id__barbearia',
+            'cliente_id__nome',
+            'profissional_id__nome',
+            'servico_id__servicos',
+            'servico_id__preco',
+            'data',
+            'horario',
+            'horarioFim',
+            'agendado',
+            'antendido'
+            )).rename(
+                columns={
+                    'barbearia_id__barbearia':'Barbearia',
+                    'cliente_id__nome':'Cliente',
+                    'profissional_id__nome':'Profissional',
+                    'servico_id__servicos':'Serviço',
+                    'servico_id__preco':'Valor',
+                    'data':'Dia',
+                    'horario':'Inicio',
+                    'horarioFim':'Fim',
+                    'agendado':'Agendado',
+                    'antendido':'Atendido'
+                }
+            )
         
-        return df
-
-
-    def get_data_atendimento(self, data):
-        datas = []
-        for d in data:
-            datas.append(d.data)
+        return dfAgendameto
+    
+    
+    def graph_atendimento_data(self, df):
+        dfDict = df.to_dict()
         
-        return datas
-            
+        df = pd.DataFrame(dfDict, columns=['Dia','Atendido'])
+        dfGroupd = df.groupby('Dia').sum()[['Atendido']].reset_index()
+        
+        #graph = plt.bar(dfGroupd)
+        print(dfGroupd)
+
+        return
+
 
 class Agenda(TemplateView):
     template_name = 'agenda.html'
