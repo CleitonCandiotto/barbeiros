@@ -99,14 +99,18 @@ class DashboardView(TemplateView):
         ).count()
         
         #filtrando atendimentos dos ultimos 30 dias
-        hoje = date.today()
-        trintaDias =  timedelta(days=30)
-        ultimosdias = hoje - trintaDias
+        '''hoje = date.today()
+        ag = AgendaHorario.objects.filter(
+            barbearia = barbearia,
+            antendido = True
+        )
+        datas = self.get_data_atendimento(ag)
+        print(datas)
         context['antendimento30Dias'] = AgendaHorario.objects.filter(
             barbearia = barbearia,
             antendido = True,
-            data__range = [ultimosdias, hoje]
-        ).count()
+            data__range = [hoje, [d for d in datas][0]]
+        ).count()'''
         
         context['totalAtendimento'] = AgendaHorario.objects.filter(
             barbearia = barbearia,
@@ -127,6 +131,14 @@ class DashboardView(TemplateView):
         
         return df
 
+
+    def get_data_atendimento(self, data):
+        datas = []
+        for d in data:
+            datas.append(d.data)
+        
+        return datas
+            
 
 class Agenda(TemplateView):
     template_name = 'agenda.html'
@@ -798,6 +810,7 @@ class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
         horario = self.request.POST.get('horario')
         data = self.request.POST.get('data')
         servico = self.request.POST.get('servico')
+        atendido = self.request.POST.get('antendido')
             
         horario = datetime.strptime(horario, '%H:%M').time()
         data = datetime.strptime(data, '%Y-%m-%d').date()
@@ -808,6 +821,11 @@ class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
                
         tempoAdicional = timedelta(minutes=int(servicoDb.tempo))
         tempoServico = (datetime.combine(data, horario) + tempoAdicional).time()
+        
+        if atendido == 'on':
+            form.save()
+            messages.success(request, 'Horario arquivado')
+            return redirect('agenda')
         
         if form.is_valid():
             form.instance.barbearia = self.request.user.barbearia
@@ -827,7 +845,7 @@ class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
                     if (horario <= a.horario or horario >= a.horarioFim) and (tempoServico <= a.horario or tempoServico >= a.horarioFim):
                         form.save()
                         messages.success(request, 'Horario agendado')
-                        #return redirect('agenda')
+                        return redirect('agenda')
                     else:
                         messages.error(request, 'Horario Indisponível', extra_tags='danger')
                         return redirect('agenda') 
@@ -1196,7 +1214,8 @@ class AgendaHorarioUpdate(LoginRequiredMixin, UpdateView):
         horario = self.request.POST.get('horario')
         data = self.request.POST.get('data')
         servico = self.request.POST.get('servico')
-        
+        atendido = self.request.POST.get('antendido')
+              
         horario = datetime.strptime(horario[:5], '%H:%M').time()
         data = datetime.strptime(data, '%Y-%m-%d').date()
              
@@ -1209,7 +1228,12 @@ class AgendaHorarioUpdate(LoginRequiredMixin, UpdateView):
         
         if form.is_valid():
             form.instance.barbearia = self.request.user.barbearia
-            form.instance.horarioFim = tempoServico 
+            form.instance.horarioFim = tempoServico
+            
+            if atendido == 'on':
+                form.save()
+                messages.success(request, 'Horario arquivado')
+                return redirect('agenda') 
             
             if dataDb and horarioDb:                
                 messages.error(request, 'Horario já Agendado', extra_tags='danger')

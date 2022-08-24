@@ -193,7 +193,7 @@ class AgendaHorario(models.Model):
     horario = models.TimeField()
     horarioFim = models.TimeField()
     agendado = models.BooleanField(default=True)
-    antendido = models.BooleanField(default=False)
+    antendido = models.BooleanField(default=False, verbose_name='Atendido')
 
     class Meta:
         verbose_name = 'Agenda Horario'
