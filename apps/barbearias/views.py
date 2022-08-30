@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView
@@ -15,7 +16,7 @@ from django.db.models import Sum
 from datetime import date, datetime, timedelta
 from calendar import HTMLCalendar
 import pandas as pd
-import matplotlib.pyplot as plt
+
 
 
 class DashboardView(TemplateView):
@@ -168,14 +169,22 @@ class DashboardView(TemplateView):
     def graph_atendimento_data(self, df):
         dfDict = df.to_dict()
         
-        df = pd.DataFrame(dfDict, columns=['Dia','Atendido'])
-        dfGroupd = df.groupby('Dia').sum()[['Atendido']].reset_index()
-        
-        fig, ax = plt.subplots(figsize=(5, 2.7), layout='constrained')
-        ax.bar(dfGroupd['Dia'], dfGroupd['Atendido'])
-        print(type(ax))
+        mes = date.today().month
 
-        return ax
+        df = pd.DataFrame(dfDict, columns=['Dia','Atendido'])
+        df['Dia'] = pd.to_datetime(df['Dia'])
+        df = df[df['Dia'].dt.month == mes]
+        df['Dia'] = df['Dia'].astype(str)
+        dfGroupd = df.groupby('Dia').sum()[['Atendido']].reset_index()
+        print(dfGroupd)
+        
+        v = dfGroupd.values.tolist()
+        d = dfGroupd.columns.tolist()
+        v.insert(0,d)
+
+        graph = json.dumps({'data': v })
+        print(graph)
+        return graph
 
 
 class Agenda(TemplateView):
@@ -188,7 +197,7 @@ class Agenda(TemplateView):
         context['cal'] = cal
         context['agenda'] = AgendaHorario.objects.filter(
             barbearia = self.request.user.barbearia,
-            antendido = False)
+            )
         return context
 
 

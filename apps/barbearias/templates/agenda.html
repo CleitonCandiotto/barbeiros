@@ -32,6 +32,9 @@
                     <p class="card-p"><strong>Data</strong>: {{ hora.data }}</p>
                     <p class="card-p"><strong>Hora Início</strong>: {{ hora.horario }}hrs</p>
                     <p class="card-p"><strong>Hora Término</strong>: {{ hora.horarioFim }}hrs </p>
+                    {% if hora.antendido %}
+                    <p class="card-p" style="background-color: red; color: white;">Atendido</p>
+                    {% endif %}
                     <div class="dropdown">
                         <a  href="#" data-bs-toggle="dropdown">
                             <i class="bi bi-three-dots"></i>  
