@@ -123,7 +123,7 @@ class DashboardView(TemplateView):
         # grafico de número de atendimentos por data e profissionais
         
         graph = self.graph_atendimento_data(agendaAtendido)
-        
+        print(graph)
         context['graphAtendimentoData'] = graph
 
         return context
@@ -176,15 +176,12 @@ class DashboardView(TemplateView):
         df = df[df['Dia'].dt.month == mes]
         df['Dia'] = df['Dia'].astype(str)
         dfGroupd = df.groupby('Dia').sum()[['Atendido']].reset_index()
-        print(dfGroupd)
         
         v = dfGroupd.values.tolist()
         d = dfGroupd.columns.tolist()
         v.insert(0,d)
 
-        graph = json.dumps({'data': v })
-        print(graph)
-        return graph
+        return json.dumps(v)
 
 
 class Agenda(TemplateView):

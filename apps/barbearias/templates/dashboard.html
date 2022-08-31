@@ -234,7 +234,7 @@
       <div class="col-lg-8">
         <div class="card">
           <div class="card-body" id="columnchart_values"></div>
-          <p>{{ graphAtendimentoData }}</p>
+
         </div>  
       </div>
   </div>
@@ -278,21 +278,11 @@
     google.charts.load("current", {packages:['corechart']});
     google.charts.setOnLoadCallback(drawChart);
     function drawChart() {
-      var data = google.visualization.arrayToDataTable([
-        ["Element", "Density", { role: "style" } ],
-        ["Copper", 8.94, "#b87333"],
-        ["Silver", 10.49, "silver"],
-        ["Gold", 19.30, "gold"],
-        ["Platinum", 21.45, "color: #e5e4e2"]
-      ]);
+      var data = google.visualization.arrayToDataTable(
+        {{ graphAtendimentoData|safe }}
+      );
 
       var view = new google.visualization.DataView(data);
-      view.setColumns([0, 1,
-                       { calc: "stringify",
-                         sourceColumn: 1,
-                         type: "string",
-                         role: "annotation" },
-                       2]);
 
       var options = {
         title: "Atendimentos Mês ",
@@ -303,7 +293,7 @@
       };
       var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
       chart.draw(view, options);
-  }
+    }
    
 </script>
     
