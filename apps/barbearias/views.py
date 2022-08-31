@@ -118,14 +118,22 @@ class DashboardView(TemplateView):
             antendido = True
         )         
         agendaAtendido = self.cria_df_agendamento(data)
-        context['dfagendaAtendido'] = agendaAtendido
         
-        # grafico de número de atendimentos por data e profissionais
-        
-        graph = self.graph_atendimento_data(agendaAtendido)
-        print(graph)
-        context['graphAtendimentoData'] = graph
+        # grafico com números de atendimentos por dia pelo mês atual    
+        graph = self.graph_atendimento_mes(agendaAtendido)
 
+        context['graphAtendimentoData'] = graph[0]
+        context['graphTitulo'] = graph[1]
+        
+        #grafico com valor por dia de atendimentos pelo mês atual
+        graphValor = self.graph_valor_mes(agendaAtendido)
+        
+        context['graphValorAtendimeno'] = graphValor[0]
+        context['graphTituloValor'] = graphValor[1]
+        
+        #grafico com Atendimentos por Profissional pelo mês atual
+        graphProfissional = self.graph_atendimento_profissional(agendaAtendido)
+        
         return context
     
 
@@ -166,22 +174,78 @@ class DashboardView(TemplateView):
         return dfAgendameto
     
     
-    def graph_atendimento_data(self, df):
+    def graph_atendimento_mes(self, df):        
+        mes = date.today().month
+        ano = date.today().year
+        
+        meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+        
+        titulo = f'Atendimentos mês de {meses[mes-1]} de {ano}' 
+        
         dfDict = df.to_dict()
         
-        mes = date.today().month
-
         df = pd.DataFrame(dfDict, columns=['Dia','Atendido'])
         df['Dia'] = pd.to_datetime(df['Dia'])
         df = df[df['Dia'].dt.month == mes]
         df['Dia'] = df['Dia'].astype(str)
+        df['Dia'] = df['Dia'].apply(lambda x: x.split('-')[-1])
         dfGroupd = df.groupby('Dia').sum()[['Atendido']].reset_index()
         
         v = dfGroupd.values.tolist()
         d = dfGroupd.columns.tolist()
         v.insert(0,d)
 
-        return json.dumps(v)
+        return json.dumps(v), titulo
+    
+    
+    def graph_valor_mes(self, df):
+        mes = date.today().month
+        ano = date.today().year
+        
+        meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+        
+        titulo = f'Valores totais dos Atedimentos de {meses[mes-1]} de {ano}' 
+        
+        dfDict = df.to_dict()
+        df = pd.DataFrame(dfDict, columns=['Dia','Valor'])
+        df['Dia'] = pd.to_datetime(df['Dia'])
+        df = df[df['Dia'].dt.month == mes]
+        df['Dia'] = df['Dia'].astype(str)
+        df['Dia'] = df['Dia'].apply(lambda x: x.split('-')[-1])
+        df['Valor'] = df['Valor'].astype(float)
+        dfGroupd = df.groupby('Dia').sum()[['Valor']].reset_index()
+
+        v = dfGroupd.values.tolist()
+        d = dfGroupd.columns.tolist()
+        v.insert(0,d)
+
+        return json.dumps(v), titulo
+
+
+    def graph_atendimento_profissional(self, df):
+        mes = date.today().month
+        ano = date.today().year
+        
+        meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+        
+        titulo = f'Atendimentos por Profissional de {meses[mes-1]} de {ano}'
+        
+        dfDict = df.to_dict()
+        df = pd.DataFrame(dfDict, columns=['Dia', 'Profissional', 'Atendido'])
+        df['Dia'] = pd.to_datetime(df['Dia'])
+        df = df[df['Dia'].dt.month == mes]
+        df['Dia'] = df['Dia'].astype(str)
+        df['Dia'] = df['Dia'].apply(lambda x: x.split('-')[-1])
+        dfGroupd = df.groupby('Profissional').sum()[['Atendido']].reset_index()
+
+        v = dfGroupd.values.tolist()
+        d = dfGroupd.columns.tolist()
+        v.insert(0,d)
+
+        return json.dumps(v), titulo
 
 
 class Agenda(TemplateView):

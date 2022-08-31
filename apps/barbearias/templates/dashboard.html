@@ -184,7 +184,7 @@
       </div>
     </div>
     <!-- saldo entre contas -->
-    <div class="col-xxl-4 col-md-4">
+    <div class="col-md-4">
       <div class="card-b info-card sales-card">
         <div class="card-body">
           <h5 class="card-title">Saldo</h5>
@@ -234,9 +234,15 @@
       <div class="col-lg-8">
         <div class="card">
           <div class="card-body" id="columnchart_values"></div>
-
         </div>  
       </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-body" id="columnchart_valor"></div>
+      </div> 
+    </div>
   </div>
 </div>
 <div class="modal fade" id="modal-endereco"  role="dialog" aria-hidden="true">
@@ -276,8 +282,8 @@
     }
 
     google.charts.load("current", {packages:['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-    function drawChart() {
+    google.charts.setOnLoadCallback(drawChartAtendimento);
+    function drawChartAtendimento() {
       var data = google.visualization.arrayToDataTable(
         {{ graphAtendimentoData|safe }}
       );
@@ -285,13 +291,47 @@
       var view = new google.visualization.DataView(data);
 
       var options = {
-        title: "Atendimentos Mês ",
-        width: 600,
+        title: '{{ graphTitulo|safe }}',
+        width: 750,
         height: 210,
+        hAxis: {
+          title: 'Dia'
+        },
+        vAxis: {
+          title: 'QTD-Atendimentos',
+        },
         bar: {groupWidth: "95%"},
         legend: { position: "none" },
       };
       var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
+      chart.draw(view, options);
+    }
+
+    google.charts.load("current", {packages:['corechart']});
+    google.charts.setOnLoadCallback(drawChartValor);
+
+    function drawChartValor() {
+      var data = google.visualization.arrayToDataTable(
+        {{ graphValorAtendimeno|safe }},
+      );
+
+      var view = new google.visualization.DataView(data);
+
+      var options = {
+        title: '{{ graphTituloValor|safe }}',
+        width: 550,
+        height: 400,
+        hAxis: {
+          title: 'Dia'
+        },
+        vAxis: {
+          title: 'Valor Atendimentos',
+          format: 'R$ ' ,
+        },
+        bar: {groupWidth: "95%"},
+        legend: { position: "none" },
+      };
+      var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_valor"));
       chart.draw(view, options);
     }
    
