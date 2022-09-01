@@ -243,6 +243,11 @@
         <div class="card-body" id="columnchart_valor"></div>
       </div> 
     </div>
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="'card-body" id="columnchart_profissional"></div>
+      </div>
+    </div>
   </div>
 </div>
 <div class="modal fade" id="modal-endereco"  role="dialog" aria-hidden="true">
@@ -332,6 +337,28 @@
         legend: { position: "none" },
       };
       var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_valor"));
+      chart.draw(view, options);
+    }
+
+    google.charts.load("current", {packages:['corechart']});
+    google.charts.setOnLoadCallback(drawChartProfissional);
+
+    function drawChartProfissional() {
+      var data = google.visualization.arrayToDataTable(
+        {{ graphProfissionalAtendimento|safe }},
+      );
+
+      var view = new google.visualization.DataView(data);
+
+      var options = {
+        title: '{{ graphProfissionalTitulo|safe }}',
+        width: 550,
+        height: 400,
+        pieHole: 0.4,
+        bar: {groupWidth: "95%"},
+        legend: { position: "none" },
+      };
+      var chart = new google.visualization.PieChart(document.getElementById("columnchart_profissional"));
       chart.draw(view, options);
     }
    

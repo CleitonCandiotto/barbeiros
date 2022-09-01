@@ -133,6 +133,8 @@ class DashboardView(TemplateView):
         
         #grafico com Atendimentos por Profissional pelo mês atual
         graphProfissional = self.graph_atendimento_profissional(agendaAtendido)
+        context['graphProfissionalAtendimento'] = graphProfissional[0]
+        context['graphProfissionalTitulo'] = graphProfissional[1]
         
         return context
     
@@ -190,6 +192,8 @@ class DashboardView(TemplateView):
         df = df[df['Dia'].dt.month == mes]
         df['Dia'] = df['Dia'].astype(str)
         df['Dia'] = df['Dia'].apply(lambda x: x.split('-')[-1])
+        if df.empty:
+            df['Dia'] = ['Menhum atendimento feito nesse mês']
         dfGroupd = df.groupby('Dia').sum()[['Atendido']].reset_index()
         
         v = dfGroupd.values.tolist()
@@ -215,6 +219,8 @@ class DashboardView(TemplateView):
         df['Dia'] = df['Dia'].astype(str)
         df['Dia'] = df['Dia'].apply(lambda x: x.split('-')[-1])
         df['Valor'] = df['Valor'].astype(float)
+        if df.empty:
+            df['Dia'] = ['Menhum atendimento feito nesse mês']
         dfGroupd = df.groupby('Dia').sum()[['Valor']].reset_index()
 
         v = dfGroupd.values.tolist()
@@ -237,8 +243,6 @@ class DashboardView(TemplateView):
         df = pd.DataFrame(dfDict, columns=['Dia', 'Profissional', 'Atendido'])
         df['Dia'] = pd.to_datetime(df['Dia'])
         df = df[df['Dia'].dt.month == mes]
-        df['Dia'] = df['Dia'].astype(str)
-        df['Dia'] = df['Dia'].apply(lambda x: x.split('-')[-1])
         dfGroupd = df.groupby('Profissional').sum()[['Atendido']].reset_index()
 
         v = dfGroupd.values.tolist()
@@ -258,6 +262,7 @@ class Agenda(TemplateView):
         context['cal'] = cal
         context['agenda'] = AgendaHorario.objects.filter(
             barbearia = self.request.user.barbearia,
+            data__month = date.today().month
             )
         return context
 
