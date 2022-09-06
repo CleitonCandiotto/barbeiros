@@ -124,18 +124,25 @@ class DashboardView(TemplateView):
 
         context['graphAtendimentoData'] = graph[0]
         context['graphTitulo'] = graph[1]
+        context['atendimentoAcomulado'] = graph[2]
         
         #grafico com valor por dia de atendimentos pelo mês atual
         graphValor = self.graph_valor_mes(agendaAtendido)
         
         context['graphValorAtendimeno'] = graphValor[0]
         context['graphTituloValor'] = graphValor[1]
+        context['valorAcomulado'] = graphValor[2]
         
         #grafico com Atendimentos por Profissional pelo mês atual
         graphProfissional = self.graph_atendimento_profissional(agendaAtendido)
         context['graphProfissionalAtendimento'] = graphProfissional[0]
         context['graphProfissionalTitulo'] = graphProfissional[1]
         
+        #grafico com Servicos feitos pelo mês atual
+        graphServicos = self.graph_servicos(agendaAtendido)
+        context['dataServicos'] = graphServicos[0]
+        context['labelServicos'] = graphServicos[1]
+        print(graphServicos[0])
         return context
     
 
@@ -199,8 +206,10 @@ class DashboardView(TemplateView):
         v = dfGroupd.values.tolist()
         d = dfGroupd.columns.tolist()
         v.insert(0,d)
-
-        return json.dumps(v), titulo
+        
+        acomulado = df['Atendido'].sum()
+        
+        return json.dumps(v), titulo, acomulado
     
     
     def graph_valor_mes(self, df):
@@ -226,8 +235,11 @@ class DashboardView(TemplateView):
         v = dfGroupd.values.tolist()
         d = dfGroupd.columns.tolist()
         v.insert(0,d)
+        
+        valorAcomulado = df['Valor'].sum()
+        valorAcomulado = self.formata_context_conta(valorAcomulado)
 
-        return json.dumps(v), titulo
+        return json.dumps(v), titulo, valorAcomulado
 
 
     def graph_atendimento_profissional(self, df):
@@ -250,6 +262,30 @@ class DashboardView(TemplateView):
         v.insert(0,d)
 
         return json.dumps(v), titulo
+    
+    def graph_servicos(self, df):
+        mes = date.today().month
+        ano = date.today().year
+        
+        meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+        
+        titulo = f'Serviços mais feitos em  {meses[mes-1]} de {ano}' 
+        dfDict = df.to_dict()
+        
+        df = pd.DataFrame(dfDict, columns=['Dia', 'Serviço', 'Atendido'])
+        df['Dia'] = pd.to_datetime(df['Dia'])
+        df = df[df['Dia'].dt.month == mes]
+        
+        dfGroupd = df.groupby('Serviço').sum()[['Atendido']].reset_index()
+        
+        print(dfGroupd)
+
+        data = dfGroupd.values.tolist()
+        label = dfGroupd.columns.tolist()
+        
+
+        return data, label, titulo
 
 
 class Agenda(TemplateView):
@@ -966,8 +1002,7 @@ class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
                 
                 messages.error(request, 'Horario Indisponível', extra_tags='danger')
                 return redirect('agenda')
-                     
-                      
+                                   
         messages.error(request, 'Erro ao agendar', extra_tags='danger')          
         return redirect('agenda')
 
@@ -1353,25 +1388,25 @@ class AgendaHorarioUpdate(LoginRequiredMixin, UpdateView):
                 messages.success(request, 'Horario arquivado')
                 return redirect('agenda') 
             
-            if dataDb and horarioDb:                
-                messages.error(request, 'Horario já Agendado', extra_tags='danger')
-                return redirect('agenda')
-            
             if not dataDb:
                 form.save()
                 messages.success(request, 'Horario Alterado com Sucesso')
                 return redirect('agenda')
             
             if dataDb: 
-                agendamento = AgendaHorario.objects.filter(data=data)
-                for a in agendamento:
+                for a in dataDb:
                     if (horario <= a.horario or horario >= a.horarioFim) and (tempoServico <= a.horario or tempoServico >= a.horarioFim):
-                        form.save()
-                        messages.success(request, 'Horario Alterado com Sucesso')
-                        return redirect('agenda')
+                        agenda = True
                     else:
-                        messages.error(request, 'Horario Indisponível', extra_tags='danger')
-                        return redirect('agenda') 
+                        agenda = False
+                
+                if agenda:
+                    form.save()
+                    messages.success(request, 'Horario agendado')
+                    return redirect('agenda')
+                
+                messages.error(request, 'Horario Indisponível', extra_tags='danger')
+                return redirect('agenda') 
                       
         messages.error(request, 'Erro ao agendar', extra_tags='danger')          
         return redirect('agenda')
