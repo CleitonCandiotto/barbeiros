@@ -142,7 +142,7 @@ class DashboardView(TemplateView):
         graphServicos = self.graph_servicos(agendaAtendido)
         context['dataServicos'] = graphServicos[0]
         context['labelServicos'] = graphServicos[1]
-        print(graphServicos[0])
+        context['titutloServicos'] = graphServicos[2]
         return context
     
 
@@ -263,6 +263,7 @@ class DashboardView(TemplateView):
 
         return json.dumps(v), titulo
     
+    
     def graph_servicos(self, df):
         mes = date.today().month
         ano = date.today().year
@@ -277,15 +278,13 @@ class DashboardView(TemplateView):
         df['Dia'] = pd.to_datetime(df['Dia'])
         df = df[df['Dia'].dt.month == mes]
         
-        dfGroupd = df.groupby('Serviço').sum()[['Atendido']].reset_index()
+        dfGroupd = df.groupby('Serviço').sum()[['Atendido']]
+        dfGroupd = dfGroupd.T
         
-        print(dfGroupd)
-
         data = dfGroupd.values.tolist()
-        label = dfGroupd.columns.tolist()
-        
+        label = dfGroupd.columns.tolist()      
 
-        return data, label, titulo
+        return data[0], label, titulo
 
 
 class Agenda(TemplateView):

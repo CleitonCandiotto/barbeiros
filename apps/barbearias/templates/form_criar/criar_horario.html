@@ -14,12 +14,11 @@
               <div class="col-md-10">
                 {{ form.cliente }}
               </div>
-              <div class="col-md-2">
-                <button type="button" 
-                onclick="criarModalCliente()">
-                <input type="hidden" value="{% url 'criar_cliente' %}" id="hhoracliente" >
-                <i id="bi-circle" class="bi bi-plus-circle-fill" title="Acicionar Clientes" style="font-size: 22px; color:#04d484;"></i>
-                </button>
+              <div class="col-md-2 dropdown">
+                <a href="#" data-bs-toggle="dropdown" >
+                  <i class="bi bi-plus-circle-fill" title="Acicionar Profisionais" style="font-size: 22px; color:#04d484;">
+                  </i>
+                </a>
               </div>
             </div>
           </div>
