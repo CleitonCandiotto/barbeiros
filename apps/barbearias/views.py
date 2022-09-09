@@ -960,12 +960,14 @@ class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
         data = self.request.POST.get('data')
         servico = self.request.POST.get('servico')
         atendido = self.request.POST.get('antendido')
+        profissional = self.request.POST.get('profissional')
+        profissional = Profissionais.objects.get(id=profissional)
+        print(profissional, "<<<<<<< forms")
             
         horario = datetime.strptime(horario, '%H:%M').time()
         data = datetime.strptime(data, '%Y-%m-%d').date()
         
         dataDb = AgendaHorario.objects.filter(data=data)
-        horarioDb = AgendaHorario.objects.filter(horario=horario)
         servicoDb = Servicos.objects.get(id=servico)
         
                
@@ -987,8 +989,9 @@ class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
                 messages.success(request, 'Horario agendado')
                 return redirect('agenda')
             
-            if dataDb: 
+            if dataDb:
                 for a in dataDb:
+                    print(a.profissional)
                     if (horario <= a.horario or horario >= a.horarioFim) and (tempoServico <= a.horario or tempoServico >= a.horarioFim):
                         agenda = True
                     else:
