@@ -1,3 +1,4 @@
+from cgitb import reset
 import json
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -143,6 +144,7 @@ class DashboardView(TemplateView):
         context['dataServicos'] = graphServicos[0]
         context['labelServicos'] = graphServicos[1]
         context['titutloServicos'] = graphServicos[2]
+
         return context
     
 
@@ -970,6 +972,7 @@ class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
         dataDb = AgendaHorario.objects.filter(data=data)
         servicoDb = Servicos.objects.get(id=servico)
         
+        
                
         tempoAdicional = timedelta(minutes=int(servicoDb.tempo))
         tempoServico = (datetime.combine(data, horario) + tempoAdicional).time()       
@@ -992,7 +995,7 @@ class AgendaHorarioCreate(LoginRequiredMixin, CreateView):
             if dataDb:
                 for a in dataDb:
                     print(a.profissional)
-                    if (horario <= a.horario or horario >= a.horarioFim) and (tempoServico <= a.horario or tempoServico >= a.horarioFim):
+                    if (horario <= a.horario or horario >= a.horarioFim) and (tempoServico <= a.horario or tempoServico >= a.horarioFim) or profissional != a.profissional:
                         agenda = True
                     else:
                         agenda = False

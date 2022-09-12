@@ -40,7 +40,7 @@ urlpatterns = [
     path('criar-conta-receber/', ContaReceberCreate.as_view(), name='criar_conta_receber'),
     path('criar-fornecedor/', FornecedorCreate.as_view(), name='criar_fornecedor'),
     path('criar-horario/', AgendaHorarioCreate.as_view(), name='agenda_horario'),
-
+    
     path('editar-servico/<int:pk>/', ServicosUpdate.as_view(), name='editar_servico'),
     path('editar-cliente/<int:pk>/', ClientesUpdate.as_view(), name='editar_cliente'),
     path('editar-profissional/<int:pk>/', ProfissionaisUpdate.as_view(), name='editar_profissional'),

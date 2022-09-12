@@ -14,11 +14,12 @@
               <div class="col-md-10">
                 {{ form.cliente }}
               </div>
-              <div class="col-md-2 dropdown">
-                <a href="#" data-bs-toggle="dropdown" >
-                  <i class="bi bi-plus-circle-fill" title="Acicionar Profisionais" style="font-size: 22px; color:#04d484;">
-                  </i>
-                </a>
+              <div class="col-md-2">
+                <button type="button" 
+                onclick="ModalAddCliente()">
+                <i class="bi bi-plus-circle-fill" title="Acicionar Profisionais" style="font-size: 22px; color:#04d484;"></i>
+                <input type="hidden" value="{% url 'criar_cliente' %}" id="hcliente">
+              </button>
               </div>
             </div>
           </div>
@@ -68,7 +69,7 @@
 <div class="modal fade" id="open-modal"  role="dialog" aria-hidden="true">
 
 </div>
-<div class="modal fade" id="cliente-modal"  role="dialog" aria-hidden="true">
+<div class="modal fade" id="criar-cliente"  role="dialog" aria-hidden="true">
 
 </div>
 
@@ -76,9 +77,9 @@
 
 <script>
 
-function criarModalCliente(){
+function ModalAddCliente(){
         const url = document.querySelector('#hcliente')
-        $('#cliente-modal').load(url.value, function(){
+        $('#criar-cliente').load(url.value, function(){
             $(this).modal('show');
         });
     };
